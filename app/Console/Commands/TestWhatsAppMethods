@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use App\Models\KontrakSewa;
+use App\Services\NotificationService;
+
+class TestWhatsAppMethods extends Command
+{
+    protected $signature = 'whatsapp:test-method {id} {method} {--list : List available methods}';
+    
+    protected $description = 'Test specific WhatsApp notification method';
+    
+    public function handle()
+    {
+        if ($this->option('list')) {
+            $this->listMethods();
+            return 0;
+        }
+        
+        $id = $this->argument('id');
+        $methodName = $this->argument('method');
+        
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($id);
+        
+        if (!$kontrak) {
+            $this->error("Kontrak {$id} tidak ditemukan");
+            return 1;
+        }
+        
+        $this->info("=== KONTRAK INFO ===");
+        $this->table(
+            ['Field', 'Value'],
+            [
+                ['ID', $kontrak->id_kontrak],
+                ['Status', $kontrak->status_kontrak],
+                ['Penghuni', $kontrak->penghuni->nama ?? 'N/A'],
+                ['No HP', $kontrak->penghuni->no_hp ?? 'N/A'],
+                ['Tanggal Mulai', $kontrak->tanggal_mulai ? $kontrak->tanggal_mulai->format('d-m-Y') : 'NULL'],
+                ['Tanggal Selesai', $kontrak->tanggal_selesai ? $kontrak->tanggal_selesai->format('d-m-Y') : 'NULL'],
+                ['Sisa Hari', $kontrak->tanggal_selesai ? now()->diffInDays($kontrak->tanggal_selesai, false) : 'N/A'],
+            ]
+        );
+        
+        $service = app(NotificationService::class);
+        
+        if (!method_exists($service, $methodName)) {
+            $this->error("Method '{$methodName}' tidak ditemukan di NotificationService");
+            $this->listMethods();
+            return 1;
+        }
+        
+        $this->info("\n=== TESTING METHOD: {$methodName} ===");
+        
+        try {
+            // Panggil method
+            $result = $service->{$methodName}($kontrak);
+            
+            $this->info("✓ Method berhasil dipanggil");
+            
+            if (is_array($result) || is_object($result)) {
+                $this->info("Result: " . json_encode($result, JSON_PRETTY_PRINT));
+            }
+            
+        } catch (\Exception $e) {
+            $this->error("✗ Error: " . $e->getMessage());
+            $this->error("Trace: " . $e->getTraceAsString());
+        }
+        
+        $this->info("\n=== PERIKSA WHATSAPP ANDA ===");
+        $this->info("1. Buka WhatsApp di HP");
+        $this->info("2. Cek pesan dari nomor bot");
+        $this->info("3. Jika tidak muncul, cek logs:");
+        $this->info("   tail -f storage/logs/laravel.log | grep -i whatsapp");
+        
+        return 0;
+    }
+    
+    private function listMethods()
+    {
+        $service = app(NotificationService::class);
+        $methods = get_class_methods($service);
+        
+        $this->info("=== AVAILABLE METHODS ===");
+        
+        $whatsappMethods = [];
+        foreach ($methods as $method) {
+            if (strpos($method, 'send') === 0) {
+                $whatsappMethods[] = [$method];
+            }
+        }
+        
+        $this->table(['Method Name'], $whatsappMethods);
+        
+        $this->info("\n=== RECOMMENDED METHODS ===");
+        $this->info("Untuk kontrak PENDING:");
+        $this->info("  - sendMenungguPersetujuan");
+        $this->info("  - sendPengajuanBaru");
+        
+        $this->info("\nUntuk kontrak AKTIF:");
+        $this->info("  - sendPengingat7Hari");
+        $this->info("  - sendPengingat3Hari");
+        $this->info("  - sendPengingatH1");
+        $this->info("  - sendPengingatHariIni");
+        
+        $this->info("\nContoh penggunaan:");
+        $this->info("  php artisan whatsapp:test-method 1 sendMenungguPersetujuan");
+        $this->info("  php artisan whatsapp:test-method 1 sendPengingat7Hari");
+    }
+}

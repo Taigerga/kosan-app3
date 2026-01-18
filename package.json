@@ -1,0 +1,32 @@
+{
+  "name": "kosan-app",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "whatsapp:dev": "node app/Services/WhatsAppBot/whatsapp-bot.js",
+    "whatsapp:start": "node app/Services/WhatsAppBot/whatsapp-bot.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "autoprefixer": "^10.4.23",
+    "axios": "^1.13.2",
+    "concurrently": "^9.0.1",
+    "laravel-vite-plugin": "^2.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "vite": "^7.2.1"
+  },
+  "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
+    "@whiskeysockets/baileys": "latest",
+    "axios": "^1.6.0",
+    "crypto": "^1.0.1",
+    "fs": "^0.0.1-security",
+    "node-cron": "^3.0.2",
+    "path": "^0.12.7",
+    "pino": "^8.15.0",
+    "qrcode-terminal": "^0.12.0",
+    "util": "^0.12.5"
+  }
+}

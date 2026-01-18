@@ -1,0 +1,38 @@
+﻿=== SCHEDULER & CONTRACT STATUS CHECK ===
+
+Total Active Contracts: 20
+
+Contracts that should be EXPIRED (but still active): 5
+  - ID: 3, End: 2025-12-22, Days overdue: 27.453921666088
+  - ID: 4, End: 2025-12-22, Days overdue: 27.453921673484
+  - ID: 5, End: 2025-12-22, Days overdue: 27.453921674502
+  - ID: 6, End: 2025-12-22, Days overdue: 27.453921675394
+  - ID: 7, End: 2025-12-22, Days overdue: 27.45392167625
+
+Contracts expiring in next 7 days: 2
+  - ID: 21, End: 2026-01-22, Days left: 3.5460783114699
+  - ID: 22, End: 2026-01-23, Days left: 4.546078310625
+
+=== SCHEDULER CONFIGURATION ===
+Total scheduled tasks: 0
+
+=== SCHEDULER STATUS ===
+ΓÜá∩╕Å  WARNING: No schedule mutex files found!
+   This might mean the scheduler has never run.
+
+=== RECOMMENDATIONS ===
+ΓÜá∩╕Å  You have 5 expired contracts still marked as 'aktif'!
+   The scheduler should have changed these to 'selesai'.
+   This suggests the scheduler might not be running.
+
+To enable the scheduler on Windows (Laragon):
+1. Open Task Scheduler (taskschd.msc)
+2. Create a new task that runs every minute:
+   Program: php
+   Arguments: artisan schedule:run
+   Start in: D:\laragon\www\kosan-app3
+
+OR run manually for testing:
+   php artisan contract:send-reminders --test
+
+=== END CHECK ===

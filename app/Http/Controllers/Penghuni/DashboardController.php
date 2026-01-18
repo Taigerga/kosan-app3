@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers\Penghuni;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\KontrakSewa;
+use App\Models\Pembayaran;
+use App\Models\Kos;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        // Manual check auth
+        if (!Auth::guard('penghuni')->check()) {
+            return redirect()->route('login')->with('error', 'Anda harus login sebagai penghuni.');
+        }
+
+        $user = Auth::guard('penghuni')->user();
+        
+        $kontrakAktif = KontrakSewa::with(['kos', 'kamar'])
+            ->where('id_penghuni', $user->id_penghuni)
+            ->where('status_kontrak', 'aktif')
+            ->get();
+
+        // Tambahkan data sisa waktu untuk setiap kontrak
+        $kontrakAktif->each(function($kontrak) {
+            $sekarang = Carbon::now();
+            $selesai = Carbon::parse($kontrak->tanggal_selesai);
+            
+            // Hitung sisa hari (convert ke integer)
+            $sisaHari = (int) floor($sekarang->diffInDays($selesai, false));
+            $totalHari = (int) floor($kontrak->tanggal_mulai->diffInDays($kontrak->tanggal_selesai));
+            
+            // Hitung persentase waktu tersisa
+            $persentaseAkhir = $totalHari > 0 ? ($sisaHari / $totalHari) * 100 : 0;
+            
+            // Tentukan status warna
+            if ($persentaseAkhir > 50) {
+                $statusWarna = 'green'; // Waktu masih banyak
+            } elseif ($persentaseAkhir > 20) {
+                $statusWarna = 'yellow'; // Waktu mulai berkurang
+            } else {
+                $statusWarna = 'red'; // Waktu hampir habis
+            }
+            
+            $kontrak->sisaHari = max($sisaHari, 0);
+            $kontrak->totalHari = $totalHari;
+            $kontrak->persentaseAkhir = max($persentaseAkhir, 0);
+            $kontrak->statusWarna = $statusWarna;
+            $kontrak->sudahBerakhir = $sisaHari < 0;
+        });
+
+        $pembayaranTerakhir = Pembayaran::with(['kontrak.kos'])
+            ->where('id_penghuni', $user->id_penghuni)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // PERBAIKAN: Hitung total pembayaran termasuk deposit kontrak
+        $totalPembayaran = $this->hitungTotalPembayaran($user->id_penghuni);
+
+        return view('penghuni.dashboard', compact(
+            'user', 
+            'kontrakAktif', 
+            'pembayaranTerakhir',
+            'totalPembayaran'
+        ));
+    }
+
+    /**
+     * Hitung total pembayaran termasuk deposit dari kontrak
+     */
+    private function hitungTotalPembayaran($penghuniId)
+    {
+        // 1. Pembayaran bulanan yang sudah lunas
+        $totalPembayaranBulanan = Pembayaran::where('id_penghuni', $penghuniId)
+            ->where('status_pembayaran', 'lunas')
+            ->sum('jumlah');
+        
+        // 2. Deposit dari kontrak aktif (uang muka pertama)
+        $totalDeposit = KontrakSewa::where('id_penghuni', $penghuniId)
+            ->where('status_kontrak', 'aktif')
+            ->sum('harga_sewa');
+        
+        return $totalPembayaranBulanan + $totalDeposit;
+    }
+}

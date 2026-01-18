@@ -1,0 +1,565 @@
+@extends('layouts.app')
+
+@section('title', 'Tambah Kamar - Kosan App')
+
+@section('content')
+<div class="max-w-4xl mx-auto p-4 md:p-6">
+    <!-- Breadcrumb -->
+    <div class="bg-dark-card/50 border border-dark-border rounded-xl p-4 mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('pemilik.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <i class="fas fa-home mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="inline-flex items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                        <a href="{{ route('pemilik.kamar.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                            <i class="fas fa-file-contract mr-2"></i>
+                            Kelola Kamar
+                        </a>
+                    </div>
+                </li>
+                <li class="inline-flex items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                        <span class="inline-flex items-center text-sm font-medium text-white">
+                            <i class="fas fa-plus mr-2"></i>
+                            Tambah Kamar
+                        </span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-3 mb-4">
+            <a href="{{ route('pemilik.kamar.index') }}" 
+               class="p-2 bg-dark-card border border-dark-border rounded-lg hover:bg-dark-border/50 transition">
+                <i class="fas fa-arrow-left text-dark-muted"></i>
+            </a>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white">Tambah Kamar Baru</h1>
+                <p class="text-dark-muted mt-1">Isi form berikut untuk menambahkan kamar baru ke kos Anda</p>
+            </div>
+        </div>
+        
+
+
+    @if($errors->any())
+        <div class="mb-6 p-4 bg-red-900/30 border border-red-800/50 rounded-xl">
+            <div class="flex items-start space-x-3">
+                <div class="p-2 bg-red-900/50 rounded-lg">
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-white font-medium mb-1">Ada beberapa kesalahan:</h3>
+                    <ul class="text-red-300 text-sm space-y-1">
+                        @foreach($errors->all() as $error)
+                        <li class="flex items-center">
+                            <i class="fas fa-circle text-xs mr-2"></i>
+                            {{ $error }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Form -->
+    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
+        <form method="POST" action="{{ route('pemilik.kamar.store') }}" enctype="multipart/form-data">
+            @csrf
+
+            <!-- Form Content -->
+            <div class="p-6">
+                <div class="space-y-8">
+                    <!-- Section 1: Informasi Dasar -->
+                    <div class="border-b border-dark-border pb-8">
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center">
+                            <i class="fas fa-info-circle text-primary-400 mr-3"></i>
+                            Informasi Dasar Kamar
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Pilih Kos -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Pilih Kos <span class="text-red-400">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-home absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
+                                    <select name="id_kos" 
+                                            class="w-full pl-12 pr-10 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 appearance-none transition"
+                                            required>
+                                        <option value="">Pilih Kos...</option>
+                                        @foreach($kos as $k)
+                                        <option value="{{ $k->id_kos }}" {{ old('id_kos') == $k->id_kos ? 'selected' : '' }}>
+                                            {{ $k->nama_kos }} - {{ $k->alamat }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-dark-muted pointer-events-none"></i>
+                                </div>
+                                <p class="text-sm text-dark-muted mt-2">Pilih kos tempat kamar ini akan ditambahkan</p>
+                            </div>
+
+                            <!-- Nomor Kamar -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Nomor Kamar <span class="text-red-400">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-hashtag absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
+                                    <input type="text" 
+                                           name="nomor_kamar" 
+                                           value="{{ old('nomor_kamar') }}" 
+                                           class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 transition"
+                                           placeholder="A1, B2, 101"
+                                           required 
+                                           maxlength="10">
+                                </div>
+                                <p class="text-sm text-dark-muted mt-2">Nomor unik untuk identifikasi kamar</p>
+                            </div>
+
+                            <!-- Tipe Kamar -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Tipe Kamar <span class="text-red-400">*</span>
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    @php
+                                        $tipeOptions = [
+                                            'Standar' => ['color' => 'from-blue-500 to-blue-600', 'icon' => 'fa-home'],
+                                            'Deluxe' => ['color' => 'from-purple-500 to-purple-600', 'icon' => 'fa-crown'],
+                                            'VIP' => ['color' => 'from-yellow-500 to-yellow-600', 'icon' => 'fa-gem'],
+                                            'Superior' => ['color' => 'from-green-500 to-green-600', 'icon' => 'fa-star'],
+                                            'Ekonomi' => ['color' => 'from-gray-500 to-gray-600', 'icon' => 'fa-wallet'],
+                                        ];
+                                    @endphp
+                                    @foreach($tipeOptions as $value => $style)
+                                    <label class="cursor-pointer">
+                                        <input type="radio" 
+                                               name="tipe_kamar" 
+                                               value="{{ $value }}" 
+                                               class="hidden peer"
+                                               {{ old('tipe_kamar') == $value ? 'checked' : '' }}
+                                               required>
+                                        <div class="p-4 border-2 border-dark-border rounded-xl peer-checked:border-primary-500 peer-checked:bg-primary-900/20 transition-all duration-300">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 bg-gradient-to-br {{ $style['color'] }} rounded-lg flex items-center justify-center">
+                                                    <i class="fas {{ $style['icon'] }} text-white text-sm"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="block font-medium text-white">{{ $value }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <!-- Harga Sewa -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Harga Sewa per Bulan <span class="text-red-400">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-money-bill-wave absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
+                                    <input type="number" 
+                                           name="harga" 
+                                           value="{{ old('harga') }}" 
+                                           class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 transition"
+                                           placeholder="1500000"
+                                           required 
+                                           min="0">
+                                </div>
+                                <p class="text-sm text-dark-muted mt-2">Harga sewa dalam Rupiah</p>
+                            </div>
+
+                            <!-- Luas Kamar -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Luas Kamar
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-ruler-combined absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
+                                    <input type="text" 
+                                           name="luas_kamar" 
+                                           value="{{ old('luas_kamar') }}" 
+                                           class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 transition"
+                                           placeholder="3x4, 4x4"
+                                           maxlength="20">
+                                </div>
+                                <p class="text-sm text-dark-muted mt-2">Ukuran kamar dalam meter (panjang x lebar)</p>
+                            </div>
+
+                            <!-- Kapasitas -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Kapasitas <span class="text-red-400">*</span>
+                                </label>
+                                <div class="grid grid-cols-4 gap-3">
+                                    @for($i = 1; $i <= 4; $i++)
+                                    <label class="cursor-pointer">
+                                        <input type="radio" 
+                                               name="kapasitas" 
+                                               value="{{ $i }}" 
+                                               class="hidden peer"
+                                               {{ old('kapasitas') == $i ? 'checked' : '' }}
+                                               required>
+                                        <div class="p-4 border-2 border-dark-border rounded-xl text-center peer-checked:border-primary-500 peer-checked:bg-primary-900/20 transition-all duration-300">
+                                            <div class="text-2xl font-bold text-white mb-1">{{ $i }}</div>
+                                            <div class="text-xs text-dark-muted">
+                                                @if($i == 1) 1 Orang @else {{ $i }} Orang @endif
+                                            </div>
+                                        </div>
+                                    </label>
+                                    @endfor
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Fasilitas Kamar -->
+                    <div class="border-b border-dark-border pb-8">
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center">
+                            <i class="fas fa-list-check text-green-400 mr-3"></i>
+                            Fasilitas Kamar
+                        </h2>
+                        
+                        <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @php
+                                    $facilityGroups = [
+                                        'Kamar Mandi' => ['Kamar mandi dalam', 'Water heater'],
+                                        'Elektronik' => ['AC', 'Kipas angin', 'TV', 'Kulkas mini', 'WiFi'],
+                                        'Furniture' => ['Kasur', 'Lemari', 'Meja belajar', 'Kursi'],
+                                        'Lainnya' => ['Dapur', 'Jendela', 'Balkon']
+                                    ];
+                                @endphp
+                                
+                                @foreach($facilityGroups as $group => $facilities)
+                                <div>
+                                    <h4 class="text-sm font-medium text-dark-muted mb-3">{{ $group }}</h4>
+                                    <div class="space-y-2">
+                                        @foreach($facilities as $facility)
+                                        @php
+                                            $icons = [
+                                                'Kamar mandi dalam' => 'fa-bath',
+                                                'Water heater' => 'fa-temperature-high',
+                                                'AC' => 'fa-snowflake',
+                                                'Kipas angin' => 'fa-fan',
+                                                'TV' => 'fa-tv',
+                                                'Kulkas mini' => 'fa-refrigerator',
+                                                'WiFi' => 'fa-wifi',
+                                                'Kasur' => 'fa-bed',
+                                                'Lemari' => 'fa-archive',
+                                                'Meja belajar' => 'fa-table',
+                                                'Kursi' => 'fa-chair',
+                                                'Dapur' => 'fa-kitchen-set',
+                                                'Jendela' => 'fa-window-maximize',
+                                                'Balkon' => 'fa-building'
+                                            ];
+                                        @endphp
+                                        <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-dark-border/30 rounded-lg transition">
+                                            <input type="checkbox" 
+                                                   name="fasilitas_kamar[]" 
+                                                   value="{{ $facility }}" 
+                                                   class="w-4 h-4 bg-dark-bg border-dark-border rounded text-primary-500 focus:ring-primary-500 focus:ring-2"
+                                                   {{ in_array($facility, old('fasilitas_kamar', [])) ? 'checked' : '' }}>
+                                            <div class="flex-1 flex items-center">
+                                                <i class="fas {{ $icons[$facility] ?? 'fa-check' }} w-5 text-dark-muted mr-2"></i>
+                                                <span class="text-sm text-white">{{ $facility }}</span>
+                                            </div>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <p class="text-sm text-dark-muted mt-4">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Pilih fasilitas yang tersedia di kamar ini
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Foto & Status -->
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center">
+                            <i class="fas fa-camera text-yellow-400 mr-3"></i>
+                            Foto & Status Kamar
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Foto Kamar -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Foto Kamar
+                                </label>
+                                <div class="border-2 border-dashed border-dark-border rounded-xl p-6 text-center hover:border-primary-500/50 transition">
+                                    <div class="mb-4">
+                                        <div class="w-16 h-16 bg-dark-border/50 rounded-full flex items-center justify-center mx-auto">
+                                            <i class="fas fa-camera text-2xl text-dark-muted"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <input type="file" 
+                                               name="foto_kamar" 
+                                               id="foto_kamar"
+                                               class="hidden"
+                                               accept="image/*">
+                                        <label for="foto_kamar" 
+                                               class="inline-block px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg cursor-pointer transition">
+                                            <i class="fas fa-upload mr-2"></i>
+                                            Unggah Foto
+                                        </label>
+                                    </div>
+                                    <p class="text-sm text-dark-muted">Format: JPG, PNG, JPEG (max 2 MB)</p>
+                                    <div id="file-name" class="text-xs text-primary-400 mt-2"></div>
+
+                                    {{-- PREVIEW BARU --}}
+                                    <div id="preview-wrap" class="hidden mt-4 flex justify-center">
+                                        <img id="preview-img" class="max-w-full max-h-48 rounded-xl border border-dark-border" alt="Preview">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Kamar -->
+                            <div>
+                                <label class="block text-sm font-medium text-white mb-3">
+                                    Status Kamar <span class="text-red-400">*</span>
+                                </label>
+                                <div class="space-y-3">
+                                    @php
+                                        $statusOptions = [
+                                            'tersedia' => ['color' => 'from-green-500 to-green-600', 'icon' => 'fa-check-circle', 'label' => 'Tersedia'],
+                                            'terisi' => ['color' => 'from-blue-500 to-blue-600', 'icon' => 'fa-user-check', 'label' => 'Terisi'],
+                                            'maintenance' => ['color' => 'from-yellow-500 to-yellow-600', 'icon' => 'fa-tools', 'label' => 'Maintenance'],
+                                        ];
+                                    @endphp
+                                    
+                                    @foreach($statusOptions as $value => $style)
+                                    <label class="cursor-pointer block">
+                                        <input type="radio" 
+                                               name="status_kamar" 
+                                               value="{{ $value }}" 
+                                               class="hidden peer"
+                                               {{ old('status_kamar') == $value ? 'checked' : ($value == 'tersedia' && !old('status_kamar') ? 'checked' : '') }}
+                                               required>
+                                        <div class="p-4 border-2 border-dark-border rounded-xl peer-checked:border-primary-500 peer-checked:bg-primary-900/20 transition-all duration-300">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-10 h-10 bg-gradient-to-br {{ $style['color'] }} rounded-lg flex items-center justify-center">
+                                                        <i class="fas {{ $style['icon'] }} text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block font-medium text-white">{{ $style['label'] }}</span>
+                                                        <span class="text-xs text-dark-muted">
+                                                            @if($value == 'tersedia')
+                                                            Kamar siap disewa
+                                                            @elseif($value == 'terisi')
+                                                            Kamar sedang ditempati
+                                                            @else
+                                                            Kamar sedang diperbaiki
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="w-6 h-6 border-2 border-dark-border rounded-full peer-checked:border-primary-500 peer-checked:bg-primary-500 flex items-center justify-center">
+                                                    <i class="fas fa-check text-white text-xs hidden peer-checked:block"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-10 pt-8 border-t border-dark-border flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
+                    <div>
+                        <a href="{{ route('pemilik.kamar.index') }}" 
+                           class="inline-flex items-center px-6 py-3 border-2 border-dark-border text-white rounded-xl hover:border-dark-muted hover:text-dark-muted transition">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Kembali ke Daftar
+                        </a>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="resetForm()"
+                                class="px-6 py-3 border-2 border-dark-border text-white rounded-xl hover:border-red-500 hover:text-red-400 transition">
+                            <i class="fas fa-redo mr-2"></i>
+                            Reset Form
+                        </button>
+                        <button type="submit" 
+                                class="px-8 py-3 bg-gradient-to-r from-primary-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                            <i class="fas fa-save mr-2"></i>
+                            Simpan Kamar Baru
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // File input display
+    document.getElementById('foto_kamar').addEventListener('change', function (e) {
+    const fileName   = document.getElementById('file-name');
+    const previewImg = document.getElementById('preview-img');
+    const previewWrap= document.getElementById('preview-wrap');
+
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+
+        // validasi sederhana
+        if (!file.type.startsWith('image/')) {
+        showToast('File harus berupa gambar', 'error');
+        this.value = '';
+        fileName.textContent = '';
+        fileName.classList.add('hidden');
+        previewWrap.classList.add('hidden');
+        return;
+        }
+
+        // tampilkan nama
+        fileName.textContent = file.name;
+        fileName.classList.remove('hidden');
+
+        // buat object URL untuk preview
+        const url = URL.createObjectURL(file);
+        previewImg.src = url;
+        previewWrap.classList.remove('hidden');
+
+        // bersihkan object URL setelah gambar selesai dimuat (optional, menghemat memory)
+        previewImg.onload = () => URL.revokeObjectURL(url);
+    } else {
+        fileName.textContent = '';
+        fileName.classList.add('hidden');
+        previewWrap.classList.add('hidden');
+    }
+    });
+
+    // Form reset
+    function resetForm() {
+    if (!confirm('Apakah Anda yakin ingin mengosongkan semua isian form?')) return;
+
+    document.querySelector('form').reset();
+
+    // reset file & preview
+    document.getElementById('file-name').textContent = '';
+    document.getElementById('file-name').classList.add('hidden');
+    document.getElementById('preview-wrap').classList.add('hidden');
+    document.getElementById('preview-img').src = '';
+
+    // reset radio default
+    document.querySelector('input[name="status_kamar"][value="tersedia"]').checked = true;
+    document.querySelector('input[name="kapasitas"][value="1"]').checked = true;
+
+    showToast('Form telah direset', 'success');
+    }
+
+    // Form validation on submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+                field.classList.add('border-red-500');
+            } else {
+                field.classList.remove('border-red-500');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            if (firstInvalidField) {
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidField.focus();
+            }
+            showToast('Harap isi semua field yang wajib diisi', 'error');
+        }
+    });
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+            type === 'success' ? 'bg-green-900/90 text-green-300' :
+            type === 'error' ? 'bg-red-900/90 text-red-300' :
+            'bg-blue-900/90 text-blue-300'
+        }`;
+        toast.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <i class="fas ${
+                    type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'
+                }"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+</script>
+
+<style>
+    /* Custom styles for radio and checkbox */
+    input[type="radio"]:checked + div {
+        border-color: #3b82f6;
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+    
+    /* Ganti dengan styling pada ikon FA yang sudah ada di label */
+    label:has(input[type="checkbox"]:checked) .fa-check {
+        color: #3b82f6;          /* warna centang */
+    }
+    
+    /* File upload hover effect */
+    #foto_kamar + label:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+    
+    /* Form focus states */
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Smooth transitions */
+    input, select, textarea, button, label {
+        transition: all 0.2s ease;
+    }
+</style>
+@endsection

@@ -1,0 +1,190 @@
+@extends('layouts.app')
+
+@section('title', 'Kelola Kos - Kosan App')
+
+@section('content')
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary-900/50 to-indigo-900/50 border border-primary-800/30 rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Kelola Kos</h1>
+                <p class="text-primary-200">Kelola semua properti kos Anda di satu tempat</p>
+            </div>
+            <a href="{{ route('pemilik.kos.create') }}" 
+               class="mt-4 md:mt-0 px-6 py-3 bg-gradient-to-r from-primary-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Kos Baru
+            </a>
+        </div>
+    </div>
+
+    @if(session('success'))
+    <div class="bg-green-900/30 border border-green-800/50 text-green-300 px-4 py-3 rounded-xl mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-3"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
+    <!-- Kos List -->
+    @if($kos->count() > 0)
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($kos as $item)
+        <div class="card-hover bg-dark-card border border-dark-border rounded-2xl overflow-hidden transition-all duration-300">
+            <!-- Foto Kos -->
+            <div class="relative h-56 overflow-hidden">
+                @if($item->foto_utama)
+                <img src="{{ asset('storage/' . $item->foto_utama) }}" 
+                     alt="{{ $item->nama_kos }}" 
+                     class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                @else
+                <div class="w-full h-full bg-gradient-to-br from-dark-border to-dark-bg flex items-center justify-center">
+                    <i class="fas fa-home text-4xl text-dark-muted"></i>
+                </div>
+                @endif
+                
+                <!-- Status Badge -->
+                <div class="absolute top-4 left-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm
+                        {{ $item->status_kos == 'aktif' ? 'bg-green-900/80 text-green-300' : 
+                           ($item->status_kos == 'pending' ? 'bg-yellow-900/80 text-yellow-300' : 
+                           'bg-red-900/80 text-red-300') }}">
+                        {{ ucfirst($item->status_kos) }}
+                    </span>
+                </div>
+                
+                <!-- Overlay on Hover -->
+                <div class="absolute inset-0 bg-gradient-to-t from-dark-card via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+
+            <!-- Info Kos -->
+            <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-white truncate">{{ $item->nama_kos }}</h3>
+                </div>
+                
+                <div class="flex items-center text-dark-muted text-sm mb-3">
+                    <i class="fas fa-map-marker-alt mr-2 text-primary-400"></i>
+                    <span class="line-clamp-1">{{ $item->alamat }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm mb-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center text-dark-muted">
+                            <i class="fas fa-bed mr-2 text-green-400"></i>
+                            {{ $item->kamar_count }} Kamar
+                        </span>
+                        <span class="flex items-center text-dark-muted">
+                            <i class="fas fa-users mr-2 text-blue-400"></i>
+                            {{ ucfirst($item->jenis_kos) }}
+                        </span>
+                    </div>
+                    <span class="font-semibold text-primary-300">
+                        {{ ucfirst($item->tipe_sewa) }}
+                    </span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center pt-4 border-t border-dark-border">
+                    <!-- Left Side: Detail Button -->
+                    <a href="{{ route('pemilik.kos.show', $item->id_kos) }}" 
+                       class="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium group">
+                        <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                        Detail
+                    </a>
+                    
+                    <!-- Right Side: Edit, Kamar, Delete -->
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('pemilik.kos.edit', $item->id_kos) }}" 
+                           class="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium group">
+                            <i class="fas fa-edit mr-2 group-hover:scale-110 transition-transform"></i>
+                            Edit
+                        </a>
+                        
+                        <a href="{{ route('pemilik.kamar.index', ['kos' => $item->id_kos]) }}" 
+                           class="inline-flex items-center text-green-400 hover:text-green-300 font-medium group">
+                            <i class="fas fa-bed mr-2 group-hover:scale-110 transition-transform"></i>
+                            Kamar
+                        </a>
+                        
+                        <form method="POST" action="{{ route('pemilik.kos.destroy', $item->id_kos) }}" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="inline-flex items-center text-red-400 hover:text-red-300 font-medium group"
+                                    onclick="return confirm('Hapus kos ini? Semua kamar juga akan terhapus.')">
+                                <i class="fas fa-trash mr-2 group-hover:scale-110 transition-transform"></i>
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @else
+    <!-- Empty State -->
+    <div class="bg-dark-card border border-dark-border rounded-2xl p-8">
+        <div class="text-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-primary-900/30 to-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-home text-4xl text-primary-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-3">Belum Ada Kos</h3>
+            <p class="text-dark-muted mb-6 max-w-md mx-auto">
+                Mulai dengan menambahkan kos pertama Anda untuk mengelola properti Anda
+            </p>
+            <a href="{{ route('pemilik.kos.create') }}" 
+               class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Kos Pertama
+            </a>
+        </div>
+    </div>
+    @endif
+
+            <!-- Table Footer -->
+            @if($kos->hasPages())
+            <div class="border-t border-dark-border px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-dark-muted">
+                        Menampilkan {{ $kos->firstItem() ?? 0 }} - {{ $kos->lastItem() ?? 0 }} dari {{ $kos->total() }} kos
+                    </div>
+                    <div class="flex space-x-2">
+                        @if($kos->onFirstPage())
+                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
+                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                            </span>
+                        @else
+                            <a href="{{ $kos->previousPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
+                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                            </a>
+                        @endif
+                        
+                        @if($kos->hasMorePages())
+                            <a href="{{ $kos->nextPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
+                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                            </a>
+                        @else
+                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
+                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>    
+
+    <!-- Back to Dashboard -->
+    <div class="flex justify-center pt-6">
+        <a href="{{ route('pemilik.dashboard') }}" 
+           class="inline-flex items-center px-5 py-2.5 bg-dark-card border border-dark-border text-white rounded-xl hover:border-primary-500 hover:text-primary-300 transition-all duration-300 group">
+            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+@endsection

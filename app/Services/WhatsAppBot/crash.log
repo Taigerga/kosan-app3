@@ -1,0 +1,48 @@
+[2025-12-20T12:27:20.152Z] Uncaught Exception: EPIPE: broken pipe, write
+Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.log (node:internal/console/constructor:384:26)
+    at console.log (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:28:17)
+    at WhatsAppBot.safeLog (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:184:21)
+    at WhatsAppBot.handleConnectionUpdate (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:93:18)
+    at EventEmitter.emit (node:events:530:35)
+[2025-12-20T12:27:20.692Z] Uncaught Exception: EPIPE: broken pipe, write
+Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.info (node:internal/console/constructor:391:26)
+    at SessionRecord.closeSession (D:\laragon\www\kosan-app3\node_modules\libsignal\src\session_record.js:273:17)
+    at 100596858245300_1.0 [as awaitable] (D:\laragon\www\kosan-app3\node_modules\libsignal\src\session_builder.js:47:28)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async _asyncQueueExecutor (D:\laragon\www\kosan-app3\node_modules\libsignal\src\queue_job.js:20:29)
+[2025-12-20T12:27:20.700Z] Uncaught Exception: EPIPE: broken pipe, write
+Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.log (node:internal/console/constructor:384:26)
+    at console.log (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:28:17)
+    at WhatsAppBot.safeLog (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:184:21)
+    at WhatsAppBot.sendSingleMessage (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:174:18)
+    at async processQueue (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:139:29)
+[2025-12-20T12:27:20.920Z] Uncaught Exception: EPIPE: broken pipe, write
+Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.log (node:internal/console/constructor:384:26)
+    at console.log (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:28:17)
+    at WhatsAppBot.safeLog (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:184:21)
+    at WhatsAppBot.sendSingleMessage (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:174:18)
+    at async processQueue (file:///D:/laragon/www/kosan-app3/app/Services/WhatsAppBot/whatsapp-bot.js:139:29)
