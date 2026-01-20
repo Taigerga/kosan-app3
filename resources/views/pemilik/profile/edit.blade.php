@@ -5,19 +5,24 @@
 @section('content')
     <div class="p-4 md:p-6">
         <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-r from-primary-900/30 to-primary-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Edit Profil Pemilik</h1>
-                    <p class="text-dark-muted">Perbarui informasi profil dan akun Anda</p>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-user-edit mr-3 text-primary-400"></i>
+                        Edit Profil Pemilik
+                    </h1>
+                    <p class="text-primary-100">Perbarui informasi profil Anda dengan data terbaru</p>
                 </div>
-                <a href="{{ route('pemilik.profile.show') }}"
-                    class="text-primary-400 hover:text-primary-300 inline-flex items-center transition">
+                <a href="{{ route('pemilik.profile.show') }}" 
+                class="inline-flex items-center px-4 py-2 bg-dark-card/50 border border-dark-border text-white rounded-xl hover:border-green-500 hover:text-green-300 transition mt-4 md:mt-0">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Kembali ke Profil
                 </a>
             </div>
         </div>
+
+
 
         <!-- Edit Form -->
         <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">

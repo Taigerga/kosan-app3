@@ -50,7 +50,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
  *  FILE ROUTES (public storage)
  * -------------------------------------------------------------------------- */
 Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
-    $allowed = ['kos', 'kamar', 'ktp', 'bukti', 'pembayaran', 'profiles', 'reviews', 'kontrak', 'foto_profil'];
+    $allowed = ['kos', 'kamar', 'ktp', 'bukti', 'pembayaran', 'profiles', 'reviews', 'kontrak', 'foto_profil', 'bukti_pembayaran'];
     abort_unless(in_array($folder, $allowed), 403, 'Folder tidak diizinkan');
 
     $path = storage_path("app/public/{$folder}/{$filename}");

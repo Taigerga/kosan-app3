@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Analisis Data - Kosan App')
+@section('title', 'Analisis Data - AyoKos')
 
 @section('content')
 <div class="space-y-6">
@@ -17,7 +17,7 @@
                 <li class="inline-flex items-center">
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
-                        <a href="{{ route('pemilik.analisis.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <a href="{{ route('pemilik.analisis.index') }}" class="inline-flex items-center text-sm font-medium text-white">
                             <i class="fas fa-chart-bar mr-2"></i>
                             Analisis Data
                         </a>
@@ -27,7 +27,7 @@
         </nav>
     </div>  
     <!-- Header -->
-    <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
             <div>
                 <div class="flex items-center space-x-3 mb-3">

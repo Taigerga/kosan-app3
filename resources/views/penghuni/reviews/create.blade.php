@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Beri Review - Kosan App')
+@section('title', 'Beri Review - AyoKos')
 
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-6">
@@ -10,7 +10,7 @@
             <li class="inline-flex items-center">
                 <a href="{{ route('public.home') }}" 
                    class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-primary-300 transition">
-                    <i class="fas fa-home mr-2 text-primary-400"></i>
+                    <i class="fas fa-home mr-2"></i>
                     Home
                 </a>
             </li>
@@ -19,6 +19,7 @@
                     <i class="fas fa-chevron-right text-dark-border mx-2 text-sm"></i>
                     <a href="{{ route('public.kos.show', $kos->id_kos) }}" 
                        class="ml-1 text-sm font-medium text-dark-muted hover:text-primary-300 transition">
+                        <i class="fas fa-tag mr-2"></i>
                         {{ $kos->nama_kos }}
                     </a>
                 </div>
@@ -26,7 +27,10 @@
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-dark-border mx-2 text-sm"></i>
-                    <span class="ml-1 text-sm font-medium text-primary-300">Beri Review</span>
+                    <span class="ml-1 text-sm font-medium text-primary-300">
+                        <i class="fas fa-star mr-2"></i>
+                        Beri Review
+                    </span>
                 </div>
             </li>
         </ol>
@@ -34,7 +38,7 @@
 
     <div class="bg-dark-card border border-dark-border rounded-2xl shadow-xl overflow-hidden">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border-b border-dark-border p-6">
+        <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6 mb-6">
             <div class="text-center">
                 <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-star text-white text-2xl"></i>

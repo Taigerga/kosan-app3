@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kebijakan Privasi - KosanApp')
+@section('title', 'Kebijakan Privasi - AyoKos')
 @section('content')
 <div class="dashboard-container">
     <div class="max-w-4xl mx-auto">
@@ -30,11 +30,11 @@
                         <h2 class="text-2xl font-bold text-white mb-3">Pengantar</h2>
                         <div class="space-y-3 text-dark-muted">
                             <p>
-                                Kebijakan Privasi ini menjelaskan bagaimana KosanApp mengumpulkan, menggunakan, menyimpan, 
+                                Kebijakan Privasi ini menjelaskan bagaimana AyoKos mengumpulkan, menggunakan, menyimpan, 
                                 dan melindungi informasi pribadi Anda ketika Anda menggunakan platform kami.
                             </p>
                             <p>
-                                Dengan menggunakan KosanApp, Anda menyetujui pengumpulan dan penggunaan informasi sesuai dengan 
+                                Dengan menggunakan AyoKos, Anda menyetujui pengumpulan dan penggunaan informasi sesuai dengan 
                                 kebijakan ini. Jika Anda tidak setuju, mohon untuk tidak menggunakan platform kami.
                             </p>
                         </div>
@@ -448,19 +448,7 @@
             </section>
         </div>
 
-        <!-- Navigation -->
-        <div class="flex justify-between items-center mt-12 pt-8 border-t border-dark-border">
-            <a href="{{ route('public.terms') }}" 
-               class="flex items-center text-primary-400 hover:text-primary-300 font-medium group">
-                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                Syarat & Ketentuan
-            </a>
-            <a href="{{ route('public.about') }}" 
-               class="flex items-center text-primary-400 hover:text-primary-300 font-medium group">
-                Tentang Kami
-                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-            </a>
-        </div>
+
     </div>
 </div>
 @endsection

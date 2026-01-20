@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Kosan App')</title>
+    <title>@yield('title', 'AyoKos')</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -146,7 +146,7 @@
                                 <i class="fas fa-home text-white text-lg"></i>
                             </div>
                             <span class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                                KosanApp
+                                AyoKos
                             </span>
                         </a>
                         <nav class="hidden md:flex gap-6">
@@ -195,7 +195,7 @@
                             <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-home text-white"></i>
                             </div>
-                            <span class="text-xl font-bold text-white">KosanApp</span>
+                            <span class="text-xl font-bold text-white">AyoKos</span>
                         </div>
                         <p class="text-slate-400">Platform pencarian kos terbaik di Indonesia dengan pengalaman modern.</p>
                     </div>
@@ -235,7 +235,7 @@
                     </div>
                 </div>
                 <div class="border-t border-slate-700 mt-8 pt-8 text-center text-slate-400">
-                    <p>&copy; {{ date('Y') }} KosanApp. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} AyoKos. All rights reserved.</p>
                 </div>
             </div>
         </footer>

@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Review - Kosan App')
+@section('title', 'Edit Review - AyoKos')
 
 @section('content')
 <div class="p-4 md:p-6">
     <div class="max-w-3xl mx-auto">
         <!-- Breadcrumb -->
-        <nav class="flex mb-6" aria-label="Breadcrumb">
+        <nav class="bg-dark-card/50 border border-dark-border rounded-xl p-4 mb-6">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
                     <a href="{{ route('public.home') }}" 
@@ -20,6 +20,7 @@
                         <i class="fas fa-chevron-right text-dark-border mx-2 text-xs"></i>
                         <a href="{{ route('penghuni.reviews.history') }}" 
                            class="ml-1 text-sm font-medium text-dark-muted hover:text-primary-300 transition">
+                           <i class="fas fa-star mr-2"></i>
                             Review Saya
                         </a>
                     </div>
@@ -28,6 +29,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-border mx-2 text-xs"></i>
                         <span class="ml-1 text-sm font-medium text-dark-text">
+                            <i class="fas fa-pencil mr-2"></i>
                             Edit Review
                         </span>
                     </div>
@@ -38,7 +40,7 @@
         <!-- Main Card -->
         <div class="bg-dark-card border border-dark-border rounded-2xl shadow-xl overflow-hidden">
             <!-- Header -->
-            <div class="p-6 border-b border-dark-border">
+            <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6 mb-6">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
                         <i class="fas fa-star text-white text-xl"></i>

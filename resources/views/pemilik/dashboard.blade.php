@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Pemilik - Kosan App')
+@section('title', 'Dashboard Pemilik - AyoKos')
 
 @section('content')
     <div class="space-y-6">
         <!-- Welcome Banner -->
-        <div class="bg-gradient-to-r from-primary-900/50 to-indigo-900/50 border border-primary-800/30 rounded-2xl p-6">
+        <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Selamat datang, {{ $user->nama }}! 👋</h1>

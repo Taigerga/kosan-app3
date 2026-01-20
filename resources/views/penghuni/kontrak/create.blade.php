@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Ajukan Kontrak - Kosan App')
+@section('title', 'Ajukan Kontrak - AyoKos')
 
 @section('content')
     <div class="container mx-auto px-4 py-6">
         <div class="max-w-4xl mx-auto">
             <!-- Breadcrumb -->
             <div class="mb-6">
-                <nav class="flex" aria-label="Breadcrumb">
+                <nav class="bg-dark-card/50 border border-dark-border rounded-xl p-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li class="inline-flex items-center">
                             <a href="{{ route('penghuni.dashboard') }}"
                                 class="inline-flex items-center text-sm text-dark-muted hover:text-primary-300">
-                                <i class="fas fa-home mr-2"></i>
+                                <i class="fas fa-gauge mr-2"></i>
                                 Dashboard
                             </a>
                         </li>
@@ -21,6 +21,7 @@
                                 <i class="fas fa-chevron-right text-dark-muted text-xs"></i>
                                 <a href="{{ route('public.kos.show', $kos->id_kos) }}"
                                     class="ml-1 md:ml-3 text-sm text-dark-muted hover:text-primary-300">
+                                    <i class="fas fa-home mr-2"></i>
                                     {{ Str::limit($kos->nama_kos, 20) }}
                                 </a>
                             </div>
@@ -29,6 +30,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-chevron-right text-dark-muted text-xs"></i>
                                 <span class="ml-1 md:ml-3 text-sm font-medium text-primary-300">
+                                    <i class="fas fa-file-contract mr-2"></i>
                                     Ajukan Kontrak
                                 </span>
                             </div>

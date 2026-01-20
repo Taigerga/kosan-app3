@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Cari Kos - Kosan App')
+@section('title', 'Cari Kos - AyoKos')
 
 @section('content')
     <div class="p-4 md:p-6">
         <!-- Search Header -->
-        <div class="mb-8">
+        <div class="mb-8 bg-dark-card border border-dark-border rounded-2xl p-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
                     <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">

@@ -87,13 +87,13 @@
             </p>
 
             <p>Salam,<br>
-                <strong>Tim Admin Kosan App</strong>
+                <strong>Tim Admin AyoKos</strong>
             </p>
         </div>
 
         <div class="footer">
             <p>Email ini dikirim secara otomatis. Mohon tidak membalas email ini.</p>
-            <p>&copy; {{ date('Y') }} Kosan App. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} AyoKos. All rights reserved.</p>
         </div>
     </div>
 </body>

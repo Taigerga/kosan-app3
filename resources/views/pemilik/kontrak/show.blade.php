@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Kontrak - Kosan App')
+@section('title', 'Detail Kontrak - AyoKos')
 
 @section('content')
 <div class="p-4 md:p-6">
@@ -27,7 +27,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                         <span class="inline-flex items-center text-sm font-medium text-white">
-                            <i class="fas fa-plus mr-2"></i>
+                            <i class="fas fa-eye mr-2"></i>
                             Detail Kontrak
                         </span>
                     </div>

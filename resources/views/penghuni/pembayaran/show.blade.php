@@ -5,9 +5,43 @@
 @section('content')
 <div class="p-4 md:p-6">
     <div class="max-w-3xl mx-auto">
+        <div class="space-y-6">
+        <!-- Breadcrumb -->
+        <div class="bg-dark-card/50 border border-dark-border rounded-xl p-4">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('penghuni.dashboard') }}"
+                            class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="inline-flex items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                            <a href="{{ route('penghuni.pembayaran.index') }}"
+                                class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                                <i class="fas fa-file-contract mr-2"></i>
+                                Riwayat Pembayaran
+                            </a>
+                        </div>
+                    </li>
+                    <li class="inline-flex items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                            <span class="ml-1 text-sm font-medium text-white">
+                                <i class="fas fa-eye mr-2"></i>
+                                Detail Pembayaran
+                            </span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
         <!-- Header -->
         <div class="mb-6">
-            <div class="flex items-center justify-between">
+            <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
                         <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">

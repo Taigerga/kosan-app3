@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Kamar - Kosan App')
+@section('title', 'Tambah Kamar - AyoKos')
 
 @section('content')
 <div class="max-w-4xl mx-auto p-4 md:p-6">
@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                         <a href="{{ route('pemilik.kamar.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
-                            <i class="fas fa-file-contract mr-2"></i>
+                            <i class="fas fa-bed mr-2"></i>
                             Kelola Kamar
                         </a>
                     </div>
@@ -37,14 +37,17 @@
     </div>
     <!-- Header -->
     <div class="mb-8">
-        <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
+
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white">Tambah Kamar Baru</h1>
+                <p class="text-dark-muted mt-1">Isi form berikut untuk menambahkan kamar baru ke kos Anda</p>
+            </div>
+            <div>
             <a href="{{ route('pemilik.kamar.index') }}" 
                class="p-2 bg-dark-card border border-dark-border rounded-lg hover:bg-dark-border/50 transition">
                 <i class="fas fa-arrow-left text-dark-muted"></i>
             </a>
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-white">Tambah Kamar Baru</h1>
-                <p class="text-dark-muted mt-1">Isi form berikut untuk menambahkan kamar baru ke kos Anda</p>
             </div>
         </div>
         

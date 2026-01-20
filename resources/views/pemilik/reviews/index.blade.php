@@ -3,7 +3,7 @@
 @section('title', 'Ulasan Kos Saya')
 
 @section('content')
-<div class="space-y-6 p-4 md:p-6">
+<div class="space-y-6">
     <!-- Alerts -->
     @if(session('success'))
     <div class="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-800/30 rounded-2xl p-4 mb-6" role="alert">
@@ -52,7 +52,7 @@
                 <li class="inline-flex items-center">
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
-                        <a href="{{ route('pemilik.reviews.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <a href="{{ route('pemilik.reviews.index') }}" class="inline-flex items-center text-sm font-medium text-white">
                             <i class="fas fa-star mr-2"></i>
                             Kelola Reviews
                         </a>
@@ -63,14 +63,16 @@
     </div>   
     
     <!-- Header Section -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+    <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
 
-            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
-                <i class="fas fa-star text-yellow-400 mr-3"></i>
-                Ulasan untuk Kos Saya
-            </h1>
-            <p class="text-dark-muted">Semua ulasan yang diberikan penghuni untuk kos yang Anda miliki</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    Ulasan untuk Kos Saya
+                </h1>
+                <p class="text-dark-muted">Semua ulasan yang diberikan penghuni untuk kos yang Anda miliki</p>
+            </div>
         </div>
     </div>
 

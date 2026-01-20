@@ -240,7 +240,7 @@ class ALLNotificationService
                "Kos: *{$kosName}*\n" .
                $roomInfo .
                "\n📅 Telah berakhir: {$endDate}\n\n" .
-               "Terima kasih telah menggunakan layanan Kosan App!";
+               "Terima kasih telah menggunakan layanan AyoKos!";
     }
 
     /**
@@ -297,7 +297,7 @@ class ALLNotificationService
         $roomInfo = $roomNumber ? " (Kamar {$roomNumber})" : "";
         
         return "Kontrak kos {$userType} di <strong>{$kosName}</strong>{$roomInfo} telah <strong>resmi selesai</strong> (berakhir pada {$endDate}).<br><br>" .
-               "Terima kasih telah menggunakan layanan Kosan App.";
+               "Terima kasih telah menggunakan layanan AyoKos.";
     }
 
     /**

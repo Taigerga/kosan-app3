@@ -19,12 +19,14 @@ class PembayaranController extends Controller
         $pembayaran = Pembayaran::with(['kontrak.kos'])
             ->where('id_penghuni', $user->id_penghuni)
             ->orderBy('bulan_tahun', 'desc')
-            ->paginate(10);
+            ->paginate(10, ['*'], 'pembayaran_page')
+            ->withQueryString();
 
         $kontrakAktif = KontrakSewa::with(['kos'])
             ->where('id_penghuni', $user->id_penghuni)
             ->where('status_kontrak', 'aktif')
-            ->get();
+            ->paginate(5, ['*'], 'kontrak_page')
+            ->withQueryString();
 
         return view('penghuni.pembayaran.index', compact('pembayaran', 'kontrakAktif', 'user'));
     }

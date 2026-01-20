@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-800/30 rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-800/30 rounded-2xl p-6 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">

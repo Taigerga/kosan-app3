@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Kosan App</title>
+    <title>Register - AyoKos</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -475,7 +475,9 @@
             .role-selection {
                 flex-direction: column;
             }
+            
         }
+        
     </style>
 </head>
 <body>
@@ -520,7 +522,7 @@
             <!-- Header -->
             <div class="register-header">
                 <h1><i class="fas fa-user-plus me-2"></i>Daftar Akun Baru</h1>
-                <p>Bergabung dengan Kosan App dalam beberapa langkah mudah</p>
+                <p>Bergabung dengan AyoKos dalam beberapa langkah mudah</p>
             </div>
 
             <!-- Step Indicator -->
@@ -571,13 +573,28 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label for="no_hp" class="form-label fw-semibold text-white">No. HP</label>
-                                <input type="tel" name="no_hp" id="no_hp" 
-                                       class="form-control @error('no_hp') is-invalid @enderror"
-                                       value="{{ old('no_hp') }}" 
-                                       placeholder="6281234567890" required>
+                                <label for="no_hp_display" class="form-label fw-semibold text-white">No. HP</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" 
+                                        style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); 
+                                                color: white; 
+                                                border-color: #0ea5e9;
+                                                min-width: 50px; 
+                                                user-select: none;
+                                                font-weight: 600;">
+                                        62
+                                    </span>
+                                    <input type="tel" id="no_hp_display" 
+                                        class="form-control @error('no_hp') is-invalid @enderror"
+                                        value="{{ old('no_hp') ? (str_starts_with(old('no_hp'), '62') ? substr(old('no_hp'), 2) : old('no_hp')) : '' }}"
+                                        placeholder="81234567890"
+                                        required>
+                                    <!-- Hidden input untuk menyimpan nilai lengkap -->
+                                    <input type="hidden" name="no_hp" id="no_hp" value="{{ old('no_hp') }}">
+                                </div>
+                                <small class="text-muted">Masukkan nomor setelah 62, contoh: 81234567890</small>
                                 @error('no_hp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -588,10 +605,14 @@
                                 <label for="tanggal_lahir" class="form-label fw-semibold text-white">Tanggal Lahir</label>
                                 <input type="date" name="tanggal_lahir" id="tanggal_lahir" 
                                        class="form-control @error('tanggal_lahir') is-invalid @enderror"
-                                       value="{{ old('tanggal_lahir') }}" required>
-                                @error('tanggal_lahir')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                       value="{{ old('tanggal_lahir') }}" 
+                                       max="{{ date('Y-m-d', strtotime('-17 years')) }}"
+                                       required>
+                                <div class="invalid-feedback" id="tanggal_lahir_error">
+                                    @error('tanggal_lahir')
+                                        {{ $message }}
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                         
@@ -773,112 +794,309 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        let currentStep = 1;
-        const totalSteps = 3;
+<script>
+    let currentStep = 1;
+    const totalSteps = 3;
+    
+    // Fungsi untuk memformat nomor telepon
+    function formatPhoneNumber() {
+        const phoneInput = document.getElementById('no_hp_display');
+        const hiddenInput = document.getElementById('no_hp');
         
-        function nextStep() {
-            if (currentStep < totalSteps) {
-                // Validate current step
-                if (validateStep(currentStep)) {
-                    document.getElementById(`step${currentStep}`).classList.remove('active');
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
-                    
-                    currentStep++;
-                    
-                    document.getElementById(`step${currentStep}`).classList.add('active');
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
-                }
-            }
+        // Hapus semua karakter non-digit
+        let phoneValue = phoneInput.value.replace(/\D/g, '');
+        
+        // Hapus 0 di depan jika ada
+        if (phoneValue.startsWith('0')) {
+            phoneValue = phoneValue.substring(1);
         }
         
-        function prevStep() {
-            if (currentStep > 1) {
+        // Update nilai display
+        phoneInput.value = phoneValue;
+        
+        // Set nilai lengkap ke hidden input
+        hiddenInput.value = '62' + phoneValue;
+        
+        // Validasi panjang
+        if (phoneValue && (phoneValue.length < 9 || phoneValue.length > 13)) {
+            phoneInput.classList.add('is-invalid');
+            phoneInput.parentElement.nextElementSibling.innerHTML = 'Nomor HP harus 9-13 digit setelah 62';
+            return false;
+        } else {
+            phoneInput.classList.remove('is-invalid');
+            phoneInput.parentElement.nextElementSibling.innerHTML = '';
+            return true;
+        }
+    }
+    
+    // Handle paste event
+    function handlePhonePaste(e) {
+        e.preventDefault();
+        
+        const phoneInput = document.getElementById('no_hp_display');
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Hapus semua karakter non-digit
+        const cleaned = pastedText.replace(/\D/g, '');
+        
+        // Hapus 62 atau 0 di depan
+        let finalValue = cleaned;
+        if (finalValue.startsWith('62')) {
+            finalValue = finalValue.substring(2);
+        } else if (finalValue.startsWith('0')) {
+            finalValue = finalValue.substring(1);
+        }
+        
+        // Set nilai ke input
+        phoneInput.value = finalValue;
+        formatPhoneNumber();
+    }
+    
+    function nextStep() {
+        if (currentStep < totalSteps) {
+            // Validate current step
+            if (validateStep(currentStep)) {
                 document.getElementById(`step${currentStep}`).classList.remove('active');
                 document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
                 
-                currentStep--;
+                currentStep++;
                 
                 document.getElementById(`step${currentStep}`).classList.add('active');
                 document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
             }
         }
-        
-        function validateStep(step) {
-            let isValid = true;
-            const stepElement = document.getElementById(`step${step}`);
-            const inputs = stepElement.querySelectorAll('input[required], textarea[required], select[required]');
+    }
+    
+    function prevStep() {
+        if (currentStep > 1) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
             
-            inputs.forEach(input => {
+            currentStep--;
+            
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+        }
+    }
+    
+    function validateStep(step) {
+        let isValid = true;
+        const stepElement = document.getElementById(`step${step}`);
+        const inputs = stepElement.querySelectorAll('input[required], textarea[required], select[required]');
+        
+        inputs.forEach(input => {
+            // Validasi khusus untuk nomor HP
+            if (input.id === 'no_hp_display') {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    input.parentElement.nextElementSibling.innerHTML = 'Nomor HP wajib diisi';
+                    isValid = false;
+                } else if (input.value.length < 9 || input.value.length > 13) {
+                    input.classList.add('is-invalid');
+                    input.parentElement.nextElementSibling.innerHTML = 'Nomor HP harus 9-13 digit setelah 62';
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.parentElement.nextElementSibling.innerHTML = '';
+                    
+                    // Update hidden input dengan nilai lengkap
+                    document.getElementById('no_hp').value = '62' + input.value;
+                }
+            } else if (input.id === 'tanggal_lahir') {
+                const birthDate = new Date(input.value);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                if (age < 17) {
+                    input.classList.add('is-invalid');
+                    const errorDiv = document.getElementById('tanggal_lahir_error');
+                    if (errorDiv) {
+                        errorDiv.innerHTML = 'Umur tidak boleh kurang dari 17 tahun';
+                    }
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            } else if (input.id === 'jenisKelaminL' || input.id === 'jenisKelaminP') {
+                // Validasi untuk radio button jenis kelamin
+                const jenisKelaminChecked = document.querySelector('input[name="jenis_kelamin"]:checked');
+                if (!jenisKelaminChecked) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-block';
+                    errorDiv.textContent = 'Jenis kelamin wajib dipilih';
+                    
+                    // Cari atau buat tempat untuk error message
+                    const container = input.closest('.mb-4');
+                    const existingError = container.querySelector('.invalid-feedback');
+                    if (existingError) {
+                        existingError.textContent = 'Jenis kelamin wajib dipilih';
+                    } else {
+                        container.appendChild(errorDiv);
+                    }
+                    isValid = false;
+                }
+            } else {
+                // Validasi untuk input lainnya
                 if (!input.value.trim()) {
                     input.classList.add('is-invalid');
                     isValid = false;
                 } else {
                     input.classList.remove('is-invalid');
                 }
-            });
-            
-            return isValid;
-        }
-        
-        function togglePassword(fieldId) {
-            const input = document.getElementById(fieldId);
-            const icon = input.nextElementSibling.querySelector('i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-        
-        function selectRole(role) {
-            // Uncheck all
-            document.querySelectorAll('.role-card').forEach(card => {
-                card.classList.remove('active');
-            });
-            
-            // Check selected
-            const radio = document.getElementById(`role${role.charAt(0).toUpperCase() + role.slice(1)}`);
-            radio.checked = true;
-            radio.closest('.role-card').classList.add('active');
-        }
-        
-        function previewImage(input) {
-            const preview = document.getElementById('imagePreview');
-            const label = document.getElementById('fileUploadLabel');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    label.style.display = 'none';
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        
-        // Initialize toasts
-        document.addEventListener('DOMContentLoaded', function() {
-            const toasts = document.querySelectorAll('.toast');
-            toasts.forEach(toastEl => {
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            });
-            
-            // Initialize role selection if has old value
-            const oldRole = '{{ old("role") }}';
-            if (oldRole) {
-                selectRole(oldRole);
             }
         });
-    </script>
+        
+        return isValid;
+    }
+    
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const icon = input.nextElementSibling.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    function selectRole(role) {
+        // Uncheck all
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        // Check selected
+        const radio = document.getElementById(`role${role.charAt(0).toUpperCase() + role.slice(1)}`);
+        radio.checked = true;
+        radio.closest('.role-card').classList.add('active');
+    }
+    
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        const label = document.getElementById('fileUploadLabel');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                label.style.display = 'none';
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Inisialisasi saat halaman load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize toasts
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toastEl => {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        });
+        
+        // Initialize role selection if has old value
+        const oldRole = '{{ old("role") }}';
+        if (oldRole) {
+            selectRole(oldRole);
+        }
+        
+        // Inisialisasi nomor HP
+        const hiddenInput = document.getElementById('no_hp');
+        const displayInput = document.getElementById('no_hp_display');
+        
+        // Jika ada old value, format untuk display
+        if (hiddenInput.value) {
+            // Jika mengandung 62, hapus untuk tampilan
+            if (hiddenInput.value.startsWith('62')) {
+                displayInput.value = hiddenInput.value.substring(2);
+            } else {
+                displayInput.value = hiddenInput.value;
+            }
+        }
+        
+        // Format nomor HP
+        formatPhoneNumber();
+        
+        // Tambahkan event listener untuk paste
+        displayInput.addEventListener('paste', handlePhonePaste);
+        
+        // Tambahkan event listener untuk input real-time
+        displayInput.addEventListener('input', formatPhoneNumber);
+        
+        // Validasi sebelum submit form
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            // Validasi semua step sebelum submit
+            let allValid = true;
+            
+            // Validasi step 1
+            if (!validateStep(1)) allValid = false;
+            
+            // Validasi step 2
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            const passwordConfirm = document.getElementById('password_confirmation');
+            
+            if (!username.value.trim()) {
+                username.classList.add('is-invalid');
+                allValid = false;
+            }
+            
+            if (!password.value.trim() || password.value.length < 8) {
+                password.classList.add('is-invalid');
+                allValid = false;
+            }
+            
+            if (password.value !== passwordConfirm.value) {
+                passwordConfirm.classList.add('is-invalid');
+                passwordConfirm.parentElement.nextElementSibling.innerHTML = 'Password tidak sama';
+                allValid = false;
+            }
+            
+            // Validasi step 3
+            const roleChecked = document.querySelector('input[name="role"]:checked');
+            const agreeTerms = document.getElementById('agreeTerms');
+            
+            if (!roleChecked) {
+                const roleError = document.createElement('div');
+                roleError.className = 'invalid-feedback d-block';
+                roleError.textContent = 'Pilih peran anda';
+                document.querySelector('.role-selection').appendChild(roleError);
+                allValid = false;
+            }
+            
+            if (!agreeTerms.checked) {
+                agreeTerms.classList.add('is-invalid');
+                allValid = false;
+            }
+            
+            // Jika ada yang tidak valid, prevent submit
+            if (!allValid) {
+                e.preventDefault();
+                
+                // Scroll ke error pertama
+                const firstError = document.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                // Tampilkan toast error
+                const errorToast = new bootstrap.Toast(document.querySelector('.toast.bg-danger'));
+                errorToast.show();
+            }
+        });
+    });
+</script>
 </body>
 </html>

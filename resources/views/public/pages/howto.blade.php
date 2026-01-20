@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cara Memesan - KosanApp')
+@section('title', 'Cara Memesan - AyoKos')
 @section('content')
 <div class="p-6">
     <div class="max-w-4xl mx-auto">
@@ -9,7 +9,7 @@
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
                 Cara Memesan Kos di 
                 <span class="bg-gradient-to-r from-primary-400 to-indigo-400 bg-clip-text text-transparent">
-                    KosanApp
+                    AyoKos
                 </span>
             </h1>
             <p class="text-lg text-dark-muted max-w-2xl mx-auto">
@@ -90,10 +90,7 @@
                                         <i class="fas fa-user-edit text-blue-400 mr-2 mt-1"></i>
                                         <span>Isi data diri lengkap dengan benar</span>
                                     </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-envelope text-blue-400 mr-2 mt-1"></i>
-                                        <span>Verifikasi email untuk mengaktifkan akun</span>
-                                    </li>
+
                                 </ul>
                             </div>
                             
@@ -187,7 +184,7 @@
                                 <i class="fas fa-credit-card text-yellow-400 mr-2"></i>
                                 Metode Pembayaran
                             </h4>
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div class="bg-dark-bg/50 border border-dark-border p-3 rounded-lg text-center hover:border-yellow-500/50 transition">
                                     <div class="text-yellow-400 text-lg mb-1">
                                         <i class="fas fa-university"></i>
@@ -200,12 +197,7 @@
                                     </div>
                                     <p class="text-xs font-medium text-white">QRIS</p>
                                 </div>
-                                <div class="bg-dark-bg/50 border border-dark-border p-3 rounded-lg text-center hover:border-yellow-500/50 transition">
-                                    <div class="text-yellow-400 text-lg mb-1">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                    </div>
-                                    <p class="text-xs font-medium text-white">Tunai</p>
-                                </div>
+
                             </div>
                         </div>
                         <ul class="space-y-3 text-dark-muted">
@@ -254,10 +246,7 @@
                             </div>
                         </div>
                         <ul class="space-y-3 text-dark-muted mb-6">
-                            <li class="flex items-start">
-                                <i class="fas fa-phone-alt text-red-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span>Hubungi pemilik kos untuk koordinasi check-in</span>
-                            </li>
+
                             <li class="flex items-start">
                                 <i class="fas fa-search text-red-400 mr-3 mt-1 flex-shrink-0"></i>
                                 <span>Lakukan pengecekan kondisi kamar bersama pemilik</span>
@@ -324,22 +313,7 @@
                     </div>
                 </div>
                 
-                <!-- FAQ 3 -->
-                <div class="border-b border-dark-border pb-6">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 mr-4">
-                            <div class="w-8 h-8 bg-yellow-900/30 rounded-full flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-yellow-400 text-sm"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-white mb-2">Bisakah membatalkan kontrak setelah disetujui?</h4>
-                            <p class="text-dark-muted">
-                                Pembatalan setelah kontrak disetujui dikenakan ketentuan khusus. Silakan hubungi pemilik kos untuk diskusi lebih lanjut.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+
                 
                 <!-- FAQ 4 -->
                 <div>
@@ -352,7 +326,7 @@
                         <div>
                             <h4 class="font-semibold text-white mb-2">Bagaimana jika ada masalah selama tinggal?</h4>
                             <p class="text-dark-muted">
-                                Anda dapat melaporkan masalah melalui dashboard atau menghubungi pemilik kos langsung. KosanApp juga menyediakan fitur pelaporan jika diperlukan.
+                                Anda dapat melaporkan masalah melalui dashboard atau menghubungi pemilik kos langsung. AyoKos juga menyediakan fitur pelaporan jika diperlukan.
                             </p>
                         </div>
                     </div>
@@ -367,7 +341,7 @@
                     Siap Mencari Kos Impian Anda?
                 </h3>
                 <p class="text-dark-muted mb-6 max-w-2xl mx-auto">
-                    Bergabunglah dengan ribuan penghuni yang telah menemukan rumah kedua mereka melalui KosanApp.
+                    Bergabunglah dengan ribuan penghuni yang telah menemukan rumah kedua mereka melalui AyoKos.
                 </p>
                 <a href="{{ route('public.kos.index') }}" 
                    class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary-500 to-indigo-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl">

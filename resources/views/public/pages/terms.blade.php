@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Syarat & Ketentuan - KosanApp')
+@section('title', 'Syarat & Ketentuan - AyoKos')
 @section('content')
-<div class="space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
     <!-- Hero Header -->
     <div class="bg-gradient-to-br from-primary-900/50 to-indigo-900/50 border border-primary-800/30 rounded-2xl p-8 md:p-12">
         <div class="max-w-3xl mx-auto text-center">
@@ -11,7 +11,7 @@
             </div>
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Syarat & Ketentuan</h1>
             <p class="text-lg text-primary-200 max-w-2xl mx-auto">
-                Mohon baca dengan seksama syarat dan ketentuan penggunaan platform KosanApp.
+                Mohon baca dengan seksama syarat dan ketentuan penggunaan platform AyoKos.
             </p>
             <div class="mt-6 text-sm text-primary-300 bg-primary-900/30 px-4 py-2 rounded-lg inline-block">
                 <i class="fas fa-clock mr-2"></i>
@@ -31,7 +31,7 @@
             <div class="ml-4">
                 <h3 class="text-lg font-semibold text-white mb-2">Penting</h3>
                 <p class="text-yellow-200">
-                    Dengan mengakses atau menggunakan platform KosanApp, Anda menyetujui untuk terikat dengan syarat dan ketentuan berikut.
+                    Dengan mengakses atau menggunakan platform AyoKos, Anda menyetujui untuk terikat dengan syarat dan ketentuan berikut.
                 </p>
             </div>
         </div>
@@ -51,7 +51,7 @@
                     <div class="ml-4">
                         <h2 class="text-2xl font-bold text-white mb-2">Definisi</h2>
                         <div class="space-y-3 text-dark-muted">
-                            <p><strong class="text-primary-300">"Platform"</strong> mengacu pada website, aplikasi mobile, dan layanan lainnya yang disediakan oleh KosanApp.</p>
+                            <p><strong class="text-primary-300">"Platform"</strong> mengacu pada website, aplikasi mobile, dan layanan lainnya yang disediakan oleh AyoKos.</p>
                             <p><strong class="text-primary-300">"Pengguna"</strong> adalah individu yang mengakses atau menggunakan Platform, termasuk Penghuni dan Pemilik Kos.</p>
                             <p><strong class="text-primary-300">"Penghuni"</strong> adalah pengguna yang mencari, menyewa, atau tinggal di kos yang terdaftar di Platform.</p>
                             <p><strong class="text-primary-300">"Pemilik Kos"</strong> adalah pengguna yang memiliki, mengelola, atau menyewakan kos melalui Platform.</p>
@@ -86,11 +86,11 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">4.</span>
-                                <span>KosanApp berhak menangguhkan atau menghentikan akun yang melanggar syarat dan ketentuan.</span>
+                                <span>AyoKos berhak menangguhkan atau menghentikan akun yang melanggar syarat dan ketentuan.</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">5.</span>
-                                <span>Setiap pengguna hanya boleh memiliki satu akun, kecuali dengan izin tertulis dari KosanApp.</span>
+                                <span>Setiap pengguna hanya boleh memiliki satu akun, kecuali dengan izin tertulis dari AyoKos.</span>
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">2.</span>
-                                <span>KosanApp berperan sebagai platform perantara dan tidak bertanggung jawab atas pelaksanaan kontrak.</span>
+                                <span>AyoKos berperan sebagai platform perantara dan tidak bertanggung jawab atas pelaksanaan kontrak.</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">3.</span>
@@ -177,7 +177,7 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">5.</span>
-                                <span>KosanApp berhak mengenakan biaya layanan sesuai dengan ketentuan yang berlaku.</span>
+                                <span>AyoKos berhak mengenakan biaya layanan sesuai dengan ketentuan yang berlaku.</span>
                             </div>
                             <div class="bg-primary-900/20 border border-primary-800/30 rounded-xl p-4 mt-4">
                                 <div class="flex items-start">
@@ -212,7 +212,7 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">2.</span>
-                                <span>Dengan mengunggah konten, Anda memberikan KosanApp lisensi untuk menggunakan, menampilkan, dan mendistribusikan konten tersebut di Platform.</span>
+                                <span>Dengan mengunggah konten, Anda memberikan AyoKos lisensi untuk menggunakan, menampilkan, dan mendistribusikan konten tersebut di Platform.</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">3.</span>
@@ -220,7 +220,7 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">4.</span>
-                                <span>KosanApp berhak menghapus konten yang melanggar syarat dan ketentuan tanpa pemberitahuan sebelumnya.</span>
+                                <span>AyoKos berhak menghapus konten yang melanggar syarat dan ketentuan tanpa pemberitahuan sebelumnya.</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">5.</span>
@@ -248,7 +248,7 @@
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">2.</span>
-                                <span>KosanApp tidak bertanggung jawab atas:</span>
+                                <span>AyoKos tidak bertanggung jawab atas:</span>
                             </div>
                             <ul class="space-y-2 pl-5">
                                 <li class="flex items-start">
@@ -274,7 +274,7 @@
                             </ul>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">3.</span>
-                                <span>Tanggung jawab KosanApp dibatasi sesuai dengan ketentuan hukum yang berlaku.</span>
+                                <span>Tanggung jawab AyoKos dibatasi sesuai dengan ketentuan hukum yang berlaku.</span>
                             </div>
                         </div>
                     </div>
@@ -294,7 +294,7 @@
                         <div class="space-y-3 text-dark-muted">
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">1.</span>
-                                <span>KosanApp berhak mengubah syarat dan ketentuan ini kapan saja.</span>
+                                <span>AyoKos berhak mengubah syarat dan ketentuan ini kapan saja.</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="text-primary-400 font-bold mr-2">2.</span>
@@ -403,7 +403,7 @@
             <div class="bg-green-900/20 border border-green-800/30 rounded-xl p-6">
                 <div class="flex flex-col md:flex-row items-center justify-between">
                     <div class="flex-1">
-                        <h4 class="font-bold text-white mb-4 text-lg">Dengan menggunakan KosanApp, saya menyatakan:</h4>
+                        <h4 class="font-bold text-white mb-4 text-lg">Dengan menggunakan AyoKos, saya menyatakan:</h4>
                         <ul class="space-y-3">
                             <li class="flex items-start">
                                 <div class="w-6 h-6 bg-green-900/30 rounded-lg flex items-center justify-center mr-3 mt-1 flex-shrink-0">
@@ -436,18 +436,6 @@
         </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-dark-border">
-        <a href="{{ route('public.privacy') }}" 
-           class="flex items-center text-primary-400 hover:text-primary-300 font-medium transition group">
-            <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
-            Kebijakan Privasi
-        </a>
-        <a href="{{ route('public.howto') }}" 
-           class="flex items-center text-primary-400 hover:text-primary-300 font-medium transition group">
-            Cara Memesan
-            <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
-        </a>
-    </div>
+
 </div>
 @endsection

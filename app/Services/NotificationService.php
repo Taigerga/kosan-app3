@@ -49,7 +49,7 @@ class NotificationService
             . "📅 Tanggal Daftar: " . $kontrak->created_at->format('d F Y') . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "Mohon kesediaannya menunggu konfirmasi selanjutnya. Terima kasih.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -82,7 +82,7 @@ class NotificationService
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "Silakan cek email Anda untuk detail kontrak sewa.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -113,7 +113,7 @@ class NotificationService
             . "Mohon maaf, permohonan ngekos Anda di *{$kontrak->kos->nama_kos}* belum disetujui oleh pemilik saat ini.\n\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "Jangan berkecil hati, Anda bisa mencari pilihan kamar kos lainnya di aplikasi kami.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -152,7 +152,7 @@ class NotificationService
             . "🏠 Kos: {$kontrak->kos->nama_kos}\n"
             . "🛏 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "Mohon segera login ke aplikasi untuk melihat detail dan melakukan konfirmasi.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -178,7 +178,7 @@ class NotificationService
             . "👤 Penghuni: {$kontrak->penghuni->nama}\n"
             . "🏠 Properti: {$kontrak->kos->nama_kos}\n\n"
             . "Sistem telah mengirimkan notifikasi kepada penghuni perihal persetujuan ini.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -204,7 +204,7 @@ class NotificationService
             . "👤 Penghuni: {$kontrak->penghuni->nama}\n"
             . "🏠 Properti: {$kontrak->kos->nama_kos}\n\n"
             . "Sistem telah mengirimkan notifikasi kepada penghuni perihal penolakan ini.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -229,7 +229,7 @@ class NotificationService
             . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "Silakan hubungi pemilik kos untuk perpanjangan atau persiapan lainnya.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -259,7 +259,7 @@ class NotificationService
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*Segera lakukan perpanjangan atau persiapan pindah!*\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -289,7 +289,7 @@ class NotificationService
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*HUBUNGI PEMILIK KOS SEGERA!*\n"
             . "Untuk perpanjangan atau koordinasi pengembalian kamar.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -320,7 +320,7 @@ class NotificationService
             . "1. Lakukan pembayaran terakhir jika belum\n"
             . "2. Koordinasi dengan pemilik untuk check-out\n"
             . "3. Kosongkan kamar sebelum tengah malam\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -352,7 +352,7 @@ class NotificationService
             . "1. Penyelesaian administrasi\n"
             . "2. Pengembalian deposit\n"
             . "3. Pengambilan barang jika masih ada\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -384,7 +384,7 @@ class NotificationService
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n\n"
             . "Silakan koordinasi dengan penghuni untuk perpanjangan atau persiapan check-out.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -409,7 +409,7 @@ class NotificationService
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*Segera konfirmasi dengan penghuni!*\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -434,7 +434,7 @@ class NotificationService
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*HUBUNGI PENGHUNI SEGERA!*\n"
             . "Untuk konfirmasi perpanjangan atau persiapan check-out.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -461,7 +461,7 @@ class NotificationService
             . "2. Persiapan check-out dan inspeksi kamar\n"
             . "3. Pengembalian deposit (jika ada)\n"
             . "4. Update status kamar menjadi 'tersedia'\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -489,7 +489,7 @@ class NotificationService
             . "2. Update status kamar menjadi 'tersedia'\n"
             . "3. Penyelesaian administrasi dengan penghuni\n"
             . "4. Pengembalian deposit (jika ada)\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -514,7 +514,7 @@ class NotificationService
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n\n"
             . "Silakan login ke sistem untuk meninjau dan menyetujui permintaan ini.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -537,7 +537,7 @@ class NotificationService
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "Silakan lanjutkan pembayaran sesuai ketentuan. Terima kasih!\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem Kosan App_";
+            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         return $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
     }

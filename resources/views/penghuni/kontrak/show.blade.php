@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Kontrak - Kosan App')
+@section('title', 'Detail Kontrak - AyoKos')
 
 @section('content')
 <div class="space-y-6">
     <!-- Breadcrumb -->
-    <nav class="flex" aria-label="Breadcrumb">
+    <nav class="bg-dark-card/50 border border-dark-border rounded-xl p-4">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <a href="{{ route('penghuni.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
@@ -26,7 +26,7 @@
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                     <span class="inline-flex items-center text-sm font-medium text-white">
-                        <i class="fas fa-file-contract mr-2"></i>
+                        <i class="fas fa-pencil mr-2"></i>
                         Detail Kontrak
                     </span>
                 </div>

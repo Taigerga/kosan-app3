@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
-    <div class="mb-6">
+    <div class="mb-6 bg-dark-card/50 border border-dark-border rounded-xl p-4">
         <h1 class="text-2xl md:text-3xl font-bold text-white flex items-center">
             <i class="fas fa-user-circle text-green-400 mr-3"></i>
             Profil Saya

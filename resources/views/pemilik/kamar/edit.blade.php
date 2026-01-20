@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Kamar - Kosan App')
+@section('title', 'Edit Kamar - AyoKos')
 
 @section('content')
 <div class="space-y-6">
@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                         <a href="{{ route('pemilik.kamar.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
-                            <i class="fas fa-file-contract mr-2"></i>
+                            <i class="fas fa-bed mr-2"></i>
                             Kelola Kamar
                         </a>
                     </div>
@@ -27,7 +27,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                         <span class="inline-flex items-center text-sm font-medium text-white">
-                            <i class="fas fa-plus mr-2"></i>
+                            <i class="fas fa-pencil mr-2"></i>
                             Edit Kamar
                         </span>
                     </div>
@@ -36,7 +36,7 @@
         </nav>
     </div>
     <!-- Header -->
-    <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Edit Kamar {{ $kamar->nomor_kamar }}</h1>

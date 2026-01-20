@@ -28,18 +28,22 @@ class RegisterController extends Controller
             'no_hp' => 'required|string|max:20',
             'jenis_kelamin' => 'required|in:L,P',
             'role' => 'required|in:penghuni,pemilik',
-            'tanggal_lahir' => 'required|date',
+            'tanggal_lahir' => 'required|date|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
             'alamat' => 'required|string|max:255',
             'foto_profil' => 'nullable|image|max:2048'
         ];
 
-        $request->validate($rules);
+        $messages = [
+            'tanggal_lahir.before_or_equal' => 'Umur tidak boleh kurang dari 17 tahun.',
+        ];
+
+        $request->validate($rules, $messages);
 
         // Cek unique constraints manual untuk email/username di kedua tabel
-        $emailExists = Penghuni::where('email', $request->email)->exists() || 
-                      Pemilik::where('email', $request->email)->exists();
-        $usernameExists = Penghuni::where('username', $request->username)->exists() || 
-                         Pemilik::where('username', $request->username)->exists();
+        $emailExists = Penghuni::where('email', $request->email)->exists() ||
+            Pemilik::where('email', $request->email)->exists();
+        $usernameExists = Penghuni::where('username', $request->username)->exists() ||
+            Pemilik::where('username', $request->username)->exists();
 
         if ($emailExists) {
             return back()->withErrors(['email' => 'Email sudah digunakan.'])->withInput();
@@ -69,11 +73,11 @@ class RegisterController extends Controller
                     'status_penghuni' => 'calon',
                     'role' => 'penghuni'
                 ]);
-                
+
                 Auth::guard('penghuni')->login($user);
                 return redirect()->route('penghuni.dashboard')
                     ->with('success', 'Registrasi penghuni berhasil!');
-                    
+
             } else {
                 $fotoProfilPath = null;
                 if ($request->hasFile('foto_profil')) {
@@ -92,7 +96,7 @@ class RegisterController extends Controller
                     'status_pemilik' => 'pending',
                     'role' => 'pemilik'
                 ]);
-                
+
                 Auth::guard('pemilik')->login($user);
                 return redirect()->route('pemilik.dashboard')
                     ->with('success', 'Registrasi pemilik berhasil!');

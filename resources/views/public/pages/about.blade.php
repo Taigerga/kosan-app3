@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tentang Kami - KosanApp')
+@section('title', 'Tentang Kami - AyoKos')
 @section('content')
 <div class="space-y-12">
     <!-- Hero Section -->
@@ -16,7 +16,7 @@
                 </div>
                 
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Tentang <span class="bg-gradient-to-r from-primary-400 to-indigo-400 bg-clip-text text-transparent">KosanApp</span>
+                    Tentang <span class="bg-gradient-to-r from-primary-400 to-indigo-400 bg-clip-text text-transparent">AyoKos</span>
                 </h1>
                 
                 <p class="text-xl text-primary-100 max-w-3xl mx-auto">
@@ -137,7 +137,7 @@
                 Tim <span class="text-primary-400">Kami</span>
             </h2>
             <p class="text-lg text-dark-muted max-w-2xl mx-auto">
-                Orang-orang hebal di balik layanan KosanApp
+                Orang-orang hebal di balik layanan AyoKos
             </p>
         </div>
 
@@ -173,7 +173,7 @@
                         AY
                     </div>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-1">Ahmad Yanto</h3>
+                <h3 class="text-xl font-semibold text-white mb-1">Muhammad Rizki</h3>
                 <p class="text-green-300 font-medium mb-3">CTO</p>
                 <p class="text-dark-muted text-sm">
                     Mengelola pengembangan teknologi dan platform.
@@ -196,7 +196,7 @@
                         N
                     </div>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-1">Nauval</h3>
+                <h3 class="text-xl font-semibold text-white mb-1">Muhammad Rizki</h3>
                 <p class="text-purple-300 font-medium mb-3">Head of Operations</p>
                 <p class="text-dark-muted text-sm">
                     Mengawasi operasional dan layanan pelanggan.
@@ -255,8 +255,8 @@
             <div class="flex flex-col md:flex-row items-center mb-12">
                 <div class="md:w-1/2 md:pr-12 text-right mb-4 md:mb-0">
                     <div class="bg-dark-card border border-dark-border rounded-xl p-6 inline-block">
-                        <div class="text-primary-400 text-sm font-semibold mb-1">Januari 2023</div>
-                        <h4 class="text-lg font-bold text-white mb-2">Peluncuran KosanApp</h4>
+                        <div class="text-primary-400 text-sm font-semibold mb-1">Januari 2026</div>
+                        <h4 class="text-lg font-bold text-white mb-2">Peluncuran AyoKos</h4>
                         <p class="text-dark-muted text-sm">
                             Platform pertama kami diluncurkan dengan fokus pada kota Bandung.
                         </p>
@@ -274,7 +274,7 @@
                 </div>
                 <div class="md:w-1/2 md:pl-12 mb-4 md:mb-0 order-1 md:order-2">
                     <div class="bg-dark-card border border-dark-border rounded-xl p-6 inline-block">
-                        <div class="text-indigo-400 text-sm font-semibold mb-1">Juni 2023</div>
+                        <div class="text-indigo-400 text-sm font-semibold mb-1">Febuari 2026</div>
                         <h4 class="text-lg font-bold text-white mb-2">Ekspansi ke 10 Kota</h4>
                         <p class="text-dark-muted text-sm">
                             Berhasil memperluas layanan ke 10 kota besar di Indonesia.
@@ -287,7 +287,7 @@
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 md:pr-12 text-right mb-4 md:mb-0">
                     <div class="bg-dark-card border border-dark-border rounded-xl p-6 inline-block">
-                        <div class="text-purple-400 text-sm font-semibold mb-1">Desember 2023</div>
+                        <div class="text-purple-400 text-sm font-semibold mb-1">Maret 2026</div>
                         <h4 class="text-lg font-bold text-white mb-2">1000+ Pengguna Aktif</h4>
                         <p class="text-dark-muted text-sm">
                             Mencapai tonggak sejarah dengan 1000+ pengguna aktif di platform.
@@ -309,7 +309,7 @@
                     Bergabunglah dengan Komunitas Kami
                 </h3>
                 <p class="text-dark-muted mb-6">
-                    Baik Anda mencari kos atau memiliki kos untuk disewakan, KosanApp adalah platform yang tepat untuk Anda.
+                    Baik Anda mencari kos atau memiliki kos untuk disewakan, AyoKos adalah platform yang tepat untuk Anda.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('public.kos.index') }}" 

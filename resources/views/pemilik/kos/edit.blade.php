@@ -1,11 +1,42 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Kos - Kosan App')
+@section('title', 'Edit Kos - AyoKos')
 
 @section('content')
 <div class="space-y-6">
+    <!-- Breadcrumb -->
+    <div class="bg-dark-card/50 border border-dark-border rounded-xl p-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('pemilik.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <i class="fas fa-home mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="inline-flex items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                        <a href="{{ route('pemilik.kos.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                            <i class="fas fa-file-contract mr-2"></i>
+                            Kelola Kos
+                        </a>
+                    </div>
+                </li>
+                <li class="inline-flex items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                        <a href="{{ route('pemilik.kos.edit', $kos->id_kos) }}" class="inline-flex items-center text-sm font-medium text-white">
+                            <i class="fas fa-pencil mr-2"></i>
+                            Edit Kos
+                        </a>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
     <!-- Header -->
-    <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
         <div class="flex items-center justify-between">
             <div>
                 <div class="flex items-center space-x-3 mb-2">

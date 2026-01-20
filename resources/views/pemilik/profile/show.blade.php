@@ -5,9 +5,12 @@
 @section('content')
     <div class="p-4 md:p-6">
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Profil Pemilik Kos</h1>
-            <p class="text-dark-muted">Kelola informasi profil dan akun Anda sebagai pemilik kos</p>
+        <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-white flex items-center">
+                <i class="fas fa-user-circle text-primary-400 mr-3"></i>
+                Profil Pemilik Kos
+            </h1>
+            <p class="text-dark-muted mt-2">Kelola informasi profil dan akun Anda sebagai pemilik kos</p>
         </div>
 
         <!-- Profile Card -->

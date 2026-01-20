@@ -78,11 +78,7 @@
                                 <i class="fas fa-map-marked-alt w-5 mr-3 text-orange-400"></i>
                                 <span>Peta Kos</span>
                             </a>
-                            <a href="{{ route('public.home') }}"
-                                class="flex items-center px-4 py-2.5 text-slate-100 hover:bg-slate-700 hover:text-white transition-colors">
-                                <i class="fas fa-home w-5 mr-3 text-cyan-400"></i>
-                                <span>Halaman Utama</span>
-                            </a>
+
                         </div>
 
                         <!-- Logout -->
@@ -113,7 +109,7 @@
                     <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user text-white text-sm"></i>
                     </div>
-                    <span class="logo-text font-bold text-white">KosanApp</span>
+                    <span class="logo-text font-bold text-white">AyoKos</span>
                 </div>
                 <!-- Toggle Button Moved to Main Content -->
             </div>

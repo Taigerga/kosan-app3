@@ -1,26 +1,35 @@
 @extends('layouts.app')
 
-@section('title', $kos->nama_kos . ' - Kosan App')
+@section('title', $kos->nama_kos . ' - AyoKos')
 
 @section('content')
     <div class="container mx-auto px-4 py-6 md:py-8">
         <div class="max-w-7xl mx-auto">
             <!-- Breadcrumb -->
-            <nav class="mb-6">
-                <ol class="flex items-center space-x-2 text-sm text-dark-muted">
-                    <li>
-                        <a href="{{ route('pemilik.kos.index') }}" class="hover:text-primary-400 transition">
-                            <i class="fas fa-home mr-1"></i>
-                            Daftar Kos
-                        </a>
-                    </li>
-                    <li><i class="fas fa-chevron-right text-xs"></i></li>
-                    <li class="text-white font-medium">{{ Str::limit($kos->nama_kos, 30) }}</li>
-                </ol>
-            </nav>
+            <div class="bg-dark-card/50 border border-dark-border rounded-xl p-4 mb-6">
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('pemilik.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                                <i class="fas fa-home mr-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="inline-flex items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
+                                <a href="{{ route('pemilik.kos.show', $kos->id_kos) }}" class="inline-flex items-center text-sm font-medium text-white">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Detail Kos
+                                </a>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
 
             <!-- Header Card -->
-            <div class="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
                 <div class="flex flex-col md:flex-row md:items-start justify-between">
                     <div class="flex-1">
                         <div class="flex items-center mb-2">

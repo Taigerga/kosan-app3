@@ -1,28 +1,34 @@
 @extends('layouts.app')
 
-@section('title', $kos->nama_kos . ' - Kosan App')
+@section('title', $kos->nama_kos . ' - AyoKos')
 
 @section('content')
 <div class="space-y-6">
     <!-- Breadcrumb -->
-    <nav class="flex" aria-label="Breadcrumb">
+    <nav class="bg-dark-card/50 border border-dark-border rounded-xl p-4">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <a href="{{ route('public.home') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-primary-300">
-                    <i class="fas fa-home mr-2"></i>
+                    <i class="fas fa-gauge mr-2"></i>
                     Home
                 </a>
             </li>
             <li>
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right mx-2 text-dark-border text-xs"></i>
-                    <a href="{{ route('public.kos.index') }}" class="text-sm font-medium text-dark-muted hover:text-primary-300">Kos</a>
+                    <a href="{{ route('public.kos.index') }}" class="text-sm font-medium text-dark-muted hover:text-primary-300">
+                        <i class="fas fa-home mr-2"></i>
+                        Kos
+                    </a>
                 </div>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right mx-2 text-dark-border text-xs"></i>
-                    <span class="ml-1 text-sm font-medium text-primary-300 truncate max-w-xs">{{ $kos->nama_kos }}</span>
+                    <span class="ml-1 text-sm font-medium text-primary-300 truncate max-w-xs">
+                        <i class="fa-solid fa-tag mr-2"></i>
+                        {{ $kos->nama_kos }}
+                    </span>
                 </div>
             </li>
         </ol>

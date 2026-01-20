@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ $subject ?? 'Kosan App Notification' }}</title>
+    <title>{{ $subject ?? 'AyoKos Notification' }}</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
         .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -31,7 +31,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏠 Kosan App</h1>
+            <h1>🏠 AyoKos</h1>
             <p>Sistem Manajemen Kos Terpadu</p>
         </div>
 
@@ -104,14 +104,14 @@
             </div>
 
             <p style="text-align: center; color: #666; margin-top: 30px;">
-                <em>Email ini dikirim secara otomatis oleh sistem Kosan App.</em><br>
+                <em>Email ini dikirim secara otomatis oleh sistem AyoKos.</em><br>
                 <small>Mohon tidak membalas email ini.</small>
             </p>
         </div>
 
         <div class="footer">
-            <p>© {{ date('Y') }} Kosan App - All rights reserved</p>
-            <p>Jl. Contoh No. 123, Kota Bandung | support@kosanapp.com</p>
+            <p>© {{ date('Y') }} AyoKos - All rights reserved</p>
+            <p>Jl. Contoh No. 123, Kota Bandung | support@ayokos.com</p>
         </div>
     </div>
 </body>

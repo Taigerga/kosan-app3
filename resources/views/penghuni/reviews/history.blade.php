@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'History Review - Kosan App')
+@section('title', 'History Review - AyoKos')
 
 @section('content')
 <div class="space-y-6">
@@ -17,9 +17,9 @@
                 <li class="inline-flex items-center">
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
-                        <a href="{{ route('penghuni.reviews.history') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <a href="{{ route('penghuni.reviews.history') }}" class="inline-flex items-center text-sm font-medium text-white">
                             <i class="fas fa-file-contract mr-2"></i>
-                            Riwayat Pembayaran
+                            Riwayat Review
                         </a>
                     </div>
                 </li>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Page Header -->
-    <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">

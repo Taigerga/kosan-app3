@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Pembayaran - Kosan App')
+@section('title', 'Kelola Pembayaran - AyoKos')
 
 @section('content')
     <div class="space-y-6">
@@ -17,7 +17,7 @@
                     <li class="inline-flex items-center">
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
-                            <a href="{{ route('pemilik.pembayaran.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                            <a href="{{ route('pemilik.pembayaran.index') }}" class="inline-flex items-center text-sm font-medium text-white">
                                 <i class="fas fa-credit-card mr-2"></i>
                                 Kelola Pembayaran
                             </a>
@@ -27,7 +27,7 @@
             </nav>
         </div>  
         <!-- Header -->
-        <div class="bg-gradient-to-r from-primary-900/50 to-indigo-900/50 border border-primary-800/30 rounded-2xl p-6">
+        <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
@@ -249,25 +249,19 @@
                                     @endif
                                     
                                     @if($item->status_pembayaran == 'pending')
-                                        <form method="POST" action="{{ route('pemilik.pembayaran.approve', $item->id_pembayaran) }}" class="inline">
-                                            @csrf
-                                            <button type="submit" 
-                                                    class="p-2 text-green-400 hover:text-green-300 hover:bg-green-900/20 rounded-lg transition"
-                                                    title="Verifikasi Pembayaran"
-                                                    onclick="return confirm('Verifikasi pembayaran ini?')">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                                onclick="showApproveModal('{{ route('pemilik.pembayaran.approve', $item->id_pembayaran) }}')"
+                                                class="p-2 text-green-400 hover:text-green-300 hover:bg-green-900/20 rounded-lg transition"
+                                                title="Verifikasi Pembayaran">
+                                            <i class="fas fa-check"></i>
+                                        </button>
                                         
-                                        <form method="POST" action="{{ route('pemilik.pembayaran.reject', $item->id_pembayaran) }}" class="inline">
-                                            @csrf
-                                            <button type="submit" 
-                                                    class="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition"
-                                                    title="Tolak Pembayaran"
-                                                    onclick="return confirm('Tolak pembayaran ini? Penghuni harus upload bukti baru.')">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                                onclick="showRejectModal('{{ route('pemilik.pembayaran.reject', $item->id_pembayaran) }}')"
+                                                class="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition"
+                                                title="Tolak Pembayaran">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                     @endif
                                 </div>
                             </td>
@@ -366,6 +360,66 @@
         </div>
     </div>
 
+    <!-- Approve Confirmation Modal -->
+    <div id="approveModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeApproveModal()"></div>
+        <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div class="p-6 text-center">
+                <div class="mb-4 inline-block">
+                    <div class="w-16 h-16 rounded-full bg-green-900/30 flex items-center justify-center mx-auto">
+                        <i class="fas fa-check-circle text-green-400 text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Verifikasi Pembayaran</h3>
+                <p class="text-dark-muted mb-6">Apakah Anda yakin ingin memverifikasi pembayaran ini sebagai lunas?</p>
+                
+                <div class="flex justify-center gap-3">
+                    <button type="button" onclick="closeApproveModal()" 
+                            class="px-5 py-2.5 bg-dark-border text-white rounded-xl hover:bg-dark-border/80 transition">
+                        Batal
+                    </button>
+                    <form id="approveForm" method="POST" action="">
+                        @csrf
+                        <button type="submit" 
+                                class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg shadow-green-900/20">
+                            Ya, Verifikasi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Confirmation Modal -->
+    <div id="rejectModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRejectModal()"></div>
+        <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div class="p-6 text-center">
+                <div class="mb-4 inline-block">
+                    <div class="w-16 h-16 rounded-full bg-red-900/30 flex items-center justify-center mx-auto">
+                        <i class="fas fa-times-circle text-red-400 text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Tolak Pembayaran</h3>
+                <p class="text-dark-muted mb-6">Tolak pembayaran ini? Penghuni akan diminta untuk mengunggah ulang bukti pembayaran yang valid.</p>
+                
+                <div class="flex justify-center gap-3">
+                    <button type="button" onclick="closeRejectModal()" 
+                            class="px-5 py-2.5 bg-dark-border text-white rounded-xl hover:bg-dark-border/80 transition">
+                        Batal
+                    </button>
+                    <form id="rejectForm" method="POST" action="">
+                        @csrf
+                        <button type="submit" 
+                                class="px-5 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 transition shadow-lg shadow-red-900/20">
+                            Ya, Tolak
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Bukti modal functionality
         function showBuktiModal(imageSrc) {
@@ -381,11 +435,46 @@
             document.getElementById('buktiModal').classList.add('hidden');
         }
 
+        // Approve modal functions
+        function showApproveModal(action) {
+            document.getElementById('approveForm').action = action;
+            document.getElementById('approveModal').classList.remove('hidden');
+            document.getElementById('approveModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeApproveModal() {
+            document.getElementById('approveModal').classList.add('hidden');
+            document.getElementById('approveModal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // Reject modal functions
+        function showRejectModal(action) {
+            document.getElementById('rejectForm').action = action;
+            document.getElementById('rejectModal').classList.remove('hidden');
+            document.getElementById('rejectModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+            document.getElementById('rejectModal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('buktiModal');
-            if (event.target === modal) {
+            const buktiModal = document.getElementById('buktiModal');
+            const approveModal = document.getElementById('approveModal');
+            const rejectModal = document.getElementById('rejectModal');
+            
+            if (event.target === buktiModal) {
                 closeBuktiModal();
+            } else if (event.target === approveModal) {
+                closeApproveModal();
+            } else if (event.target === rejectModal) {
+                closeRejectModal();
             }
         }
 
@@ -393,6 +482,8 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeBuktiModal();
+                closeApproveModal();
+                closeRejectModal();
             }
         });
     </script>

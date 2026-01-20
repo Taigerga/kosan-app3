@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Kontrak - Kosan App')
+@section('title', 'Kelola Kontrak - AyoKos')
 
 @section('content')
 <div class="space-y-6">
@@ -17,7 +17,7 @@
                 <li class="inline-flex items-center">
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
-                        <a href="{{ route('pemilik.kontrak.index') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
+                        <a href="{{ route('pemilik.kontrak.index') }}" class="inline-flex items-center text-sm font-medium text-white">
                             <i class="fas fa-file-contract mr-2"></i>
                             Kelola Kontrak
                         </a>
@@ -27,7 +27,7 @@
         </nav>
     </div>
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-primary-900/50 to-indigo-900/50 border border-primary-800/30 rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Kelola Kontrak Kos</h1>

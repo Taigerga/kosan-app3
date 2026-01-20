@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Kosan App</title>
+    <title>Login - AyoKos</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -406,7 +406,7 @@
     <div class="login-card" style="width: 100%; max-width: 450px;">
         <!-- Header -->
         <div class="login-header">
-            <h1><i class="fas fa-home me-2"></i>Kosan App</h1>
+            <h1><i class="fas fa-home me-2"></i>AyoKos</h1>
             <p>Masuk ke akun Anda</p>
         </div>
 
