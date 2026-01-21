@@ -8,7 +8,9 @@
         <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Selamat datang, {{ $user->nama }}! 👋</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-home mr-3"></i>
+                        Selamat datang, {{ $user->nama }}! 👋</h1>
                     <p class="text-dark-muted">Kelola properti kos Anda dengan mudah dan efisien</p>
                 </div>
                 <div class="mt-4 md:mt-0">
@@ -29,7 +31,7 @@
                     <div class="p-3 rounded-lg bg-primary-900/30">
                         <i class="fas fa-home text-primary-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-primary-900/20 text-primary-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-primary-900/20 text-primary-300">
                         {{ $statistics['total_kos'] > 0 ? '+' . $statistics['total_kos'] : '0' }}
                     </span>
                 </div>
@@ -43,7 +45,7 @@
                     <div class="p-3 rounded-lg bg-green-900/30">
                         <i class="fas fa-bed text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                         {{ $statistics['total_kamar'] > 0 ? '+' . $statistics['total_kamar'] : '0' }}
                     </span>
                 </div>
@@ -57,7 +59,7 @@
                     <div class="p-3 rounded-lg bg-blue-900/30">
                         <i class="fas fa-door-open text-blue-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
                         {{ $statistics['kamar_tersedia'] > 0 ? '+' . $statistics['kamar_tersedia'] : '0' }}
                     </span>
                 </div>
@@ -71,7 +73,7 @@
                     <div class="p-3 rounded-lg bg-purple-900/30">
                         <i class="fas fa-wallet text-purple-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
                         Bulan Ini
                     </span>
                 </div>

@@ -31,7 +31,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
-                        <i class="fas fa-credit-card mr-3 text-primary-300"></i>
+                        <i class="fas fa-credit-card mr-3"></i>
                         Kelola Pembayaran
                     </h1>
                     <p class="text-primary-100">Kelola semua pembayaran sewa kos Anda di satu tempat.</p>
@@ -63,7 +63,7 @@
                     <div class="p-3 rounded-lg bg-green-900/30">
                         <i class="fas fa-check-circle text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                         {{ $statistics['lunas'] > 0 ? '+'.$statistics['lunas'] : '0' }}
                     </span>
                 </div>
@@ -77,7 +77,7 @@
                     <div class="p-3 rounded-lg bg-yellow-900/30">
                         <i class="fas fa-clock text-yellow-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
                         {{ $statistics['pending'] > 0 ? '+'.$statistics['pending'] : '0' }}
                     </span>
                 </div>
@@ -91,7 +91,7 @@
                     <div class="p-3 rounded-lg bg-red-900/30">
                         <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-red-900/20 text-red-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-red-900/20 text-red-300">
                         {{ $statistics['terlambat'] > 0 ? '+'.$statistics['terlambat'] : '0' }}
                     </span>
                 </div>
@@ -105,7 +105,7 @@
                     <div class="p-3 rounded-lg bg-blue-900/30">
                         <i class="fas fa-calendar-times text-blue-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
                         {{ $statistics['belum'] > 0 ? '+'.$statistics['belum'] : '0' }}
                     </span>
                 </div>

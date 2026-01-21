@@ -9,7 +9,7 @@
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <a href="{{ route('penghuni.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
-                    <i class="fas fa-home mr-2"></i>
+                    <i class="fas fa-gauge mr-2"></i>
                     Dashboard
                 </a>
             </li>

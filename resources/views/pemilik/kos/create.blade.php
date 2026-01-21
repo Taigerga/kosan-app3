@@ -617,14 +617,14 @@
                     kodePosInput.value = addressData.kode_pos;
                 }
 
-                // Untuk alamat, hanya isi jika benar-benar kosong
-                if (!alamatTextarea.value.trim() && addressData.alamat_lengkap) {
+                // Untuk alamat, isi jika belum pernah diedit manual
+                if (!alamatTextarea.dataset.manualEdit && addressData.alamat_lengkap) {
                     alamatTextarea.value = addressData.alamat_lengkap;
                 }
             }
 
             // Track field yang sudah diedit manual
-            const formInputs = document.querySelectorAll('input[name="kecamatan"], input[name="kota"], input[name="provinsi"], input[name="kode_pos"]');
+            const formInputs = document.querySelectorAll('input[name="kecamatan"], input[name="kota"], input[name="provinsi"], input[name="kode_pos"], textarea[name="alamat"]');
             formInputs.forEach(input => {
                 input.addEventListener('input', function () {
                     this.dataset.manualEdit = 'true';

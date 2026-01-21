@@ -11,7 +11,7 @@
                 <li class="inline-flex items-center">
                     <a href="{{ route('public.home') }}" 
                        class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-primary-300 transition">
-                        <i class="fas fa-home mr-2"></i>
+                        <i class="fas fa-gauge mr-2"></i>
                         Home
                     </a>
                 </li>

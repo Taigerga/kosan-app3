@@ -30,7 +30,9 @@
     <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Kelola Kontrak Kos</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                    <i class="fas fa-file-contract mr-3"></i>
+                    Kelola Kontrak Kos</h1>
                 <p class="text-dark-muted">Kelola semua permohonan dan kontrak sewa kos Anda</p>
             </div>
             <div class="mt-4 md:mt-0">
@@ -58,6 +60,7 @@
     @endif
 
     <!-- Tabs Navigation -->
+     
     <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
         <div class="border-b border-dark-border">
             <nav class="-mb-px flex overflow-x-auto">

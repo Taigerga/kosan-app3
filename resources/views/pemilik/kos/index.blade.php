@@ -32,7 +32,9 @@
         <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Kelola Kos</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-home mr-3"></i>
+                        Kelola Kos</h1>
                     <p class="text-primary-200">Kelola semua properti kos Anda di satu tempat</p>
                 </div>
                 <a href="{{ route('pemilik.kos.create') }}"

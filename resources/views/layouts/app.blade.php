@@ -11,7 +11,7 @@
 
     <!-- Vite CSS -->
     @vite(['resources/css/app.css'])
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -125,7 +125,6 @@
             height: 20px;
             background: transparent;
         }
-
     </style>
 </head>
 
@@ -142,10 +141,12 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-8">
                         <a href="{{ route('public.home') }}" class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-home text-white text-lg"></i>
                             </div>
-                            <span class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                            <span
+                                class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                                 AyoKos
                             </span>
                         </a>
@@ -192,7 +193,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
                         <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-home text-white"></i>
                             </div>
                             <span class="text-xl font-bold text-white">AyoKos</span>
@@ -202,18 +204,25 @@
                     <div>
                         <h4 class="font-semibold text-white mb-4">Tautan Cepat</h4>
                         <ul class="space-y-2 text-slate-400">
-                            <li><a href="{{ route('public.home') }}" class="hover:text-blue-300 transition-colors">Home</a></li>
-                            <li><a href="{{ route('public.kos.index') }}" class="hover:text-blue-300 transition-colors">Cari Kos</a></li>
-                            <li><a href="{{ route('public.kos.peta') }}" class="hover:text-blue-300 transition-colors">Peta Kos</a></li>
+                            <li><a href="{{ route('public.home') }}" class="hover:text-blue-300 transition-colors">Home</a>
+                            </li>
+                            <li><a href="{{ route('public.kos.index') }}" class="hover:text-blue-300 transition-colors">Cari
+                                    Kos</a></li>
+                            <li><a href="{{ route('public.kos.peta') }}" class="hover:text-blue-300 transition-colors">Peta
+                                    Kos</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold text-white mb-4">Bantuan</h4>
                         <ul class="space-y-2 text-slate-400">
-                            <li><a href="{{ route('public.about') }}" class="hover:text-blue-300 transition-colors">Tentang Kami</a></li>
-                            <li><a href="{{ route('public.howto') }}" class="hover:text-blue-300 transition-colors">Cara Memesan</a></li>
-                            <li><a href="{{ route('public.terms') }}" class="hover:text-blue-300 transition-colors">Syarat & Ketentuan</a></li>
-                            <li><a href="{{ route('public.privacy') }}" class="hover:text-blue-300 transition-colors">Kebijakan Privasi</a></li>
+                            <li><a href="{{ route('public.about') }}" class="hover:text-blue-300 transition-colors">Tentang
+                                    Kami</a></li>
+                            <li><a href="{{ route('public.howto') }}" class="hover:text-blue-300 transition-colors">Cara
+                                    Memesan</a></li>
+                            <li><a href="{{ route('public.terms') }}" class="hover:text-blue-300 transition-colors">Syarat &
+                                    Ketentuan</a></li>
+                            <li><a href="{{ route('public.privacy') }}"
+                                    class="hover:text-blue-300 transition-colors">Kebijakan Privasi</a></li>
                         </ul>
                     </div>
                     <div>
@@ -242,7 +251,8 @@
     @endif
 
     <!-- Logout Confirmation Modal -->
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div id="logoutModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4"
+        aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-modal-close></div>
         <div class="relative bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden">
             <div class="border-b border-slate-700 p-6">
@@ -250,20 +260,24 @@
             </div>
             <div class="p-6 text-center">
                 <div class="mb-4 inline-block">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center mx-auto">
+                    <div
+                        class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center mx-auto">
                         <i class="fas fa-sign-out-alt text-red-400 text-2xl"></i>
                     </div>
                 </div>
                 <h5 class="text-lg font-medium text-white mb-2">Apakah Anda yakin ingin logout?</h5>
-                <p class="text-slate-400 mb-6">Anda akan keluar dari akun ini dan harus login kembali untuk mengakses dashboard.</p>
+                <p class="text-slate-400 mb-6">Anda akan keluar dari akun ini dan harus login kembali untuk mengakses
+                    dashboard.</p>
             </div>
             <div class="border-t border-slate-700 p-6 flex justify-end gap-3">
-                <button type="button" class="modal-close-btn px-5 py-2.5 bg-slate-700 text-slate-100 rounded-lg hover:bg-slate-600 transition-colors">
+                <button type="button"
+                    class="modal-close-btn px-5 py-2.5 bg-slate-700 text-slate-100 rounded-lg hover:bg-slate-600 transition-colors">
                     Batal
                 </button>
                 <form id="logoutForm" method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors shadow-lg">
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors shadow-lg">
                         Ya, Logout
                     </button>
                 </form>
@@ -273,11 +287,12 @@
 
     <!-- Success Notification Modal -->
     @if(session('success'))
-        <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div id="successModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
             <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-modal-close></div>
             <div class="relative bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden">
                 <div class="p-6 text-center">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+                    <div
+                        class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-check-circle text-green-400 text-2xl"></i>
                     </div>
                     <h5 class="text-lg font-medium text-white mb-2">Sukses!</h5>
@@ -441,7 +456,7 @@
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setupProfileDropdown();
 
             // Mobile sidebar toggle
@@ -455,7 +470,7 @@
             }
 
             // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (window.innerWidth < 768) {
                     const isClickInsideSidebar = sidebar.contains(e.target);
                     const isClickOnToggle = mobileToggle && mobileToggle.contains(e.target);

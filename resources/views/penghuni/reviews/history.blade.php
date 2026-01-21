@@ -10,7 +10,7 @@
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
                     <a href="{{ route('penghuni.dashboard') }}" class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-primary-300">
-                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        <i class="fas fa-gauge mr-2"></i>
                         Dashboard
                     </a>
                 </li>
@@ -18,7 +18,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                         <a href="{{ route('penghuni.reviews.history') }}" class="inline-flex items-center text-sm font-medium text-white">
-                            <i class="fas fa-file-contract mr-2"></i>
+                            <i class="fas fa-star mr-2"></i>
                             Riwayat Review
                         </a>
                     </div>
@@ -32,7 +32,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
-                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    <i class="fas fa-star mr-3"></i>
                     History Review
                 </h1>
                 <p class="text-dark-muted">Review yang telah Anda berikan untuk kos-kos</p>
@@ -107,7 +107,7 @@
                 <div class="p-3 rounded-lg bg-blue-900/30">
                     <i class="fas fa-star text-blue-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
                     {{ $reviews->total() }}
                 </span>
             </div>
@@ -121,7 +121,7 @@
                 <div class="p-3 rounded-lg bg-yellow-900/30">
                     <i class="fas fa-chart-line text-yellow-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
                     Rata-rata
                 </span>
             </div>
@@ -137,7 +137,7 @@
                 <div class="p-3 rounded-lg bg-green-900/30">
                     <i class="fas fa-calendar-alt text-green-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                     Terbaru
                 </span>
             </div>

@@ -1,5 +1,5 @@
 <!-- Dashboard Header -->
-<header class="bg-slate-800 border-b border-slate-700 h-16 flex items-center sticky top-0 z-40">
+<header class="bg-slate-800 border-b border-slate-700 h-16 flex items-center sticky top-0 z-[1002]">
     <div id="dashboardHeader" class="flex-1 px-4 transition-all duration-300 md:ml-64">
         <div class="flex items-center justify-between">
             <!-- Mobile Toggle -->
@@ -10,7 +10,8 @@
             <!-- Logo and Title -->
             <div class="flex items-center gap-3">
                 <div class="hidden md:flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user-tie text-white"></i>
                     </div>
                     <div>
@@ -31,15 +32,19 @@
                 <!-- Profile Menu -->
                 <div class="profile-menu relative">
                     <button class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700/50">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center">
-                            <span class="text-white font-medium">{{ substr(Auth::guard('pemilik')->user()->nama, 0, 1) }}</span>
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center">
+                            <span
+                                class="text-white font-medium">{{ substr(Auth::guard('pemilik')->user()->nama, 0, 1) }}</span>
                         </div>
-                        <span class="text-sm font-medium text-white hidden md:inline">{{ Auth::guard('pemilik')->user()->nama }}</span>
+                        <span
+                            class="text-sm font-medium text-white hidden md:inline">{{ Auth::guard('pemilik')->user()->nama }}</span>
                         <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
                     </button>
 
                     <!-- Profile Dropdown -->
-                    <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-slate-800 rounded-xl shadow-2xl border border-slate-700 py-2 z-50">
+                    <div
+                        class="profile-dropdown absolute right-0 mt-2 w-64 bg-slate-800 rounded-xl shadow-2xl border border-slate-700 py-2 z-[1001]">
                         <!-- User Info -->
                         <div class="px-4 py-3 border-b border-slate-700">
                             <p class="text-sm font-semibold text-white">{{ Auth::guard('pemilik')->user()->nama }}</p>
@@ -100,12 +105,13 @@
 <div class="flex min-h-[calc(100vh-64px)] relative">
     <!-- Sidebar -->
     <aside id="sidebar"
-        class="bg-slate-800 border-r border-slate-700 w-64 md:w-64 flex-shrink-0 fixed md:relative h-full md:h-auto z-30 -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out">
+        class="bg-slate-800 border-r border-slate-700 w-64 md:w-64 flex-shrink-0 fixed md:relative h-full md:h-auto z-[1005] -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out">
         <!-- Sidebar Header -->
         <div class="p-4 border-b border-slate-700">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user-tie text-white text-sm"></i>
                     </div>
                     <span class="logo-text font-bold text-white">AyoKos</span>
@@ -189,7 +195,7 @@
 
     <!-- Sidebar Toggle Button (Desktop) -->
     <button id="desktopSidebarToggle" onclick="toggleSidebar()"
-        class="hidden md:flex fixed top-20 left-64 z-50 bg-slate-800 border border-slate-700 text-slate-400 hover:text-white p-1 rounded-r-lg shadow-lg items-center justify-center w-8 h-10 transition-all duration-300">
+        class="hidden md:flex fixed top-20 left-64 z-[1004] bg-slate-800 border border-slate-700 text-slate-400 hover:text-white p-1 rounded-r-lg shadow-lg items-center justify-center w-8 h-10 transition-all duration-300">
         <i id="sidebarToggleIcon" class="fas fa-chevron-left text-xs"></i>
     </button>
 

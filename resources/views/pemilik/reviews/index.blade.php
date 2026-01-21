@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ulasan Kos Saya')
+@section('title', 'Ulasan Kos Saya - AyoKos')
 
 @section('content')
 <div class="space-y-6">
@@ -68,7 +68,7 @@
             <div>
 
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
-                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    <i class="fas fa-star mr-3"></i>
                     Ulasan untuk Kos Saya
                 </h1>
                 <p class="text-dark-muted">Semua ulasan yang diberikan penghuni untuk kos yang Anda miliki</p>

@@ -5,12 +5,12 @@
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-6">
     <!-- Breadcrumb -->
-    <nav class="flex mb-6" aria-label="Breadcrumb">
+    <nav class="bg-dark-card/50 border border-dark-border rounded-xl p-4 mb-6">
         <ol class="inline-flex items-center space-x-2 md:space-x-4">
             <li class="inline-flex items-center">
                 <a href="{{ route('public.home') }}" 
                    class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-primary-300 transition">
-                    <i class="fas fa-home mr-2"></i>
+                    <i class="fas fa-gauge mr-2"></i>
                     Home
                 </a>
             </li>
@@ -19,7 +19,7 @@
                     <i class="fas fa-chevron-right text-dark-border mx-2 text-sm"></i>
                     <a href="{{ route('public.kos.show', $kos->id_kos) }}" 
                        class="ml-1 text-sm font-medium text-dark-muted hover:text-primary-300 transition">
-                        <i class="fas fa-tag mr-2"></i>
+                        <i class="fas fa-home mr-2"></i>
                         {{ $kos->nama_kos }}
                     </a>
                 </div>
@@ -27,8 +27,8 @@
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-dark-border mx-2 text-sm"></i>
-                    <span class="ml-1 text-sm font-medium text-primary-300">
-                        <i class="fas fa-star mr-2"></i>
+                    <span class="ml-1 text-sm font-medium text-white">
+                        <i class="fas fa-plus mr-2"></i>
                         Beri Review
                     </span>
                 </div>

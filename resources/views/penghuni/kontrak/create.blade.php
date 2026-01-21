@@ -21,7 +21,7 @@
                                 <i class="fas fa-chevron-right text-dark-muted text-xs"></i>
                                 <a href="{{ route('public.kos.show', $kos->id_kos) }}"
                                     class="ml-1 md:ml-3 text-sm text-dark-muted hover:text-primary-300">
-                                    <i class="fas fa-home mr-2"></i>
+                                    <i class="fas fa-file-contract mr-2"></i>
                                     {{ Str::limit($kos->nama_kos, 20) }}
                                 </a>
                             </div>
@@ -30,7 +30,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-chevron-right text-dark-muted text-xs"></i>
                                 <span class="ml-1 md:ml-3 text-sm font-medium text-primary-300">
-                                    <i class="fas fa-file-contract mr-2"></i>
+                                    <i class="fas fa-plus mr-2"></i>
                                     Ajukan Kontrak
                                 </span>
                             </div>

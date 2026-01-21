@@ -25,7 +25,7 @@
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right mx-2 text-dark-border text-xs"></i>
-                    <span class="ml-1 text-sm font-medium text-primary-300 truncate max-w-xs">
+                    <span class="ml-1 text-sm font-medium text-white truncate max-w-xs">
                         <i class="fa-solid fa-tag mr-2"></i>
                         {{ $kos->nama_kos }}
                     </span>

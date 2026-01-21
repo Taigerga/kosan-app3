@@ -31,11 +31,10 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between">
             <div>
                 <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-chart-bar text-white text-xl"></i>
-                    </div>
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-white">Analisis Data Kosan</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">
+                        <i class="fas fa-chart-bar text-white mr-3"></i>    
+                        Analisis Data Kosan</h1>
                         <p class="text-dark-muted">Analisis statistik dan visualisasi data properti Anda</p>
                     </div>
                 </div>

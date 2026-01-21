@@ -8,7 +8,9 @@
         <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Halo, {{ $user->nama }}! 🎉</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-gauge mr-3"></i>
+                        Halo, {{ $user->nama }}! 🎉</h1>
                     <p class="text-dark-muted">Kelola hunian dan aktivitas sewa Anda dengan mudah</p>
                 </div>
                 <div class="mt-4 md:mt-0">
@@ -29,7 +31,7 @@
                     <div class="p-3 rounded-lg bg-green-900/30">
                         <i class="fas fa-home text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                         {{ $kontrakAktif->count() > 0 ? '+' . $kontrakAktif->count() : '0' }}
                     </span>
                 </div>
@@ -43,7 +45,7 @@
                     <div class="p-3 rounded-lg bg-purple-900/30">
                         <i class="fas fa-wallet text-purple-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
                         Total
                     </span>
                 </div>
@@ -63,7 +65,7 @@
         ($user->status_penghuni == 'calon' ? 'fa-clock text-yellow-400' : 'fa-times-circle text-red-400') }} text-xl"></i>
                     </div>
                     <span
-                        class="text-xs font-medium px-2 py-1 rounded-full 
+                        class="text-sm font-medium px-2 py-1 rounded-full 
                         {{ $user->status_penghuni == 'aktif' ? 'bg-blue-900/20 text-blue-300' :
         ($user->status_penghuni == 'calon' ? 'bg-yellow-900/20 text-yellow-300' : 'bg-red-900/20 text-red-300') }}">
                         Status
@@ -84,7 +86,7 @@
                             return $kontrak->sisaHari <= 30 && !$kontrak->sudahBerakhir;
                         })->count();
                     @endphp
-                    <span class="text-xs font-medium px-2 py-1 rounded-full 
+                    <span class="text-sm font-medium px-2 py-1 rounded-full 
                         {{ $berakhirSegera > 0 ? 'bg-orange-900/20 text-orange-300' : 'bg-green-900/20 text-green-300' }}">
                         {{ $berakhirSegera > 0 ? 'Perhatian' : 'Aman' }}
                     </span>

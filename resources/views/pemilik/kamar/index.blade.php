@@ -32,7 +32,9 @@
         <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Kelola Kamar</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-bed mr-3"></i>
+                        Kelola Kamar</h1>
                     <p class="text-green-100">Kelola semua kamar kos Anda di satu tempat yang terorganisir</p>
                 </div>
                 <a href="{{ route('pemilik.kamar.create') }}"
@@ -126,7 +128,7 @@
                     <div class="p-3 rounded-lg bg-green-900/30">
                         <i class="fas fa-bed text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                         {{ $kamar->count() > 0 ? '+' . $kamar->count() : '0' }}
                     </span>
                 </div>
@@ -140,7 +142,7 @@
                     <div class="p-3 rounded-lg bg-blue-900/30">
                         <i class="fas fa-door-open text-blue-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-blue-900/20 text-blue-300">
                         {{ $kamar->where('status_kamar', 'tersedia')->count() }}
                     </span>
                 </div>
@@ -154,7 +156,7 @@
                     <div class="p-3 rounded-lg bg-purple-900/30">
                         <i class="fas fa-users text-purple-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
                         {{ $kamar->where('status_kamar', 'terisi')->count() }}
                     </span>
                 </div>
@@ -168,7 +170,7 @@
                     <div class="p-3 rounded-lg bg-yellow-900/30">
                         <i class="fas fa-tools text-yellow-400 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
+                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
                         {{ $kamar->where('status_kamar', 'maintenance')->count() }}
                     </span>
                 </div>

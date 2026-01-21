@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Penghuni;
-use App\Models\Pemilik;
+use App\Models\Pemilik; 
 
 class LoginController extends Controller
 {

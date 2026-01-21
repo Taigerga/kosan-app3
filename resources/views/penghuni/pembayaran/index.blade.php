@@ -11,7 +11,7 @@
                     <li class="inline-flex items-center">
                         <a href="{{ route('penghuni.dashboard') }}"
                             class="inline-flex items-center text-sm font-medium text-dark-muted hover:text-white transition-colors">
-                            <i class="fas fa-home mr-2"></i>
+                            <i class="fas fa-gauge mr-2"></i>
                             Dashboard
                         </a>
                     </li>
@@ -20,7 +20,7 @@
                             <i class="fas fa-chevron-right text-dark-muted text-xs mx-2"></i>
                             <a href="{{ route('penghuni.pembayaran.index') }}"
                                 class="inline-flex items-center text-sm font-medium text-white">
-                                <i class="fas fa-file-contract mr-2"></i>
+                                <i class="fas fa-credit-card  mr-2"></i>
                                 Riwayat Pembayaran
                             </a>
                         </div>
@@ -33,7 +33,9 @@
             <div
                 class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Riwayat Pembayaran</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                    <i class="fas fa-credit-card mr-2"></i>    
+                    Riwayat Pembayaran</h1>
                     <p class="text-dark-muted">Kelola dan lacak semua pembayaran kos Anda</p>
                 </div>
 
