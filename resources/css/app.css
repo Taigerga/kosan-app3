@@ -40,3 +40,188 @@
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     }
 }
+
+    .bg-animate {
+        background: linear-gradient(-45deg, #1e3a8a, #1e40af, #3b82f6, #1d4ed8);
+        background-size: 400% 400%;
+        animation: gradientAnimation 10s ease infinite;
+    }
+
+    @keyframes gradientAnimation {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* Mobile Optimizations */
+    .mobile-optimized {
+        /* Base mobile optimizations */
+    }
+    
+    @media (max-width: 640px) {
+        /* Hero Section Mobile */
+        .hero-title {
+            font-size: 2rem !important;
+            line-height: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem !important;
+        }
+        
+        .hero-stats {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+        }
+        
+        .hero-stats > div {
+            padding: 0.75rem;
+        }
+        
+        /* Search Form Mobile */
+        .search-form-input {
+            padding-left: 3rem !important;
+            padding-right: 1rem !important;
+            font-size: 0.875rem;
+        }
+        
+        .search-form-icon {
+            left: 1rem !important;
+        }
+        
+        .search-form-select {
+            padding-left: 3rem !important;
+            padding-right: 2.5rem !important;
+            font-size: 0.875rem;
+        }
+        
+        .search-form-button {
+            width: 100%;
+            padding: 0.75rem !important;
+        }
+        
+        /* Cards Mobile */
+        .kos-card {
+            margin-bottom: 1rem;
+        }
+        
+        .kos-image {
+            height: 200px !important;
+        }
+        
+        .kos-title {
+            font-size: 1.125rem !important;
+            line-height: 1.5rem;
+        }
+        
+        .kos-facilities {
+            flex-wrap: nowrap !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.5rem;
+        }
+        
+        .kos-facilities::-webkit-scrollbar {
+            height: 3px;
+        }
+        
+        .facility-badge {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        /* Features Mobile */
+        .feature-card {
+            padding: 1.5rem !important;
+            margin-bottom: 1rem;
+        }
+        
+        /* Button Mobile */
+        .mobile-full-width {
+            width: 100% !important;
+        }
+        
+        .mobile-text-center {
+            text-align: center !important;
+        }
+        
+        /* Touch-friendly elements */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        .touch-padding {
+            padding: 12px 16px;
+        }
+        
+        /* Hide decorative elements on mobile */
+        .mobile-hide {
+            display: none;
+        }
+        
+        /* Adjust spacing for mobile */
+        .mobile-py {
+            padding-top: 3rem !important;
+            padding-bottom: 3rem !important;
+        }
+        
+        .mobile-mt {
+            margin-top: 2rem !important;
+        }
+        
+        .mobile-mb {
+            margin-bottom: 1.5rem !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .section-padding {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
+        }
+        
+        .container-padding {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .grid-mobile {
+            grid-template-columns: 1fr !important;
+        }
+        
+        .text-mobile-lg {
+            font-size: 1.5rem !important;
+        }
+        
+        .text-mobile-xl {
+            font-size: 2rem !important;
+        }
+    }
+    
+    /* Prevent horizontal scroll */
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Improve touch scrolling */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Better button feedback on mobile */
+    button, a {
+        transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+    
+    button:active, a:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }

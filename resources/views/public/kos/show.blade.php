@@ -466,9 +466,15 @@
                 <!-- Price Range -->
                 <div class="mb-8">
                     <h3 class="font-semibold text-primary-300 mb-3">Harga Mulai Dari:</h3>
-                    <p class="text-4xl font-bold text-green-400">
-                        Rp {{ number_format($kos->kamar->min('harga') ?? 0, 0, ',', '.') }}
-                    </p>
+                    @if($kos->kamar->min('harga') > 0)
+                        <p class="text-4xl font-bold text-green-400">
+                            Rp {{ number_format($kos->kamar->min('harga'), 0, ',', '.') }}
+                        </p>
+                    @else
+                        <p class="text-4xl font-bold text-red-400">
+                            Penuh
+                        </p>
+                    @endif
                     <p class="text-sm text-dark-muted mt-1">per 
                         @if($kos->tipe_sewa == 'harian')
                             hari

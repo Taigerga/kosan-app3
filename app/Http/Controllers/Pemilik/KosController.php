@@ -16,7 +16,7 @@ class KosController extends Controller
         $kos = Kos::withCount('kamar')
             ->where('id_pemilik', $user->id_pemilik)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(12);
 
         return view('pemilik.kos.index', compact('kos'));
     }

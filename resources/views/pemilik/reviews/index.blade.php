@@ -228,10 +228,40 @@
                 @endforeach
             </div>
 
-            <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-dark-border">
-                {{ $reviews->links() }}
-            </div>
+            <!-- Table Footer -->
+            @if($reviews->hasPages())
+                <div class="border-t border-dark-border px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-dark-muted">
+                            Menampilkan {{ $reviews->firstItem() ?? 0 }} - {{ $reviews->lastItem() ?? 0 }} dari {{ $reviews->total() }}
+                            ulasan
+                        </div>
+                        <div class="flex space-x-2">
+                            @if($reviews->onFirstPage())
+                                <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
+                                    <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                                </span>
+                            @else
+                                <a href="{{ $reviews->previousPageUrl() }}"
+                                    class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
+                                    <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                                </a>
+                            @endif
+
+                            @if($reviews->hasMorePages())
+                                <a href="{{ $reviews->nextPageUrl() }}"
+                                    class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
+                                    Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                                </a>
+                            @else
+                                <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
+                                    Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
         @else
         <!-- Empty State -->
         <div class="text-center py-16">

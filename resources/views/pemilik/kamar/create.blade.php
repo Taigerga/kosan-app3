@@ -40,14 +40,8 @@
         <div class="bg-gradient-to-r from-primary-900/30 to-indigo-900/30 border border-primary-800/30 rounded-2xl p-6 mb-6">
 
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-white">Tambah Kamar Baru</h1>
-                <p class="text-dark-muted mt-1">Isi form berikut untuk menambahkan kamar baru ke kos Anda</p>
-            </div>
-            <div>
-            <a href="{{ route('pemilik.kamar.index') }}" 
-               class="p-2 bg-dark-card border border-dark-border rounded-lg hover:bg-dark-border/50 transition">
-                <i class="fas fa-arrow-left text-dark-muted"></i>
-            </a>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-4">Tambah Kamar Baru</h1>
+                <p class="text-dark-muted mt-1 mb-4">Isi form berikut untuk menambahkan kamar baru ke kos Anda</p>
             </div>
         </div>
         
@@ -417,61 +411,159 @@
     </div>
 </div>
 
+<!-- Reset Confirmation Modal -->
+<div id="resetModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm" aria-hidden="true">
+    <div class="fixed inset-0" data-modal-close></div>
+    <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300 pointer-events-auto" id="resetModalContent">
+        <div class="p-6 text-center">
+            <div class="mb-4 inline-block">
+                <div class="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center mx-auto shadow-inner">
+                    <i class="fas fa-exclamation-triangle text-orange-400 text-2xl"></i>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 tracking-tight">Konfirmasi Reset</h3>
+            <p class="text-dark-muted mb-6 px-4">Apakah Anda yakin ingin mengosongkan semua isian form? Tindakan ini tidak dapat dibatalkan.</p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button type="button" data-modal-close
+                        class="flex-1 px-6 py-2.5 bg-dark-border/50 text-white rounded-xl hover:bg-dark-border transition duration-200 font-medium">
+                    Batal
+                </button>
+                <button type="button" id="confirmResetBtn"
+                        class="flex-1 px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 transition duration-300 shadow-lg hover:shadow-orange-500/20 active:scale-95">
+                    Ya, Reset Form
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
 <script>
-    // File input display
-    document.getElementById('foto_kamar').addEventListener('change', function (e) {
-    const fileName   = document.getElementById('file-name');
-    const previewImg = document.getElementById('preview-img');
-    const previewWrap= document.getElementById('preview-wrap');
+    let resetModal;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Modal using class from app.blade.php
+        // Wrap in a small timeout to ensure Modal class is globally available
+        setTimeout(() => {
+            if (typeof Modal !== 'undefined') {
+                resetModal = new Modal('resetModal');
+                
+                // Custom animation for the modal content
+                const originalShow = resetModal.show.bind(resetModal);
+                const originalHide = resetModal.hide.bind(resetModal);
+                const modalContent = document.getElementById('resetModalContent');
+                
+                if (modalContent) {
+                    resetModal.show = function() {
+                        originalShow();
+                        setTimeout(() => {
+                            modalContent.classList.remove('scale-95', 'opacity-0');
+                            modalContent.classList.add('scale-100', 'opacity-100');
+                        }, 10);
+                    };
+                    
+                    resetModal.hide = function() {
+                        modalContent.classList.remove('scale-100', 'opacity-100');
+                        modalContent.classList.add('scale-95', 'opacity-0');
+                        setTimeout(() => {
+                            originalHide();
+                        }, 300);
+                    };
+                }
+            } else {
+                console.error('Modal class not found. Make sure app.blade.php defines it.');
+            }
+        }, 100);
 
-    if (this.files && this.files[0]) {
-        const file = this.files[0];
-
-        // validasi sederhana
-        if (!file.type.startsWith('image/')) {
-        showToast('File harus berupa gambar', 'error');
-        this.value = '';
-        fileName.textContent = '';
-        fileName.classList.add('hidden');
-        previewWrap.classList.add('hidden');
-        return;
+        // Handle confirm reset button click
+        const confirmBtn = document.getElementById('confirmResetBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                executeReset();
+                if (resetModal) resetModal.hide();
+            });
         }
-
-        // tampilkan nama
-        fileName.textContent = file.name;
-        fileName.classList.remove('hidden');
-
-        // buat object URL untuk preview
-        const url = URL.createObjectURL(file);
-        previewImg.src = url;
-        previewWrap.classList.remove('hidden');
-
-        // bersihkan object URL setelah gambar selesai dimuat (optional, menghemat memory)
-        previewImg.onload = () => URL.revokeObjectURL(url);
-    } else {
-        fileName.textContent = '';
-        fileName.classList.add('hidden');
-        previewWrap.classList.add('hidden');
-    }
+        
+        // Setup specialized modal closing if not already handled
+        document.querySelectorAll('[data-modal-close]').forEach(el => {
+            el.addEventListener('click', () => {
+                if (resetModal) resetModal.hide();
+            });
+        });
     });
 
-    // Form reset
+    // File input display with preview
+    document.getElementById('foto_kamar').addEventListener('change', function (e) {
+        const fileName   = document.getElementById('file-name');
+        const previewImg = document.getElementById('preview-img');
+        const previewWrap= document.getElementById('preview-wrap');
+
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+
+            if (!file.type.startsWith('image/')) {
+                showToast('File harus berupa gambar', 'error');
+                this.value = '';
+                if (fileName) fileName.classList.add('hidden');
+                if (previewWrap) previewWrap.classList.add('hidden');
+                return;
+            }
+
+            if (fileName) {
+                fileName.textContent = file.name;
+                fileName.classList.remove('hidden');
+            }
+
+            const url = URL.createObjectURL(file);
+            if (previewImg) {
+                previewImg.src = url;
+                if (previewWrap) previewWrap.classList.remove('hidden');
+                previewImg.onload = () => URL.revokeObjectURL(url);
+            }
+        } else {
+            if (fileName) fileName.classList.add('hidden');
+            if (previewWrap) previewWrap.classList.add('hidden');
+        }
+    });
+
+    // Function called by the Reset Form button
     function resetForm() {
-    if (!confirm('Apakah Anda yakin ingin mengosongkan semua isian form?')) return;
+        if (resetModal) {
+            resetModal.show();
+        } else {
+            // Fallback to native confirm if Modal class failed to load
+            if (confirm('Apakah Anda yakin ingin mengosongkan semua isian form?')) {
+                executeReset();
+            }
+        }
+    }
 
-    document.querySelector('form').reset();
+    // Logic to actually clear the form
+    function executeReset() {
+        const form = document.querySelector('form');
+        if (form) form.reset();
 
-    // reset file & preview
-    document.getElementById('file-name').textContent = '';
-    document.getElementById('file-name').classList.add('hidden');
-    document.getElementById('preview-wrap').classList.add('hidden');
-    document.getElementById('preview-img').src = '';
+        // Clear file display elements
+        const fileName = document.getElementById('file-name');
+        const previewWrap = document.getElementById('preview-wrap');
+        const previewImg = document.getElementById('preview-img');
+        
+        if (fileName) {
+            fileName.textContent = '';
+            fileName.classList.add('hidden');
+        }
+        if (previewWrap) previewWrap.classList.add('hidden');
+        if (previewImg) previewImg.src = '';
 
-    // reset radio default
-    document.querySelector('input[name="status_kamar"][value="tersedia"]').checked = true;
-    document.querySelector('input[name="kapasitas"][value="1"]').checked = true;
+        // Restore radio button defaults
+        const statusTersedia = document.querySelector('input[name="status_kamar"][value="tersedia"]');
+        if (statusTersedia) statusTersedia.checked = true;
+        
+        const kapasitasOne = document.querySelector('input[name="kapasitas"][value="1"]');
+        if (kapasitasOne) kapasitasOne.checked = true;
 
-    showToast('Form telah direset', 'success');
+        showToast('Form berhasil dikosongkan', 'success');
     }
 
     // Form validation on submit
@@ -483,12 +575,10 @@
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 isValid = false;
-                if (!firstInvalidField) {
-                    firstInvalidField = field;
-                }
-                field.classList.add('border-red-500');
+                if (!firstInvalidField) firstInvalidField = field;
+                field.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/20');
             } else {
-                field.classList.remove('border-red-500');
+                field.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
             }
         });
         
@@ -502,35 +592,61 @@
         }
     });
 
-    // Toast notification
+    // Premium Toast notification system
     function showToast(message, type = 'info') {
         const toast = document.createElement('div');
-        toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
-            type === 'success' ? 'bg-green-900/90 text-green-300' :
-            type === 'error' ? 'bg-red-900/90 text-red-300' :
-            'bg-blue-900/90 text-blue-300'
-        }`;
+        
+        const styles = {
+            success: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 glow-emerald',
+            error: 'bg-rose-500/10 border-rose-500/20 text-rose-400 glow-rose',
+            info: 'bg-blue-500/10 border-blue-500/20 text-blue-400 glow-blue'
+        };
+        
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            info: 'fa-info-circle'
+        };
+        
+        const styleClass = styles[type] || styles.info;
+        const iconClass = icons[type] || icons.info;
+
+        toast.className = `fixed top-6 right-6 px-6 py-4 rounded-2xl shadow-2xl z-[10001] border backdrop-blur-md transform transition-all duration-500 translate-x-12 opacity-0 ${styleClass}`;
+        
         toast.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <i class="fas ${
-                    type === 'success' ? 'fa-check-circle' :
-                    type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'
-                }"></i>
-                <span>${message}</span>
+            <div class="flex items-center space-x-4 min-w-[280px]">
+                <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${type === 'success' ? 'bg-emerald-500/20' : type === 'error' ? 'bg-rose-500/20' : 'bg-blue-500/20'}">
+                    <i class="fas ${iconClass} text-lg"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-white text-sm tracking-tight capitalize leading-none text-nowrap">${type}</p>
+                    <p class="text-white/70 text-xs mt-1.5">${message}</p>
+                </div>
+                <button class="text-white/30 hover:text-white transition-colors ml-2 p-1" onclick="this.closest('.fixed').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         `;
         
         document.body.appendChild(toast);
         
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-x-12', 'opacity-0');
+            toast.classList.add('translate-x-0', 'opacity-100');
+        });
+        
         setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 300);
-        }, 3000);
+            if (toast.parentElement) {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }
+        }, 5000);
     }
 </script>
+@endpush
 
+@push('styles')
 <style>
     /* Custom styles for radio and checkbox */
     input[type="radio"]:checked + div {
@@ -543,26 +659,28 @@
         border-color: #3b82f6;
     }
     
-    /* Ganti dengan styling pada ikon FA yang sudah ada di label */
     label:has(input[type="checkbox"]:checked) .fa-check {
-        color: #3b82f6;          /* warna centang */
+        color: #3b82f6;
     }
     
-    /* File upload hover effect */
     #foto_kamar + label:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
     }
     
-    /* Form focus states */
     input:focus, select:focus, textarea:focus {
         outline: none;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     
-    /* Smooth transitions */
     input, select, textarea, button, label {
         transition: all 0.2s ease;
     }
+
+    /* Glow effects for toasts */
+    .glow-emerald { box-shadow: 0 10px 40px -10px rgba(16, 185, 129, 0.4); }
+    .glow-rose { box-shadow: 0 10px 40px -10px rgba(244, 63, 94, 0.4); }
+    .glow-blue { box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.4); }
 </style>
+@endpush
 @endsection

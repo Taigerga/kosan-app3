@@ -1,0 +1,251 @@
+Use Case Per Fungsi Aplikasi Kosan (Berdasarkan Routes dan Struktur File)
+
+Aktor:
+- Pengguna (Public): Orang yang ingin mencari dan melihat kos
+- Penghuni: Penyewa kos yang sudah memiliki akun dan kontrak
+- Pemilik: Pengelola kos dan kamar
+- Sistem/API: Untuk notifikasi (WhatsApp via WhatsAppController.php, Email via NotificationController.php)
+
+Use Case Detail Per Fungsi:
+
+1. **Login** (Aktor: Pengguna/Penghuni/Pemilik)
+   - Aktor mengakses halaman login '/login'
+   - Memasukkan email dan password
+   - Sistem memverifikasi kredensial
+   - Redirect ke dashboard sesuai role (penghuni atau pemilik)
+
+2. **Register** (Aktor: Pengguna)
+   - Aktor mengakses halaman register '/register'
+   - Mengisi form nama, email, password
+   - Sistem menyimpan data user baru
+   - Redirect ke login
+
+3. **Logout** (Aktor: Penghuni/Pemilik)
+   - Aktor klik logout '/logout'
+   - Sistem menghapus session
+   - Redirect ke home
+
+4. **Melihat Home Page** (Aktor: Pengguna)
+   - Aktor mengakses '/'
+   - Sistem menampilkan halaman utama dengan informasi kos populer
+
+5. **Mencari Kos** (Aktor: Pengguna)
+   - Aktor mengakses '/kos'
+   - Sistem menampilkan daftar kos (KosController::index)
+   - Aktor bisa mencari berdasarkan nama, lokasi, dll.
+
+6. **Filter Kos** (Aktor: Pengguna)
+   - Pada halaman '/kos', aktor menggunakan filter (harga, fasilitas, dll.)
+   - Sistem menampilkan kos yang sesuai filter
+
+7. **Melihat Detail Kos** (Aktor: Pengguna)
+   - Aktor klik kos di '/kos/{id}'
+   - Sistem menampilkan detail kos, kamar, fasilitas (KosController::show)
+
+8. **Melihat Peta Kos** (Aktor: Pengguna)
+   - Aktor mengakses '/peta'
+   - Sistem menampilkan kos di peta (KosController::peta)
+
+9. **Melihat Halaman Statis** (Aktor: Pengguna)
+   - Aktor mengakses '/pages/about', '/pages/how-to', dll.
+   - Sistem menampilkan konten halaman (PageController)
+
+10. **Melihat Dashboard Penghuni** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/dashboard'
+    - Sistem menampilkan ringkasan kontrak, pembayaran, dll. (PenghuniDashboard::index)
+
+11. **Mengajukan Kontrak** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/kontrak/create/{kosId}'
+    - Mengisi form kontrak
+    - Sistem menyimpan pengajuan (PenghuniKontrak::store)
+    - Kirim notifikasi ke pemilik
+
+12. **Melihat Kontrak** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/kontrak' atau '/penghuni/kontrak/{id}'
+    - Sistem menampilkan daftar atau detail kontrak (PenghuniKontrak::index/show)
+
+13. **Memperpanjang Kontrak** (Aktor: Penghuni)
+    - Pada detail kontrak, aktor klik extend
+    - Sistem memperpanjang kontrak (PenghuniKontrak::extend)
+
+14. **Melihat Pembayaran** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/pembayaran'
+    - Sistem menampilkan daftar pembayaran (PenghuniPembayaran::index)
+
+15. **Membuat Pembayaran** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/pembayaran/create'
+    - Mengisi form pembayaran
+    - Sistem menyimpan dan proses payment (PenghuniPembayaran::store)
+
+16. **Melihat Detail Pembayaran** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/pembayaran/{id}'
+    - Sistem menampilkan detail pembayaran (PenghuniPembayaran::show)
+
+17. **Membuat Review** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/reviews/create/{kos}'
+    - Mengisi form review
+    - Sistem menyimpan review (PenghuniReview::store)
+
+18. **Melihat History Review** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/reviews/history'
+    - Sistem menampilkan review yang dibuat (PenghuniReview::history)
+
+19. **Edit Review** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/reviews/{review}/edit'
+    - Mengubah review
+    - Sistem update (PenghuniReview::update)
+
+20. **Hapus Review** (Aktor: Penghuni)
+    - Aktor klik delete pada review
+    - Sistem hapus (PenghuniReview::destroy)
+
+21. **Melihat Profil Penghuni** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/profile'
+    - Sistem menampilkan profil (ProfileController::showPenghuni)
+
+22. **Edit Profil Penghuni** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/profile/edit'
+    - Mengubah data
+    - Sistem update (ProfileController::updatePenghuni)
+
+23. **Upload Foto Profil Penghuni** (Aktor: Penghuni)
+    - Pada edit profil, aktor upload foto
+    - Sistem simpan (ProfileController::uploadPhotoPenghuni)
+
+24. **Melihat Analisis Pengeluaran** (Aktor: Penghuni)
+    - Aktor mengakses '/penghuni/analisis'
+    - Sistem menampilkan analisis (PenghuniAnalisis::index)
+    - Atau '/penghuni/analisis/spending' untuk detail spending
+
+25. **Melihat Dashboard Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/dashboard'
+    - Sistem menampilkan ringkasan kos, kontrak, dll. (PemilikDashboard::index)
+
+26. **Melihat Kontrak Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kontrak'
+    - Sistem menampilkan daftar pengajuan kontrak (PemilikKontrak::index)
+
+27. **Meninjau Detail Kontrak** (Aktor: Pemilik)
+    - Aktor klik kontrak '/pemilik/kontrak/{id}'
+    - Sistem menampilkan detail (PemilikKontrak::show)
+
+28. **Menyetujui Kontrak** (Aktor: Pemilik)
+    - Pada detail kontrak, aktor approve
+    - Sistem ubah status, kirim notifikasi (PemilikKontrak::approve)
+
+29. **Menolak Kontrak** (Aktor: Pemilik)
+    - Aktor reject kontrak
+    - Sistem ubah status, kirim notifikasi (PemilikKontrak::reject)
+
+30. **Menyelesaikan Kontrak** (Aktor: Pemilik)
+    - Aktor selesai kontrak
+    - Sistem ubah status (PemilikKontrak::selesai)
+
+31. **Hapus Kontrak** (Aktor: Pemilik)
+    - Aktor delete kontrak
+    - Sistem hapus (PemilikKontrak::destroy)
+
+32. **Melihat Pembayaran Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/pembayaran'
+    - Sistem menampilkan pembayaran dari penghuni (PemilikPembayaran::index)
+
+33. **Menyetujui Pembayaran** (Aktor: Pemilik)
+    - Aktor approve pembayaran
+    - Sistem ubah status (PemilikPembayaran::approve)
+
+34. **Menolak Pembayaran** (Aktor: Pemilik)
+    - Aktor reject pembayaran
+    - Sistem ubah status (PemilikPembayaran::reject)
+
+35. **Melihat Kos Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kos'
+    - Sistem menampilkan kos miliknya (PemilikKos::index)
+
+36. **Membuat Kos Baru** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kos/create'
+    - Mengisi form kos
+    - Sistem simpan (PemilikKos::store)
+
+37. **Edit Kos** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kos/{id}/edit'
+    - Mengubah data kos
+    - Sistem update (PemilikKos::update)
+
+38. **Hapus Kos** (Aktor: Pemilik)
+    - Aktor delete kos
+    - Sistem hapus (PemilikKos::destroy)
+
+39. **Melihat Detail Kos Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kos/{id}/show'
+    - Sistem menampilkan detail kos (PemilikKos::show)
+
+40. **Melihat Kamar** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kamar'
+    - Sistem menampilkan kamar kos (PemilikKamar::index)
+
+41. **Membuat Kamar** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kamar/create'
+    - Mengisi form kamar
+    - Sistem simpan (PemilikKamar::store)
+
+42. **Edit Kamar** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/kamar/{id}/edit'
+    - Mengubah kamar
+    - Sistem update (PemilikKamar::update)
+
+43. **Hapus Kamar** (Aktor: Pemilik)
+    - Aktor delete kamar
+    - Sistem hapus (PemilikKamar::destroy)
+
+44. **Melihat Review Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/reviews'
+    - Sistem menampilkan review kos (PemilikReview::index)
+
+45. **Melihat Profil Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/profile'
+    - Sistem menampilkan profil (ProfileController::showPemilik)
+
+46. **Edit Profil Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/profile/edit'
+    - Mengubah data
+    - Sistem update (ProfileController::updatePemilik)
+
+47. **Upload Foto Profil Pemilik** (Aktor: Pemilik)
+    - Pada edit profil, aktor upload foto
+    - Sistem simpan (ProfileController::uploadPhotoPemilik)
+
+48. **Melihat Analisis Pemilik** (Aktor: Pemilik)
+    - Aktor mengakses '/pemilik/analisis'
+    - Sistem menampilkan analisis pendapatan, dll. (PemilikAnalisis::index)
+
+49. **Mengirim Email Notifikasi** (Aktor: Sistem)
+    - Sistem mengirim email via NotificationController.php
+    - Templates: kontrak_disetujui, kontrak_ditolak, pengajuan_baru, tenggat_waktu
+
+50. **Mengirim WhatsApp Notifikasi** (Aktor: Sistem)
+    - Sistem mengirim WA via WhatsAppController.php
+
+51. **Handling Payment Callback** (Aktor: Sistem)
+    - Sistem menerima callback dari gateway via PaymentCallbackController.php
+
+52. **Akses File Storage** (Aktor: Sistem/Pengguna)
+    - Aktor mengakses '/storage/{folder}/{filename}'
+    - Sistem return file dari storage/public/{folder}/
+
+Models Terlibat:
+- Kos.php, Kamar.php, KontrakSewa.php, Pembayaran.php, Review.php, User.php, Pemilik.php, Penghuni.php, Fasilitas.php, FotoKos.php, KosFasilitas.php, PengaturanKos.php, Notification.php
+
+Controllers:
+- Public: HomeController, KosController, PageController
+- Auth: LoginController, RegisterController
+- Penghuni: Dashboard, Kontrak, Pembayaran, Review, Analisis
+- Pemilik: Dashboard, Kontrak, Pembayaran, Kos, Kamar, Review, Analisis
+- API: NotificationController, PaymentCallbackController, WhatsAppController
+- ProfileController, KosanController
+
+Views:
+- Public: home, kos (index, show, peta), pages
+- Auth: login, register
+- Penghuni: dashboard, kontrak, pembayaran, reviews, profile, analisis
+- Pemilik: dashboard, kontrak, pembayaran, kos, kamar, reviews, profile, analisis
+- Emails: notifikasi kontrak dan tenggat waktu untuk pemilik dan penghuni

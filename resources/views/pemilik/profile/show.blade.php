@@ -305,7 +305,7 @@
 
                 <!-- Recent Kos List -->
                 @php
-                    $recentKos = \App\Models\Kos::where('id_pemilik', $pemilik->id_pemilik)
+                    $recentKos = Kos::where('id_pemilik', $pemilik->id_pemilik)
                         ->withCount([
                             'kamar as kamar_tersedia' => function ($q) {
                                 $q->where('status_kamar', 'tersedia');

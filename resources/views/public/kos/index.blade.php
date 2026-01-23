@@ -34,11 +34,11 @@
             <!-- Search Form -->
             <form method="GET" action="{{ route('public.kos.index') }}" 
                   class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
                     <!-- Search Input -->
                     <div>
                         <label class="block text-sm font-medium text-white mb-2 flex items-center">
-                            <i class="fas fa-search mr-2 text-blue-400"></i>
+                            <i class="fas fa-search mr-2 text-slate-400"></i>
                             Kata Kunci
                         </label>
                         <div class="relative">
@@ -76,6 +76,20 @@
                                    class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 text-white rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-colors">
                             <i class="fas fa-city absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         </div>
+                    </div>
+                    
+                    <!-- Ketersediaan -->
+                    <div>
+                        <label class="block text-sm font-medium text-white mb-2 flex items-center">
+                            <i class="fas fa-door-open mr-2 text-amber-800"></i>
+                            Ketersediaan
+                        </label>
+                        <select name="ketersediaan" 
+                                class="w-full px-4 py-3 bg-slate-900 border border-slate-700 text-white rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-colors appearance-none">
+                            <option value="">Semua Status</option>
+                            <option value="tersedia" {{ request('ketersediaan') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                            <option value="penuh" {{ request('ketersediaan') == 'penuh' ? 'selected' : '' }}>Penuh</option>
+                        </select>
                     </div>
                     
                     <!-- Search Button -->
@@ -163,7 +177,7 @@
                         <!-- Sort Options -->
                         <div>
                             <label class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-sort mr-2 text-blue-400"></i>
+                                <i class="fas fa-sort mr-2 text-cyan-400"></i>
                                 Urutkan Berdasarkan
                             </label>
                             <select name="sort" 
@@ -180,7 +194,7 @@
                     
                     <!-- Active Filters -->
                     @php
-                        $hasActiveFilters = request()->hasAny(['search', 'jenis_kos', 'kota', 'min_harga', 'max_harga', 'min_rating', 'fasilitas', 'sort']);
+                        $hasActiveFilters = request()->hasAny(['search', 'jenis_kos', 'kota', 'ketersediaan', 'min_harga', 'max_harga', 'min_rating', 'fasilitas', 'sort']);
                     @endphp
                     
                     @if($hasActiveFilters)
@@ -216,6 +230,16 @@
                                 <i class="fas fa-map-marker-alt mr-1"></i>
                                 {{ request('kota') }}
                                 <a href="{{ request()->fullUrlWithQuery(['kota' => null]) }}" class="ml-2 hover:text-white">
+                                    &times;
+                                </a>
+                            </span>
+                            @endif
+                            
+                            @if(request('ketersediaan'))
+                            <span class="inline-flex items-center bg-yellow-900/30 text-yellow-300 px-3 py-1.5 rounded-full text-sm">
+                                <i class="fas fa-door-open mr-1"></i>
+                                {{ request('ketersediaan') == 'tersedia' ? 'Tersedia' : 'Penuh' }}
+                                <a href="{{ request()->fullUrlWithQuery(['ketersediaan' => null]) }}" class="ml-2 hover:text-white">
                                     &times;
                                 </a>
                             </span>
@@ -286,7 +310,7 @@
         </div>
 
         <!-- Results -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
             @forelse($kos as $k)
             <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl">
                 <!-- Kos Image -->
@@ -331,7 +355,7 @@
                 </div>
                 
                 <!-- Kos Content -->
-                <div class="p-5">
+                <div class="p-5 bg-slate-900">
                     <h3 class="text-lg font-semibold text-white mb-2 truncate">{{ $k->nama_kos }}</h3>
                     
                     <div class="flex items-center text-slate-400 text-sm mb-3">
@@ -382,17 +406,9 @@
                         </div>
                         
                         <a href="{{ route('public.kos.show', $k->id_kos) }}"
-                           class="px-4 py-2.5 rounded-xl font-medium transition-colors duration-300 
-                           {{ $k->kamar_tersedia_count > 0 ? 
-                              'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 hover:shadow-lg' : 
-                              'bg-slate-700 text-slate-400' }}">
-                            @if($k->kamar_tersedia_count > 0)
-                                <i class="fas fa-eye mr-2"></i>
-                                Lihat Detail
-                            @else
-                                <i class="fas fa-eye mr-2"></i>
-                                Kos Penuh
-                            @endif
+                           class="px-4 py-2.5 rounded-xl font-medium transition-colors duration-300 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 hover:shadow-lg">
+                            <i class="fas fa-eye mr-2"></i>
+                            Lihat Detail
                         </a>
                     </div>
                 </div>

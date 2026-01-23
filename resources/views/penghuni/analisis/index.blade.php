@@ -32,17 +32,27 @@
         <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-800/30 rounded-2xl p-6 mb-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center">
-                        <i class="fas fa-chart-bar mr-3"></i>
-                        Analisis Data Saya
-                    </h1>
-                    <p class="text-dark-muted">Analisis riwayat kos, pengeluaran, dan preferensi Anda</p>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-white">
+                            <i class="fas fa-chart-bar text-white mr-3"></i>    
+                            Analisis Data Kosan</h1>
+                            <p class="text-dark-muted">Analisis statistik dan visualisasi data properti Anda</p>
+                        </div>
+                    </div>
                 </div>
-                <a href="{{ route('penghuni.dashboard') }}" 
-                   class="mt-4 md:mt-0 px-4 py-2.5 bg-dark-border text-white rounded-xl hover:bg-dark-border/80 transition flex items-center justify-center w-full md:w-auto">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Kembali ke Dashboard
-                </a>
+                <div class="mt-4 md:mt-0">
+                    <a href="{{ route('penghuni.dashboard') }}" 
+                    class="inline-flex items-center px-4 py-2.5 bg-dark-border hover:bg-dark-border/80 text-white rounded-xl transition">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Kembali ke Dashboard
+                    </a>
+                    <button id="exportPdfPenghuni" 
+                        class="inline-flex items-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
+                        <i class="fas fa-file-pdf mr-2"></i>
+                        Export PDF
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -62,10 +72,10 @@
             </div>
 
             <!-- Total Pengeluaran -->
-            <div class="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-2xl p-5 card-hover">
+            <div class="bg-gradient-to-br from-orange-500/20 to-amber-700/20 border border-orange-500/30 rounded-2xl p-5 card-hover">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-xl bg-green-900/30 backdrop-blur-sm">
-                        <i class="fas fa-wallet text-green-400 text-xl"></i>
+                    <div class="p-3 rounded-xl bg-orange-900/30 backdrop-blur-sm">
+                        <i class="fas fa-wallet text-orange-400 text-xl"></i>
                     </div>
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-dark-muted">Total Pengeluaran</h3>
@@ -724,4 +734,17 @@
             transition: transform 0.3s ease;
         }
     </style>
+<!-- Include library PDF dan script export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<!-- Data penghuni untuk PDF (hidden element) -->
+<div id="penghuniData" 
+     data-nama="{{ auth()->guard('penghuni')->user()->nama ?? 'Penghuni' }}"
+     style="display: none;">
+</div>
+
+<!-- Include PDF export script dari blade file -->
+@include('penghuni.analisis.pdf-export')
+
 @endsection

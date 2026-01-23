@@ -1,0 +1,641 @@
+Deskripsi Use Case Aplikasi Kosan (Berdasarkan usecase1.txt)
+
+1. **Use Case Name**: Login  
+   **Goal in context**: Pengguna dapat masuk ke sistem untuk mengakses fitur sesuai role.  
+   **Preconditions**: Pengguna memiliki akun terdaftar.  
+   **Successful End Condition**: Pengguna berhasil login dan diarahkan ke dashboard sesuai role.  
+   **Failed End Condition**: Login gagal karena kredensial salah atau akun tidak ada.  
+   **Primary Actor**: Pengguna/Penghuni/Pemilik  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses halaman login '/login'.  
+     2. Aktor memasukkan email dan password.  
+     3. Sistem memverifikasi kredensial.  
+     4. Sistem redirect ke dashboard sesuai role.  
+   **Extensions**: Jika kredensial salah, tampilkan pesan error.
+
+2. **Use Case Name**: Register  
+   **Goal in context**: Pengguna baru dapat mendaftar akun.  
+   **Preconditions**: Tidak ada.  
+   **Successful End Condition**: Akun baru dibuat dan diarahkan ke login.  
+   **Failed End Condition**: Registrasi gagal karena data tidak valid atau email sudah ada.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses halaman register '/register'.  
+     2. Aktor mengisi form nama, email, password.  
+     3. Sistem menyimpan data user baru.  
+     4. Sistem redirect ke login.  
+   **Extensions**: Jika email sudah terdaftar, tampilkan error.
+
+3. **Use Case Name**: Logout  
+   **Goal in context**: Pengguna keluar dari sistem.  
+   **Preconditions**: Pengguna sudah login.  
+   **Successful End Condition**: Session dihapus dan diarahkan ke home.  
+   **Failed End Condition**: Tidak ada (biasanya selalu sukses).  
+   **Primary Actor**: Penghuni/Pemilik  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor klik logout '/logout'.  
+     2. Sistem menghapus session.  
+     3. Sistem redirect ke home.  
+   **Extensions**: Tidak ada.
+
+4. **Use Case Name**: Melihat Home Page  
+   **Goal in context**: Pengguna melihat halaman utama aplikasi.  
+   **Preconditions**: Tidak ada.  
+   **Successful End Condition**: Halaman utama ditampilkan dengan info kos populer.  
+   **Failed End Condition**: Halaman tidak dimuat (server error).  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses '/'.  
+     2. Sistem menampilkan halaman utama dengan informasi kos populer.  
+   **Extensions**: Jika kos tidak ada, tampilkan pesan kosong.
+
+5. **Use Case Name**: Mencari Kos  
+   **Goal in context**: Pengguna mencari kos berdasarkan kriteria.  
+   **Preconditions**: Tidak ada.  
+   **Successful End Condition**: Daftar kos sesuai pencarian ditampilkan.  
+   **Failed End Condition**: Pencarian tidak menemukan hasil.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses '/kos'.  
+     2. Sistem menampilkan daftar kos (KosController::index).  
+     3. Aktor bisa mencari berdasarkan nama, lokasi, dll.  
+   **Extensions**: Jika tidak ada hasil, tampilkan pesan "Tidak ada kos ditemukan".
+
+6. **Use Case Name**: Filter Kos  
+   **Goal in context**: Pengguna memfilter kos berdasarkan kriteria.  
+   **Preconditions**: Halaman '/kos' sudah diakses.  
+   **Successful End Condition**: Kos yang sesuai filter ditampilkan.  
+   **Failed End Condition**: Filter tidak menghasilkan hasil.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Pada halaman '/kos', aktor menggunakan filter (harga, fasilitas, dll.).  
+     2. Sistem menampilkan kos yang sesuai filter.  
+   **Extensions**: Jika filter kosong, tampilkan semua kos.
+
+7. **Use Case Name**: Melihat Detail Kos  
+   **Goal in context**: Pengguna melihat detail kos tertentu.  
+   **Preconditions**: Kos ada.  
+   **Successful End Condition**: Detail kos, kamar, fasilitas ditampilkan.  
+   **Failed End Condition**: Kos tidak ditemukan.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor klik kos di '/kos/{id}'.  
+     2. Sistem menampilkan detail kos, kamar, fasilitas (KosController::show).  
+   **Extensions**: Jika id invalid, redirect ke '/kos'.
+
+8. **Use Case Name**: Melihat Peta Kos  
+   **Goal in context**: Pengguna melihat kos di peta.  
+   **Preconditions**: Tidak ada.  
+   **Successful End Condition**: Peta kos ditampilkan.  
+   **Failed End Condition**: Peta tidak dimuat.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses '/peta'.  
+     2. Sistem menampilkan kos di peta (KosController::peta).  
+   **Extensions**: Jika kos tidak ada, peta kosong.
+
+9. **Use Case Name**: Melihat Halaman Statis  
+   **Goal in context**: Pengguna melihat halaman informasi statis.  
+   **Preconditions**: Tidak ada.  
+   **Successful End Condition**: Konten halaman ditampilkan.  
+   **Failed End Condition**: Halaman tidak ditemukan.  
+   **Primary Actor**: Pengguna  
+   **Secondary Actor**: Sistem  
+   **Main Flow**:  
+     1. Aktor mengakses '/pages/about', '/pages/how-to', dll.  
+     2. Sistem menampilkan konten halaman (PageController).  
+   **Extensions**: Jika route invalid, 404 error.
+
+10. **Use Case Name**: Melihat Dashboard Penghuni  
+    **Goal in context**: Penghuni melihat ringkasan akunnya.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Dashboard ditampilkan.  
+    **Failed End Condition**: Akses ditolak.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/dashboard'.  
+      2. Sistem menampilkan ringkasan kontrak, pembayaran, dll. (PenghuniDashboard::index).  
+    **Extensions**: Jika tidak login, redirect ke login.
+
+11. **Use Case Name**: Mengajukan Kontrak  
+    **Goal in context**: Penghuni mengajukan kontrak kos.  
+    **Preconditions**: Penghuni login, kos ada.  
+    **Successful End Condition**: Pengajuan disimpan, notifikasi dikirim ke pemilik.  
+    **Failed End Condition**: Pengajuan gagal karena data invalid.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem, Pemilik (notifikasi)  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/kontrak/create/{kosId}'.  
+      2. Aktor mengisi form kontrak.  
+      3. Sistem menyimpan pengajuan (PenghuniKontrak::store).  
+      4. Sistem kirim notifikasi ke pemilik.  
+    **Extensions**: Jika kosId invalid, error.
+
+12. **Use Case Name**: Melihat Kontrak  
+    **Goal in context**: Penghuni melihat kontraknya.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Daftar/detail kontrak ditampilkan.  
+    **Failed End Condition**: Tidak ada kontrak.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/kontrak' atau '/penghuni/kontrak/{id}'.  
+      2. Sistem menampilkan daftar atau detail kontrak (PenghuniKontrak::index/show).  
+    **Extensions**: Jika id invalid, redirect.
+
+13. **Use Case Name**: Memperpanjang Kontrak  
+    **Goal in context**: Penghuni memperpanjang kontrak.  
+    **Preconditions**: Kontrak ada.  
+    **Successful End Condition**: Kontrak diperpanjang.  
+    **Failed End Condition**: Perpanjangan gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Pada detail kontrak, aktor klik extend.  
+      2. Sistem memperpanjang kontrak (PenghuniKontrak::extend).  
+    **Extensions**: Jika tidak bisa extend, pesan error.
+
+14. **Use Case Name**: Melihat Pembayaran  
+    **Goal in context**: Penghuni melihat pembayaran.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Daftar pembayaran ditampilkan.  
+    **Failed End Condition**: Tidak ada pembayaran.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/pembayaran'.  
+      2. Sistem menampilkan daftar pembayaran (PenghuniPembayaran::index).  
+    **Extensions**: Kosong jika tidak ada.
+
+15. **Use Case Name**: Membuat Pembayaran  
+    **Goal in context**: Penghuni membuat pembayaran.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Pembayaran disimpan dan diproses.  
+    **Failed End Condition**: Pembayaran gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/pembayaran/create'.  
+      2. Aktor mengisi form pembayaran.  
+      3. Sistem menyimpan dan proses payment (PenghuniPembayaran::store).  
+    **Extensions**: Jika payment gateway error, gagal.
+
+16. **Use Case Name**: Melihat Detail Pembayaran  
+    **Goal in context**: Penghuni melihat detail pembayaran.  
+    **Preconditions**: Pembayaran ada.  
+    **Successful End Condition**: Detail ditampilkan.  
+    **Failed End Condition**: Tidak ditemukan.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/pembayaran/{id}'.  
+      2. Sistem menampilkan detail pembayaran (PenghuniPembayaran::show).  
+    **Extensions**: Jika id invalid, error.
+
+17. **Use Case Name**: Membuat Review  
+    **Goal in context**: Penghuni memberikan review kos.  
+    **Preconditions**: Penghuni login, kos ada.  
+    **Successful End Condition**: Review disimpan.  
+    **Failed End Condition**: Review gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/reviews/create/{kos}'.  
+      2. Aktor mengisi form review.  
+      3. Sistem menyimpan review (PenghuniReview::store).  
+    **Extensions**: Jika sudah review, pesan error.
+
+18. **Use Case Name**: Melihat History Review  
+    **Goal in context**: Penghuni melihat review yang dibuat.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: History ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/reviews/history'.  
+      2. Sistem menampilkan review yang dibuat (PenghuniReview::history).  
+    **Extensions**: Tidak ada.
+
+19. **Use Case Name**: Edit Review  
+    **Goal in context**: Penghuni mengubah review.  
+    **Preconditions**: Review ada.  
+    **Successful End Condition**: Review diupdate.  
+    **Failed End Condition**: Update gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/reviews/{review}/edit'.  
+      2. Aktor mengubah review.  
+      3. Sistem update (PenghuniReview::update).  
+    **Extensions**: Jika tidak owner, akses ditolak.
+
+20. **Use Case Name**: Hapus Review  
+    **Goal in context**: Penghuni menghapus review.  
+    **Preconditions**: Review ada.  
+    **Successful End Condition**: Review dihapus.  
+    **Failed End Condition**: Hapus gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor klik delete pada review.  
+      2. Sistem hapus (PenghuniReview::destroy).  
+    **Extensions**: Jika tidak owner, akses ditolak.
+
+21. **Use Case Name**: Melihat Profil Penghuni  
+    **Goal in context**: Penghuni melihat profilnya.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Profil ditampilkan.  
+    **Failed End Condition**: Tidak ada.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/profile'.  
+      2. Sistem menampilkan profil (ProfileController::showPenghuni).  
+    **Extensions**: Tidak ada.
+
+22. **Use Case Name**: Edit Profil Penghuni  
+    **Goal in context**: Penghuni mengubah profil.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Profil diupdate.  
+    **Failed End Condition**: Update gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/profile/edit'.  
+      2. Aktor mengubah data.  
+      3. Sistem update (ProfileController::updatePenghuni).  
+    **Extensions**: Jika data invalid, error.
+
+23. **Use Case Name**: Upload Foto Profil Penghuni  
+    **Goal in context**: Penghuni upload foto.  
+    **Preconditions**: Edit profil.  
+    **Successful End Condition**: Foto disimpan.  
+    **Failed End Condition**: Upload gagal.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Pada edit profil, aktor upload foto.  
+      2. Sistem simpan (ProfileController::uploadPhotoPenghuni).  
+    **Extensions**: Jika file invalid, error.
+
+24. **Use Case Name**: Melihat Analisis Pengeluaran  
+    **Goal in context**: Penghuni melihat analisis spending.  
+    **Preconditions**: Penghuni login.  
+    **Successful End Condition**: Analisis ditampilkan.  
+    **Failed End Condition**: Tidak ada data.  
+    **Primary Actor**: Penghuni  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/penghuni/analisis'.  
+      2. Sistem menampilkan analisis (PenghuniAnalisis::index).  
+      3. Atau '/penghuni/analisis/spending' untuk detail spending.  
+    **Extensions**: Kosong jika tidak ada.
+
+25. **Use Case Name**: Melihat Dashboard Pemilik  
+    **Goal in context**: Pemilik melihat ringkasan.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Dashboard ditampilkan.  
+    **Failed End Condition**: Akses ditolak.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/dashboard'.  
+      2. Sistem menampilkan ringkasan kos, kontrak, dll. (PemilikDashboard::index).  
+    **Extensions**: Jika tidak login, redirect.
+
+26. **Use Case Name**: Melihat Kontrak Pemilik  
+    **Goal in context**: Pemilik melihat pengajuan kontrak.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Daftar kontrak ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kontrak'.  
+      2. Sistem menampilkan daftar pengajuan kontrak (PemilikKontrak::index).  
+    **Extensions**: Tidak ada.
+
+27. **Use Case Name**: Meninjau Detail Kontrak  
+    **Goal in context**: Pemilik melihat detail kontrak.  
+    **Preconditions**: Kontrak ada.  
+    **Successful End Condition**: Detail ditampilkan.  
+    **Failed End Condition**: Tidak ditemukan.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor klik kontrak '/pemilik/kontrak/{id}'.  
+      2. Sistem menampilkan detail (PemilikKontrak::show).  
+    **Extensions**: Jika id invalid, error.
+
+28. **Use Case Name**: Menyetujui Kontrak  
+    **Goal in context**: Pemilik approve kontrak.  
+    **Preconditions**: Kontrak pending.  
+    **Successful End Condition**: Status diubah, notifikasi dikirim.  
+    **Failed End Condition**: Approve gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem, Penghuni (notifikasi)  
+    **Main Flow**:  
+      1. Pada detail kontrak, aktor approve.  
+      2. Sistem ubah status, kirim notifikasi (PemilikKontrak::approve).  
+    **Extensions**: Jika sudah approved, pesan error.
+
+29. **Use Case Name**: Menolak Kontrak  
+    **Goal in context**: Pemilik reject kontrak.  
+    **Preconditions**: Kontrak pending.  
+    **Successful End Condition**: Status diubah, notifikasi dikirim.  
+    **Failed End Condition**: Reject gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem, Penghuni (notifikasi)  
+    **Main Flow**:  
+      1. Aktor reject kontrak.  
+      2. Sistem ubah status, kirim notifikasi (PemilikKontrak::reject).  
+    **Extensions**: Jika sudah rejected, pesan error.
+
+30. **Use Case Name**: Menyelesaikan Kontrak  
+    **Goal in context**: Pemilik selesai kontrak.  
+    **Preconditions**: Kontrak aktif.  
+    **Successful End Condition**: Status diubah.  
+    **Failed End Condition**: Gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor selesai kontrak.  
+      2. Sistem ubah status (PemilikKontrak::selesai).  
+    **Extensions**: Jika tidak bisa, error.
+
+31. **Use Case Name**: Hapus Kontrak  
+    **Goal in context**: Pemilik hapus kontrak.  
+    **Preconditions**: Kontrak ada.  
+    **Successful End Condition**: Kontrak dihapus.  
+    **Failed End Condition**: Hapus gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor delete kontrak.  
+      2. Sistem hapus (PemilikKontrak::destroy).  
+    **Extensions**: Jika ada dependensi, error.
+
+32. **Use Case Name**: Melihat Pembayaran Pemilik  
+    **Goal in context**: Pemilik melihat pembayaran penghuni.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Daftar pembayaran ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/pembayaran'.  
+      2. Sistem menampilkan pembayaran dari penghuni (PemilikPembayaran::index).  
+    **Extensions**: Tidak ada.
+
+33. **Use Case Name**: Menyetujui Pembayaran  
+    **Goal in context**: Pemilik approve pembayaran.  
+    **Preconditions**: Pembayaran pending.  
+    **Successful End Condition**: Status diubah.  
+    **Failed End Condition**: Approve gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor approve pembayaran.  
+      2. Sistem ubah status (PemilikPembayaran::approve).  
+    **Extensions**: Jika sudah approved, pesan.
+
+34. **Use Case Name**: Menolak Pembayaran  
+    **Goal in context**: Pemilik reject pembayaran.  
+    **Preconditions**: Pembayaran pending.  
+    **Successful End Condition**: Status diubah.  
+    **Failed End Condition**: Reject gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor reject pembayaran.  
+      2. Sistem ubah status (PemilikPembayaran::reject).  
+    **Extensions**: Jika sudah rejected, pesan.
+
+35. **Use Case Name**: Melihat Kos Pemilik  
+    **Goal in context**: Pemilik melihat kos miliknya.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Daftar kos ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kos'.  
+      2. Sistem menampilkan kos miliknya (PemilikKos::index).  
+    **Extensions**: Tidak ada.
+
+36. **Use Case Name**: Membuat Kos Baru  
+    **Goal in context**: Pemilik membuat kos baru.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Kos disimpan.  
+    **Failed End Condition**: Simpan gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kos/create'.  
+      2. Aktor mengisi form kos.  
+      3. Sistem simpan (PemilikKos::store).  
+    **Extensions**: Jika data invalid, error.
+
+37. **Use Case Name**: Edit Kos  
+    **Goal in context**: Pemilik mengubah kos.  
+    **Preconditions**: Kos ada.  
+    **Successful End Condition**: Kos diupdate.  
+    **Failed End Condition**: Update gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kos/{id}/edit'.  
+      2. Aktor mengubah data kos.  
+      3. Sistem update (PemilikKos::update).  
+    **Extensions**: Jika id invalid, error.
+
+38. **Use Case Name**: Hapus Kos  
+    **Goal in context**: Pemilik hapus kos.  
+    **Preconditions**: Kos ada.  
+    **Successful End Condition**: Kos dihapus.  
+    **Failed End Condition**: Hapus gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor delete kos.  
+      2. Sistem hapus (PemilikKos::destroy).  
+    **Extensions**: Jika ada dependensi, error.
+
+39. **Use Case Name**: Melihat Detail Kos Pemilik  
+    **Goal in context**: Pemilik melihat detail kos.  
+    **Preconditions**: Kos ada.  
+    **Successful End Condition**: Detail ditampilkan.  
+    **Failed End Condition**: Tidak ditemukan.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kos/{id}/show'.  
+      2. Sistem menampilkan detail kos (PemilikKos::show).  
+    **Extensions**: Jika id invalid, error.
+
+40. **Use Case Name**: Melihat Kamar  
+    **Goal in context**: Pemilik melihat kamar kos.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Daftar kamar ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kamar'.  
+      2. Sistem menampilkan kamar kos (PemilikKamar::index).  
+    **Extensions**: Tidak ada.
+
+41. **Use Case Name**: Membuat Kamar  
+    **Goal in context**: Pemilik membuat kamar.  
+    **Preconditions**: Kos ada.  
+    **Successful End Condition**: Kamar disimpan.  
+    **Failed End Condition**: Simpan gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kamar/create'.  
+      2. Aktor mengisi form kamar.  
+      3. Sistem simpan (PemilikKamar::store).  
+    **Extensions**: Jika data invalid, error.
+
+42. **Use Case Name**: Edit Kamar  
+    **Goal in context**: Pemilik mengubah kamar.  
+    **Preconditions**: Kamar ada.  
+    **Successful End Condition**: Kamar diupdate.  
+    **Failed End Condition**: Update gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/kamar/{id}/edit'.  
+      2. Aktor mengubah kamar.  
+      3. Sistem update (PemilikKamar::update).  
+    **Extensions**: Jika id invalid, error.
+
+43. **Use Case Name**: Hapus Kamar  
+    **Goal in context**: Pemilik hapus kamar.  
+    **Preconditions**: Kamar ada.  
+    **Successful End Condition**: Kamar dihapus.  
+    **Failed End Condition**: Hapus gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor delete kamar.  
+      2. Sistem hapus (PemilikKamar::destroy).  
+    **Extensions**: Jika ada dependensi, error.
+
+44. **Use Case Name**: Melihat Review Pemilik  
+    **Goal in context**: Pemilik melihat review kos.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Daftar review ditampilkan.  
+    **Failed End Condition**: Kosong.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/reviews'.  
+      2. Sistem menampilkan review kos (PemilikReview::index).  
+    **Extensions**: Tidak ada.
+
+45. **Use Case Name**: Melihat Profil Pemilik  
+    **Goal in context**: Pemilik melihat profilnya.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Profil ditampilkan.  
+    **Failed End Condition**: Tidak ada.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/profile'.  
+      2. Sistem menampilkan profil (ProfileController::showPemilik).  
+    **Extensions**: Tidak ada.
+
+46. **Use Case Name**: Edit Profil Pemilik  
+    **Goal in context**: Pemilik mengubah profil.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Profil diupdate.  
+    **Failed End Condition**: Update gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/profile/edit'.  
+      2. Aktor mengubah data.  
+      3. Sistem update (ProfileController::updatePemilik).  
+    **Extensions**: Jika data invalid, error.
+
+47. **Use Case Name**: Upload Foto Profil Pemilik  
+    **Goal in context**: Pemilik upload foto.  
+    **Preconditions**: Edit profil.  
+    **Successful End Condition**: Foto disimpan.  
+    **Failed End Condition**: Upload gagal.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Pada edit profil, aktor upload foto.  
+      2. Sistem simpan (ProfileController::uploadPhotoPemilik).  
+    **Extensions**: Jika file invalid, error.
+
+48. **Use Case Name**: Melihat Analisis Pemilik  
+    **Goal in context**: Pemilik melihat analisis pendapatan.  
+    **Preconditions**: Pemilik login.  
+    **Successful End Condition**: Analisis ditampilkan.  
+    **Failed End Condition**: Tidak ada data.  
+    **Primary Actor**: Pemilik  
+    **Secondary Actor**: Sistem  
+    **Main Flow**:  
+      1. Aktor mengakses '/pemilik/analisis'.  
+      2. Sistem menampilkan analisis pendapatan, dll. (PemilikAnalisis::index).  
+    **Extensions**: Kosong jika tidak ada.
+
+49. **Use Case Name**: Mengirim Email Notifikasi  
+    **Goal in context**: Sistem mengirim email notifikasi.  
+    **Preconditions**: Event terjadi (kontrak, pembayaran).  
+    **Successful End Condition**: Email dikirim.  
+    **Failed End Condition**: Kirim gagal.  
+    **Primary Actor**: Sistem  
+    **Secondary Actor**: Email Service  
+    **Main Flow**:  
+      1. Sistem mengirim email via NotificationController.php.  
+      2. Templates: kontrak_disetujui, kontrak_ditolak, pengajuan_baru, tenggat_waktu.  
+    **Extensions**: Jika email invalid, gagal.
+
+50. **Use Case Name**: Mengirim WhatsApp Notifikasi  
+    **Goal in context**: Sistem mengirim WA notifikasi.  
+    **Preconditions**: Event terjadi.  
+    **Successful End Condition**: WA dikirim.  
+    **Failed End Condition**: Kirim gagal.  
+    **Primary Actor**: Sistem  
+    **Secondary Actor**: WhatsApp API  
+    **Main Flow**:  
+      1. Sistem mengirim WA via WhatsAppController.php.  
+    **Extensions**: Jika nomor invalid, gagal.
+
+51. **Use Case Name**: Handling Payment Callback  
+    **Goal in context**: Sistem menangani callback payment.  
+    **Preconditions**: Payment gateway mengirim callback.  
+    **Successful End Condition**: Callback diproses.  
+    **Failed End Condition**: Proses gagal.  
+    **Primary Actor**: Sistem  
+    **Secondary Actor**: Payment Gateway  
+    **Main Flow**:  
+      1. Sistem menerima callback dari gateway via PaymentCallbackController.php.  
+    **Extensions**: Jika signature invalid, abaikan.
+
+52. **Use Case Name**: Akses File Storage  
+    **Goal in context**: Aktor mengakses file dari storage.  
+    **Preconditions**: File ada.  
+    **Successful End Condition**: File dikembalikan.  
+    **Failed End Condition**: File tidak ditemukan.  
+    **Primary Actor**: Sistem/Pengguna  
+    **Secondary Actor**: File System  
+    **Main Flow**:  
+      1. Aktor mengakses '/storage/{folder}/{filename}'.  
+      2. Sistem return file dari storage/public/{folder}/.  
+    **Extensions**: Jika folder tidak allowed, 403.

@@ -45,6 +45,11 @@
                     <i class="fas fa-arrow-left mr-2"></i>
                     Kembali ke Dashboard
                 </a>
+                <button id="exportPdf" 
+                    class="inline-flex items-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    Export PDF
+                </button>
             </div>
         </div>
     </div>
@@ -59,7 +64,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-primary-100 font-medium mb-1">Total Pendapatan Tahun Ini</p>
-                    <p class="text-2xl font-bold text-white">
+                    <p class="text-2xl font-bold text-white" data-total-pendapatan>
                         Rp {{ number_format($pendapatanPerKos->sum('total_pendapatan'), 0, ',', '.') }}
                     </p>
                 </div>
@@ -74,7 +79,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-green-100 font-medium mb-1">Total Penghuni Aktif</p>
-                    <p class="text-2xl font-bold text-white">
+                    <p class="text-2xl font-bold text-white" data-total-penghuni>
                         {{ $penghuniPerKos->sum('jumlah_penghuni') }}
                     </p>
                 </div>
@@ -89,7 +94,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-purple-100 font-medium mb-1">Rata-rata Okupansi</p>
-                    <p class="text-2xl font-bold text-white">
+                    <p class="text-2xl font-bold text-white" data-rata-rata-okupansi>
                         @php
                             $terisi = $statusKamar->where('status_kamar', 'terisi')->first()->jumlah ?? 0;
                             $total = $statusKamar->sum('jumlah') ?: 1;
@@ -547,5 +552,21 @@
             }
         });
     });
+   
 </script>
+
+<!-- Include library PDF dan script export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Di kedua index.blade.php (pemilik dan penghuni) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Data pemilik untuk PDF (hidden element) -->
+<div id="pemilikData" 
+     data-nama="{{ auth()->guard('pemilik')->user()->nama ?? 'Pemilik' }}"
+     data-tanggal="{{ now()->format('d F Y') }}"
+     style="display: none;">
+</div>
+
+<!-- Include PDF export script dari blade file -->
+@include('pemilik.analisis.pdf-export')
 @endsection

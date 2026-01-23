@@ -1,0 +1,456 @@
+```mermaid
+classDiagram
+    %% Models - Representasi data dari database
+    class Kos {
+        +int id
+        +string nama
+        +string alamat
+        +string deskripsi
+        +decimal harga
+        +belongsTo(Pemilik)
+        +hasMany(Kamar)
+        +hasMany(Review)
+        +getKos()
+        +filterKos(criteria)
+        +findKos(id)
+    }
+
+    class Kamar {
+        +int id
+        +int kos_id
+        +string nama
+        +string fasilitas
+        +belongsTo(Kos)
+        +hasMany(KontrakSewa)
+        +getKamar()
+        +createKamar(data)
+        +updateKamar(id, data)
+    }
+
+    class KontrakSewa {
+        +int id
+        +int penghuni_id
+        +int kamar_id
+        +date tanggal_mulai
+        +date tanggal_selesai
+        +belongsTo(Penghuni)
+        +belongsTo(Kamar)
+        +approve()
+        +reject()
+    }
+
+    class Pembayaran {
+        +int id
+        +int kontrak_id
+        +decimal jumlah
+        +string status
+        +belongsTo(KontrakSewa)
+        +approve()
+        +reject()
+    }
+
+    class Review {
+        +int id
+        +int kos_id
+        +int penghuni_id
+        +int rating
+        +string komentar
+        +belongsTo(Kos)
+        +belongsTo(Penghuni)
+        +createReview(data)
+        +updateReview(id, data)
+    }
+
+    class Pemilik {
+        +int id
+        +string nama
+        +string email
+        +hasMany(Kos)
+        +getProfile()
+        +updateProfile(data)
+    }
+
+    class Penghuni {
+        +int id
+        +string nama
+        +string email
+        +hasMany(KontrakSewa)
+        +hasMany(Review)
+        +getProfile()
+        +updateProfile(data)
+    }
+
+    %% Controllers - Logika bisnis dan pemrosesan request (dengan namespace)
+    class Public_KosController {
+        +index(request) : view data kos
+        +show(id) : view detail kos
+        +peta() : view peta kos
+        +getKosFromModel(criteria) : query data kos
+        +filterKos(request) : filter data kos
+        +viewDetail(id) : ambil detail kos
+    }
+
+    class Pemilik_KosController {
+        +index() : list kos pemilik
+        +create() : form create kos
+        +store(request) : simpan kos baru
+        +edit(id) : form edit kos
+        +update(id, request) : update kos
+        +destroy(id) : hapus kos
+        +show(id) : detail kos pemilik
+    }
+
+    class Pemilik_KamarController {
+        +index() : list kamar
+        +create() : form create kamar
+        +store(request) : simpan kamar
+        +edit(id) : form edit kamar
+        +update(id, request) : update kamar
+        +destroy(id) : hapus kamar
+    }
+
+    class Penghuni_KontrakController {
+        +index() : list kontrak penghuni
+        +create(kosId) : form ajuan kontrak
+        +store(request) : simpan ajuan kontrak
+        +show(id) : detail kontrak
+        +extend(id) : perpanjang kontrak
+    }
+
+    class Pemilik_KontrakController {
+        +index() : list kontrak pemilik
+        +show(id) : detail kontrak
+        +approve(id) : setujui kontrak
+        +reject(id) : tolak kontrak
+        +selesai(id) : selesai kontrak
+        +destroy(id) : hapus kontrak
+    }
+
+    class Penghuni_PembayaranController {
+        +index() : list pembayaran penghuni
+        +create() : form create pembayaran
+        +store(request) : simpan pembayaran
+        +show(id) : detail pembayaran
+    }
+
+    class Pemilik_PembayaranController {
+        +index() : list pembayaran pemilik
+        +approve(id) : setujui pembayaran
+        +reject(id) : tolak pembayaran
+    }
+
+    class Penghuni_ReviewController {
+        +create(kos) : form review
+        +store(request) : simpan review
+        +history() : history review
+        +edit(id) : form edit review
+        +update(id, request) : update review
+        +destroy(id) : hapus review
+    }
+
+    class Pemilik_ReviewController {
+        +index() : list review kos
+    }
+
+    class Penghuni_DashboardController {
+        +index() : dashboard penghuni
+    }
+
+    class Pemilik_DashboardController {
+        +index() : dashboard pemilik
+    }
+
+    class Penghuni_AnalisisController {
+        +index() : analisis pengeluaran penghuni
+        +getSpendingAnalysis() : detail spending
+    }
+
+    class Pemilik_AnalisisController {
+        +index() : analisis pendapatan pemilik
+    }
+
+    class Auth_LoginController {
+        +showLoginForm() : form login
+        +login(request) : proses login
+        +logout() : logout
+    }
+
+    class Auth_RegisterController {
+        +showRegistrationForm() : form register
+        +register(request) : proses register
+    }
+
+    class Public_HomeController {
+        +index() : home page
+    }
+
+    class Public_PageController {
+        +about() : halaman about
+        +howto() : halaman howto
+        +terms() : halaman terms
+        +privacy() : halaman privacy
+    }
+
+    class ProfileController {
+        +showPenghuni() : profil penghuni
+        +editPenghuni() : edit profil penghuni
+        +updatePenghuni(request) : update profil penghuni
+        +uploadPhotoPenghuni() : upload foto penghuni
+        +showPemilik() : profil pemilik
+        +editPemilik() : edit profil pemilik
+        +updatePemilik(request) : update profil pemilik
+        +uploadPhotoPemilik() : upload foto pemilik
+    }
+
+    %% Views - Antarmuka pengguna dengan metode abstrak (dengan namespace folder)
+    class auth_login.blade.php {
+        +showLoginForm() : trigger Auth_LoginController.showLoginForm
+        +processLogin(data) : trigger Auth_LoginController.login
+    }
+
+    class auth_register.blade.php {
+        +showRegistrationForm() : trigger Auth_RegisterController.showRegistrationForm
+        +processRegister(data) : trigger Auth_RegisterController.register
+    }
+
+    class public_home.blade.php {
+        +loadHomeData() : trigger Public_HomeController.index
+    }
+
+    class public_kos_index.blade.php {
+        +getKos() : trigger Public_KosController.index
+        +filterData(criteria) : trigger Public_KosController.filterKos
+        +viewDetail(id) : trigger Public_KosController.show
+        +searchKos(query) : trigger pencarian kos
+    }
+
+    class public_kos_show.blade.php {
+        +viewKosDetail(id) : trigger Public_KosController.show
+        +createKontrak(kos_id) : trigger Penghuni_KontrakController.create
+        +viewReviews(kos_id) : trigger Pemilik_ReviewController.index
+    }
+
+    class public_kos_peta.blade.php {
+        +loadPetaKos() : trigger Public_KosController.peta
+    }
+
+    class public_pages_about.blade.php {
+        +loadAbout() : trigger Public_PageController.about
+    }
+
+    class public_pages_howto.blade.php {
+        +loadHowto() : trigger Public_PageController.howto
+    }
+
+    class public_pages_terms.blade.php {
+        +loadTerms() : trigger Public_PageController.terms
+    }
+
+    class public_pages_privacy.blade.php {
+        +loadPrivacy() : trigger Public_PageController.privacy
+    }
+
+    class pemilik_dashboard.blade.php {
+        +loadDashboard() : trigger Pemilik_DashboardController.index
+    }
+
+    class pemilik_kos_index.blade.php {
+        +getKos() : trigger Pemilik_KosController.index
+        +createKos() : trigger Pemilik_KosController.create
+        +editKos(id) : trigger Pemilik_KosController.edit
+        +deleteKos(id) : trigger Pemilik_KosController.destroy
+        +viewKosDetail(id) : trigger Pemilik_KosController.show
+    }
+
+    class pemilik_kos_create.blade.php {
+        +storeKos(data) : trigger Pemilik_KosController.store
+        +validateForm() : validasi form kos
+    }
+
+    class pemilik_kos_edit.blade.php {
+        +updateKos(id, data) : trigger Pemilik_KosController.update
+    }
+
+    class pemilik_kos_show.blade.php {
+        +loadKosDetail(id) : trigger Pemilik_KosController.show
+    }
+
+    class pemilik_kamar_index.blade.php {
+        +getKamar() : trigger Pemilik_KamarController.index
+        +createKamar() : trigger Pemilik_KamarController.create
+        +editKamar(id) : trigger Pemilik_KamarController.edit
+        +deleteKamar(id) : trigger Pemilik_KamarController.destroy
+    }
+
+    class pemilik_kamar_create.blade.php {
+        +storeKamar(data) : trigger Pemilik_KamarController.store
+    }
+
+    class pemilik_kamar_edit.blade.php {
+        +updateKamar(id, data) : trigger Pemilik_KamarController.update
+    }
+
+    class pemilik_kontrak_index.blade.php {
+        +getKontrak() : trigger Pemilik_KontrakController.index
+        +viewDetail(id) : trigger Pemilik_KontrakController.show
+        +approveKontrak(id) : trigger Pemilik_KontrakController.approve
+        +rejectKontrak(id) : trigger Pemilik_KontrakController.reject
+        +selesaiKontrak(id) : trigger Pemilik_KontrakController.selesai
+        +deleteKontrak(id) : trigger Pemilik_KontrakController.destroy
+    }
+
+    class pemilik_kontrak_show.blade.php {
+        +loadKontrakDetail(id) : trigger Pemilik_KontrakController.show
+    }
+
+    class pemilik_pembayaran_index.blade.php {
+        +getPembayaran() : trigger Pemilik_PembayaranController.index
+        +approvePembayaran(id) : trigger Pemilik_PembayaranController.approve
+        +rejectPembayaran(id) : trigger Pemilik_PembayaranController.reject
+    }
+
+    class pemilik_reviews_index.blade.php {
+        +getReviews() : trigger Pemilik_ReviewController.index
+    }
+
+    class pemilik_profile_show.blade.php {
+        +loadProfile() : trigger ProfileController.showPemilik
+    }
+
+    class pemilik_profile_edit.blade.php {
+        +updateProfile(data) : trigger ProfileController.updatePemilik
+        +uploadPhoto(data) : trigger ProfileController.uploadPhotoPemilik
+    }
+
+    class pemilik_analisis_index.blade.php {
+        +getAnalisis() : trigger Pemilik_AnalisisController.index
+        +exportPDF() : trigger export PDF
+    }
+
+    class pemilik_analisis_pdf_export.blade.php {
+        +exportAnalisis() : trigger PDF export
+    }
+
+    class penghuni_dashboard.blade.php {
+        +loadDashboard() : trigger Penghuni_DashboardController.index
+    }
+
+    class penghuni_kontrak_index.blade.php {
+        +getKontrak() : trigger Penghuni_KontrakController.index
+        +viewDetail(id) : trigger Penghuni_KontrakController.show
+        +extendKontrak(id) : trigger Penghuni_KontrakController.extend
+    }
+
+    class penghuni_kontrak_create.blade.php {
+        +storeKontrak(data) : trigger Penghuni_KontrakController.store
+        +validateKontrak() : validasi form kontrak
+    }
+
+    class penghuni_kontrak_show.blade.php {
+        +loadKontrakDetail(id) : trigger Penghuni_KontrakController.show
+    }
+
+    class penghuni_pembayaran_index.blade.php {
+        +getPembayaran() : trigger Penghuni_PembayaranController.index
+        +createPembayaran() : trigger Penghuni_PembayaranController.create
+        +viewDetail(id) : trigger Penghuni_PembayaranController.show
+    }
+
+    class penghuni_pembayaran_create.blade.php {
+        +storePembayaran(data) : trigger Penghuni_PembayaranController.store
+        +processPayment() : trigger payment gateway
+    }
+
+    class penghuni_pembayaran_show.blade.php {
+        +loadPembayaranDetail(id) : trigger Penghuni_PembayaranController.show
+    }
+
+    class penghuni_reviews_create.blade.php {
+        +storeReview(data) : trigger Penghuni_ReviewController.store
+        +validateReview() : validasi form review
+    }
+
+    class penghuni_reviews_edit.blade.php {
+        +updateReview(id, data) : trigger Penghuni_ReviewController.update
+    }
+
+    class penghuni_reviews_history.blade.php {
+        +loadReviewHistory() : trigger Penghuni_ReviewController.history
+    }
+
+    class penghuni_profile_show.blade.php {
+        +loadProfile() : trigger ProfileController.showPenghuni
+    }
+
+    class penghuni_profile_edit.blade.php {
+        +updateProfile(data) : trigger ProfileController.updatePenghuni
+        +uploadPhoto(data) : trigger ProfileController.uploadPhotoPenghuni
+    }
+
+    class penghuni_analisis_index.blade.php {
+        +getAnalisis() : trigger Penghuni_AnalisisController.index
+        +getSpendingAnalysis() : trigger Penghuni_AnalisisController.getSpendingAnalysis
+        +exportPDF() : trigger export PDF
+    }
+
+    class penghuni_analisis_pdf_export.blade.php {
+        +exportAnalisis() : trigger PDF export
+    }
+
+    %% Hubungan Model ke Controller
+    Public_KosController --> Kos : uses
+    Pemilik_KosController --> Kos : uses
+    Pemilik_KamarController --> Kamar : uses
+    Penghuni_KontrakController --> KontrakSewa : uses
+    Pemilik_KontrakController --> KontrakSewa : uses
+    Penghuni_PembayaranController --> Pembayaran : uses
+    Pemilik_PembayaranController --> Pembayaran : uses
+    Penghuni_ReviewController --> Review : uses
+    Pemilik_ReviewController --> Review : uses
+    Penghuni_DashboardController --> Kos : uses
+    Pemilik_DashboardController --> Kos : uses
+    Penghuni_AnalisisController --> Pembayaran : uses
+    Pemilik_AnalisisController --> Pembayaran : uses
+    ProfileController --> Pemilik : uses
+    ProfileController --> Penghuni : uses
+
+    %% Hubungan Controller ke View (logika via routing)
+    auth_login.blade.php --> Auth_LoginController : triggers via route '/login'
+    auth_register.blade.php --> Auth_RegisterController : triggers via route '/register'
+    public_home.blade.php --> Public_HomeController : triggers via route '/'
+    public_kos_index.blade.php --> Public_KosController : triggers via route '/kos'
+    public_kos_show.blade.php --> Public_KosController : triggers via route '/kos/{id}'
+    public_kos_peta.blade.php --> Public_KosController : triggers via route '/peta'
+    public_pages_about.blade.php --> Public_PageController : triggers via route '/pages/about'
+    pemilik_dashboard.blade.php --> Pemilik_DashboardController : triggers via route '/pemilik/dashboard'
+    pemilik_kos_index.blade.php --> Pemilik_KosController : triggers via route '/pemilik/kos'
+    pemilik_kos_create.blade.php --> Pemilik_KosController : triggers via route '/pemilik/kos/create'
+    pemilik_kamar_index.blade.php --> Pemilik_KamarController : triggers via route '/pemilik/kamar'
+    pemilik_kontrak_index.blade.php --> Pemilik_KontrakController : triggers via route '/pemilik/kontrak'
+    pemilik_pembayaran_index.blade.php --> Pemilik_PembayaranController : triggers via route '/pemilik/pembayaran'
+    pemilik_reviews_index.blade.php --> Pemilik_ReviewController : triggers via route '/pemilik/reviews'
+    pemilik_profile_show.blade.php --> ProfileController : triggers via route '/pemilik/profile'
+    pemilik_analisis_index.blade.php --> Pemilik_AnalisisController : triggers via route '/pemilik/analisis'
+    penghuni_dashboard.blade.php --> Penghuni_DashboardController : triggers via route '/penghuni/dashboard'
+    penghuni_kontrak_index.blade.php --> Penghuni_KontrakController : triggers via route '/penghuni/kontrak'
+    penghuni_kontrak_create.blade.php --> Penghuni_KontrakController : triggers via route '/penghuni/kontrak/create/{kosId}'
+    penghuni_pembayaran_index.blade.php --> Penghuni_PembayaranController : triggers via route '/penghuni/pembayaran'
+    penghuni_pembayaran_create.blade.php --> Penghuni_PembayaranController : triggers via route '/penghuni/pembayaran/create'
+    penghuni_reviews_create.blade.php --> Penghuni_ReviewController : triggers via route '/penghuni/reviews/create/{kos}'
+    penghuni_reviews_history.blade.php --> Penghuni_ReviewController : triggers via route '/penghuni/reviews/history'
+    penghuni_profile_show.blade.php --> ProfileController : triggers via route '/penghuni/profile'
+    penghuni_analisis_index.blade.php --> Penghuni_AnalisisController : triggers via route '/penghuni/analisis'
+
+    %% Alur data: Model -> Controller -> View
+    Kos ..> Public_KosController : provides data attributes
+    Kos ..> Pemilik_KosController : provides data attributes
+    Kamar ..> Pemilik_KamarController : provides data attributes
+    KontrakSewa ..> Penghuni_KontrakController : provides data attributes
+    KontrakSewa ..> Pemilik_KontrakController : provides data attributes
+    Pembayaran ..> Penghuni_PembayaranController : provides data attributes
+    Pembayaran ..> Pemilik_PembayaranController : provides data attributes
+    Review ..> Penghuni_ReviewController : provides data attributes
+    Review ..> Pemilik_ReviewController : provides data attributes
+    Pemilik ..> ProfileController : provides profile data
+    Penghuni ..> ProfileController : provides profile data
+```

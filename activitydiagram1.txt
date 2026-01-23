@@ -1,0 +1,281 @@
+Aktivitas Langkah-Langkah untuk Main Flow dari usecasedescription1.txt
+
+Untuk setiap use case, aktivitas diuraikan dalam langkah-langkah dengan aktor yang bertanggung jawab.
+
+1. **Use Case: Login**
+   Aktivitas 1
+   1. Mengakses halaman login '/login' (Pengguna)
+   2. Memasukkan email dan password (Pengguna)
+   3. Memverifikasi kredensial (Sistem)
+   4. Redirect ke dashboard sesuai role (Sistem)
+
+2. **Use Case: Register**
+   Aktivitas 1
+   1. Mengakses halaman register '/register' (Pengguna)
+   2. Mengisi form nama, email, password (Pengguna)
+   3. Menyimpan data user baru (Sistem)
+   4. Redirect ke login (Sistem)
+
+3. **Use Case: Logout**
+   Aktivitas 1
+   1. Klik logout '/logout' (Penghuni/Pemilik)
+   2. Menghapus session (Sistem)
+   3. Redirect ke home (Sistem)
+
+4. **Use Case: Melihat Home Page**
+   Aktivitas 1
+   1. Mengakses '/' (Pengguna)
+   2. Menampilkan halaman utama dengan informasi kos populer (Sistem)
+
+5. **Use Case: Mencari Kos**
+   Aktivitas 1
+   1. Mengakses '/kos' (Pengguna)
+   2. Menampilkan daftar kos (KosController::index) (Sistem)
+   3. Mencari berdasarkan nama, lokasi, dll. (Pengguna)
+
+6. **Use Case: Filter Kos**
+   Aktivitas 1
+   1. Pada halaman '/kos', menggunakan filter (harga, fasilitas, dll.) (Pengguna)
+   2. Menampilkan kos yang sesuai filter (Sistem)
+
+7. **Use Case: Melihat Detail Kos**
+   Aktivitas 1
+   1. Klik kos di '/kos/{id}' (Pengguna)
+   2. Menampilkan detail kos, kamar, fasilitas (KosController::show) (Sistem)
+
+8. **Use Case: Melihat Peta Kos**
+   Aktivitas 1
+   1. Mengakses '/peta' (Pengguna)
+   2. Menampilkan kos di peta (KosController::peta) (Sistem)
+
+9. **Use Case: Melihat Halaman Statis**
+   Aktivitas 1
+   1. Mengakses '/pages/about', dll. (Pengguna)
+   2. Menampilkan konten halaman (PageController) (Sistem)
+
+10. **Use Case: Melihat Dashboard Penghuni**
+    Aktivitas 1
+    1. Mengakses '/penghuni/dashboard' (Penghuni)
+    2. Menampilkan ringkasan kontrak, pembayaran, dll. (PenghuniDashboard::index) (Sistem)
+
+11. **Use Case: Mengajukan Kontrak**
+    Aktivitas 1
+    1. Mengakses '/penghuni/kontrak/create/{kosId}' (Penghuni)
+    2. Mengisi form kontrak (Penghuni)
+    3. Menyimpan pengajuan (PenghuniKontrak::store) (Sistem)
+    4. Kirim notifikasi ke pemilik (Sistem)
+
+12. **Use Case: Melihat Kontrak**
+    Aktivitas 1
+    1. Mengakses '/penghuni/kontrak' atau '/penghuni/kontrak/{id}' (Penghuni)
+    2. Menampilkan daftar atau detail kontrak (PenghuniKontrak::index/show) (Sistem)
+
+13. **Use Case: Memperpanjang Kontrak**
+    Aktivitas 1
+    1. Pada detail kontrak, klik extend (Penghuni)
+    2. Memperpanjang kontrak (PenghuniKontrak::extend) (Sistem)
+
+14. **Use Case: Melihat Pembayaran**
+    Aktivitas 1
+    1. Mengakses '/penghuni/pembayaran' (Penghuni)
+    2. Menampilkan daftar pembayaran (PenghuniPembayaran::index) (Sistem)
+
+15. **Use Case: Membuat Pembayaran**
+    Aktivitas 1
+    1. Mengakses '/penghuni/pembayaran/create' (Penghuni)
+    2. Mengisi form pembayaran (Penghuni)
+    3. Menyimpan dan proses payment (PenghuniPembayaran::store) (Sistem)
+
+16. **Use Case: Melihat Detail Pembayaran**
+    Aktivitas 1
+    1. Mengakses '/penghuni/pembayaran/{id}' (Penghuni)
+    2. Menampilkan detail pembayaran (PenghuniPembayaran::show) (Sistem)
+
+17. **Use Case: Membuat Review**
+    Aktivitas 1
+    1. Mengakses '/penghuni/reviews/create/{kos}' (Penghuni)
+    2. Mengisi form review (Penghuni)
+    3. Menyimpan review (PenghuniReview::store) (Sistem)
+
+18. **Use Case: Melihat History Review**
+    Aktivitas 1
+    1. Mengakses '/penghuni/reviews/history' (Penghuni)
+    2. Menampilkan review yang dibuat (PenghuniReview::history) (Sistem)
+
+19. **Use Case: Edit Review**
+    Aktivitas 1
+    1. Mengakses '/penghuni/reviews/{review}/edit' (Penghuni)
+    2. Mengubah review (Penghuni)
+    3. Update (PenghuniReview::update) (Sistem)
+
+20. **Use Case: Hapus Review**
+    Aktivitas 1
+    1. Klik delete pada review (Penghuni)
+    2. Hapus (PenghuniReview::destroy) (Sistem)
+
+21. **Use Case: Melihat Profil Penghuni**
+    Aktivitas 1
+    1. Mengakses '/penghuni/profile' (Penghuni)
+    2. Menampilkan profil (ProfileController::showPenghuni) (Sistem)
+
+22. **Use Case: Edit Profil Penghuni**
+    Aktivitas 1
+    1. Mengakses '/penghuni/profile/edit' (Penghuni)
+    2. Mengubah data (Penghuni)
+    3. Update (ProfileController::updatePenghuni) (Sistem)
+
+23. **Use Case: Upload Foto Profil Penghuni**
+    Aktivitas 1
+    1. Pada edit profil, upload foto (Penghuni)
+    2. Simpan (ProfileController::uploadPhotoPenghuni) (Sistem)
+
+24. **Use Case: Melihat Analisis Pengeluaran**
+    Aktivitas 1
+    1. Mengakses '/penghuni/analisis' (Penghuni)
+    2. Menampilkan analisis (PenghuniAnalisis::index) (Sistem)
+    3. Atau '/penghuni/analisis/spending' untuk detail (Penghuni)
+
+25. **Use Case: Melihat Dashboard Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/dashboard' (Pemilik)
+    2. Menampilkan ringkasan kos, kontrak, dll. (PemilikDashboard::index) (Sistem)
+
+26. **Use Case: Melihat Kontrak Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kontrak' (Pemilik)
+    2. Menampilkan daftar pengajuan kontrak (PemilikKontrak::index) (Sistem)
+
+27. **Use Case: Meninjau Detail Kontrak**
+    Aktivitas 1
+    1. Klik kontrak '/pemilik/kontrak/{id}' (Pemilik)
+    2. Menampilkan detail (PemilikKontrak::show) (Sistem)
+
+28. **Use Case: Menyetujui Kontrak**
+    Aktivitas 1
+    1. Pada detail kontrak, approve (Pemilik)
+    2. Ubah status, kirim notifikasi (PemilikKontrak::approve) (Sistem)
+
+29. **Use Case: Menolak Kontrak**
+    Aktivitas 1
+    1. Reject kontrak (Pemilik)
+    2. Ubah status, kirim notifikasi (PemilikKontrak::reject) (Sistem)
+
+30. **Use Case: Menyelesaikan Kontrak**
+    Aktivitas 1
+    1. Selesai kontrak (Pemilik)
+    2. Ubah status (PemilikKontrak::selesai) (Sistem)
+
+31. **Use Case: Hapus Kontrak**
+    Aktivitas 1
+    1. Delete kontrak (Pemilik)
+    2. Hapus (PemilikKontrak::destroy) (Sistem)
+
+32. **Use Case: Melihat Pembayaran Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/pembayaran' (Pemilik)
+    2. Menampilkan pembayaran dari penghuni (PemilikPembayaran::index) (Sistem)
+
+33. **Use Case: Menyetujui Pembayaran**
+    Aktivitas 1
+    1. Approve pembayaran (Pemilik)
+    2. Ubah status (PemilikPembayaran::approve) (Sistem)
+
+34. **Use Case: Menolak Pembayaran**
+    Aktivitas 1
+    1. Reject pembayaran (Pemilik)
+    2. Ubah status (PemilikPembayaran::reject) (Sistem)
+
+35. **Use Case: Melihat Kos Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kos' (Pemilik)
+    2. Menampilkan kos miliknya (PemilikKos::index) (Sistem)
+
+36. **Use Case: Membuat Kos Baru**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kos/create' (Pemilik)
+    2. Mengisi form kos (Pemilik)
+    3. Simpan (PemilikKos::store) (Sistem)
+
+37. **Use Case: Edit Kos**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kos/{id}/edit' (Pemilik)
+    2. Mengubah data kos (Pemilik)
+    3. Update (PemilikKos::update) (Sistem)
+
+38. **Use Case: Hapus Kos**
+    Aktivitas 1
+    1. Delete kos (Pemilik)
+    2. Hapus (PemilikKos::destroy) (Sistem)
+
+39. **Use Case: Melihat Detail Kos Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kos/{id}/show' (Pemilik)
+    2. Menampilkan detail kos (PemilikKos::show) (Sistem)
+
+40. **Use Case: Melihat Kamar**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kamar' (Pemilik)
+    2. Menampilkan kamar kos (PemilikKamar::index) (Sistem)
+
+41. **Use Case: Membuat Kamar**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kamar/create' (Pemilik)
+    2. Mengisi form kamar (Pemilik)
+    3. Simpan (PemilikKamar::store) (Sistem)
+
+42. **Use Case: Edit Kamar**
+    Aktivitas 1
+    1. Mengakses '/pemilik/kamar/{id}/edit' (Pemilik)
+    2. Mengubah kamar (Pemilik)
+    3. Update (PemilikKamar::update) (Sistem)
+
+43. **Use Case: Hapus Kamar**
+    Aktivitas 1
+    1. Delete kamar (Pemilik)
+    2. Hapus (PemilikKamar::destroy) (Sistem)
+
+44. **Use Case: Melihat Review Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/reviews' (Pemilik)
+    2. Menampilkan review kos (PemilikReview::index) (Sistem)
+
+45. **Use Case: Melihat Profil Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/profile' (Pemilik)
+    2. Menampilkan profil (ProfileController::showPemilik) (Sistem)
+
+46. **Use Case: Edit Profil Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/profile/edit' (Pemilik)
+    2. Mengubah data (Pemilik)
+    3. Update (ProfileController::updatePemilik) (Sistem)
+
+47. **Use Case: Upload Foto Profil Pemilik**
+    Aktivitas 1
+    1. Pada edit profil, upload foto (Pemilik)
+    2. Simpan (ProfileController::uploadPhotoPemilik) (Sistem)
+
+48. **Use Case: Melihat Analisis Pemilik**
+    Aktivitas 1
+    1. Mengakses '/pemilik/analisis' (Pemilik)
+    2. Menampilkan analisis pendapatan, dll. (PemilikAnalisis::index) (Sistem)
+
+49. **Use Case: Mengirim Email Notifikasi**
+    Aktivitas 1
+    1. Mengirim email via NotificationController.php (Sistem)
+    2. Templates: kontrak_disetujui, dll. (Email Service)
+
+50. **Use Case: Mengirim WhatsApp Notifikasi**
+    Aktivitas 1
+    1. Mengirim WA via WhatsAppController.php (Sistem)
+    2. Kirim notifikasi (WhatsApp API)
+
+51. **Use Case: Handling Payment Callback**
+    Aktivitas 1
+    1. Menerima callback dari gateway via PaymentCallbackController.php (Sistem)
+    2. Proses callback (Payment Gateway)
+
+52. **Use Case: Akses File Storage**
+    Aktivitas 1
+    1. Mengakses '/storage/{folder}/{filename}' (Sistem/Pengguna)
+    2. Return file dari storage/public/{folder}/ (File System)

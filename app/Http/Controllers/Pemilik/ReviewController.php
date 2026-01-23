@@ -28,7 +28,7 @@ class ReviewController extends Controller
         $reviews = Review::with(['kos', 'penghuni'])
             ->whereIn('id_kos', $kosIds->toArray())
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(10);
 
         return view('pemilik.reviews.index', compact('reviews'));
     }

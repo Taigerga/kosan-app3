@@ -109,6 +109,8 @@ class AnalisisController extends Controller
             'rata_rata_rating' => Review::where('id_penghuni', $penghuniId)->avg('rating') ?? 0,
         ];
 
+        $penghuni = auth()->guard('penghuni')->user();
+
         return view('penghuni.analisis.index', compact(
             'riwayatKontrak',
             'pembayaranPerBulan',
@@ -117,7 +119,8 @@ class AnalisisController extends Controller
             'jenisKosDisewa',
             'reviewStats',
             'tipeKamarDisewa',
-            'statistikRingkasan'
+            'statistikRingkasan',
+            'penghuni'
         ));
     }
 

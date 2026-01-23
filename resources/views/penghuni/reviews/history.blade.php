@@ -247,7 +247,7 @@
                             <!-- Action Buttons -->
                             <div class="flex flex-wrap gap-3">
                                 <a href="{{ route('public.kos.show', $review->kos->id_kos) }}" 
-                                   class="px-4 py-2 border border-primary-600 text-primary-300 rounded-xl hover:bg-primary-900/30 transition flex items-center">
+                                   class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition flex items-center">
                                     <i class="fas fa-eye mr-2"></i>
                                     Lihat Kos
                                 </a>

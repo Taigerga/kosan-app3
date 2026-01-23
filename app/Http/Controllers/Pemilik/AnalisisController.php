@@ -99,6 +99,7 @@ class AnalisisController extends Controller
             ->orderBy('total_pendapatan', 'desc')
             ->get();
 
+        $pemilik = auth()->guard('pemilik')->user();
         return view('pemilik.analisis.index', compact(
             'pendapatanPerBulan',
             'statusKamar',
@@ -106,7 +107,8 @@ class AnalisisController extends Controller
             'statusKontrak',
             'penghuniPerKos',
             'tipeKamar',
-            'pendapatanPerKos'
+            'pendapatanPerKos',
+            'pemilik'
         ));
     }
 }

@@ -19,11 +19,11 @@ class KosController extends Controller
         // Filter pencarian
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama_kos', 'like', '%' . $search . '%')
-                  ->orWhere('alamat', 'like', '%' . $search . '%')
-                  ->orWhere('kecamatan', 'like', '%' . $search . '%')
-                  ->orWhere('kota', 'like', '%' . $search . '%');
+                    ->orWhere('alamat', 'like', '%' . $search . '%')
+                    ->orWhere('kecamatan', 'like', '%' . $search . '%')
+                    ->orWhere('kota', 'like', '%' . $search . '%');
             });
         }
 
@@ -38,6 +38,25 @@ class KosController extends Controller
         // Filter Tipe Sewa - TAMBAHKAN INI
         if ($request->filled('tipe_sewa')) {
             $query->where('tipe_sewa', $request->tipe_sewa);
+        }
+
+        // Filter ketersediaan
+        if ($request->filled('ketersediaan')) {
+            if ($request->ketersediaan == 'tersedia') {
+                $query->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('kamar')
+                        ->whereColumn('kamar.id_kos', 'kos.id_kos')
+                        ->where('status_kamar', 'tersedia');
+                });
+            } elseif ($request->ketersediaan == 'penuh') {
+                $query->whereNotExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('kamar')
+                        ->whereColumn('kamar.id_kos', 'kos.id_kos')
+                        ->where('status_kamar', 'tersedia');
+                });
+            }
         }
 
         // Subquery untuk mendapatkan harga kamar tersedia terendah
@@ -72,38 +91,38 @@ class KosController extends Controller
 
         // Filter harga - hanya filter kamar yang tersedia
         if ($request->filled('min_harga')) {
-            $query->whereExists(function($q) use ($request) {
+            $query->whereExists(function ($q) use ($request) {
                 $q->select(DB::raw(1))
-                  ->from('kamar')
-                  ->whereColumn('kamar.id_kos', 'kos.id_kos')
-                  ->where('status_kamar', 'tersedia')
-                  ->where('harga', '>=', $request->min_harga);
+                    ->from('kamar')
+                    ->whereColumn('kamar.id_kos', 'kos.id_kos')
+                    ->where('status_kamar', 'tersedia')
+                    ->where('harga', '>=', $request->min_harga);
             });
         }
 
         if ($request->filled('max_harga')) {
-            $query->whereExists(function($q) use ($request) {
+            $query->whereExists(function ($q) use ($request) {
                 $q->select(DB::raw(1))
-                  ->from('kamar')
-                  ->whereColumn('kamar.id_kos', 'kos.id_kos')
-                  ->where('status_kamar', 'tersedia')
-                  ->where('harga', '<=', $request->max_harga);
+                    ->from('kamar')
+                    ->whereColumn('kamar.id_kos', 'kos.id_kos')
+                    ->where('status_kamar', 'tersedia')
+                    ->where('harga', '<=', $request->max_harga);
             });
         }
 
         // Filter rating
         if ($request->filled('min_rating')) {
-            $query->whereHas('reviews', function($q) use ($request) {
+            $query->whereHas('reviews', function ($q) use ($request) {
                 $q->select(DB::raw('AVG(rating) as avg_rating, id_kos'))
-                  ->groupBy('id_kos')
-                  ->having('avg_rating', '>=', $request->min_rating);
+                    ->groupBy('id_kos')
+                    ->having('avg_rating', '>=', $request->min_rating);
             }, '>=', 1);
         }
 
         // Filter fasilitas
         if ($request->filled('fasilitas')) {
             $facilityIds = (array) $request->fasilitas;
-            $query->whereHas('fasilitas', function($q) use ($facilityIds) {
+            $query->whereHas('fasilitas', function ($q) use ($facilityIds) {
                 $q->whereIn('fasilitas.id_fasilitas', $facilityIds);
             }, '=', count($facilityIds));
         }
@@ -113,32 +132,33 @@ class KosController extends Controller
             case 'harga_asc':
                 $query->orderByRaw('COALESCE(harga_terendah_all, 9999999999) ASC');
                 break;
-                
+
             case 'harga_desc':
                 $query->orderByRaw('COALESCE(harga_terendah_all, 0) DESC');
                 break;
-                
+
             case 'rating_desc':
                 $query->leftJoin('reviews', 'kos.id_kos', '=', 'reviews.id_kos')
-                      ->select('kos.*', 
-                          DB::raw('COALESCE(AVG(reviews.rating), 0) as avg_rating'),
-                          DB::raw('(SELECT MIN(harga) FROM kamar WHERE kamar.id_kos = kos.id_kos AND status_kamar = "tersedia") as harga_terendah_tersedia'),
-                          DB::raw('(SELECT MIN(harga) FROM kamar WHERE kamar.id_kos = kos.id_kos) as harga_terendah_all'),
-                          DB::raw('(SELECT COUNT(*) FROM kamar WHERE kamar.id_kos = kos.id_kos AND status_kamar = "tersedia") as kamar_tersedia_count'),
-                          DB::raw('(SELECT COUNT(*) FROM kamar WHERE kamar.id_kos = kos.id_kos) as total_kamar_count')
-                      )
-                      ->groupBy('kos.id_kos')
-                      ->orderByDesc('avg_rating');
+                    ->select(
+                        'kos.*',
+                        DB::raw('COALESCE(AVG(reviews.rating), 0) as avg_rating'),
+                        DB::raw('(SELECT MIN(harga) FROM kamar WHERE kamar.id_kos = kos.id_kos AND status_kamar = "tersedia") as harga_terendah_tersedia'),
+                        DB::raw('(SELECT MIN(harga) FROM kamar WHERE kamar.id_kos = kos.id_kos) as harga_terendah_all'),
+                        DB::raw('(SELECT COUNT(*) FROM kamar WHERE kamar.id_kos = kos.id_kos AND status_kamar = "tersedia") as kamar_tersedia_count'),
+                        DB::raw('(SELECT COUNT(*) FROM kamar WHERE kamar.id_kos = kos.id_kos) as total_kamar_count')
+                    )
+                    ->groupBy('kos.id_kos')
+                    ->orderByDesc('avg_rating');
                 break;
-                
+
             case 'nama_asc':
                 $query->orderBy('nama_kos', 'asc');
                 break;
-                
+
             case 'created_desc':
                 $query->orderBy('created_at', 'desc');
                 break;
-                
+
             default:
                 $query->orderBy('created_at', 'desc');
                 break;
@@ -154,12 +174,16 @@ class KosController extends Controller
 
     public function show($id)
     {
-        $kos = Kos::with(['fasilitas', 'kamar' => function($query) {
-            $query->where('status_kamar', 'tersedia');
-        }, 'reviews' => function($query) {
-            $query->with('penghuni')
-                ->orderBy('created_at', 'desc');
-        }])->where('status_kos', 'aktif')->findOrFail($id);
+        $kos = Kos::with([
+            'fasilitas',
+            'kamar' => function ($query) {
+                $query->where('status_kamar', 'tersedia');
+            },
+            'reviews' => function ($query) {
+                $query->with('penghuni')
+                    ->orderBy('created_at', 'desc');
+            }
+        ])->where('status_kos', 'aktif')->findOrFail($id);
 
         // Hitung total kamar (semua status)
         $kos->total_kamar_count = $kos->kamar()->count();
@@ -168,7 +192,7 @@ class KosController extends Controller
         // Calculate rating statistics
         $totalReviews = $kos->reviews->count();
         $averageRating = $kos->reviews->avg('rating');
-        
+
         // Rating distribution
         $ratingDistribution = [];
         for ($i = 5; $i >= 1; $i--) {
@@ -185,22 +209,26 @@ class KosController extends Controller
 
     public function peta()
     {
-        $kos = Kos::withCount(['kamar' => function($query) {
-            $query->where('status_kamar', 'tersedia');
-        }])->with(['kamar' => function($query) {
-            $query->where('status_kamar', 'tersedia')
-                  ->select('id_kos', 'harga', 'status_kamar')
-                  ->orderBy('harga', 'asc');
-        }])->where('status_kos', 'aktif')
-          ->whereNotNull('latitude')
-          ->whereNotNull('longitude')
-          ->get()
-          ->map(function($k) {
-              // Tambahkan properti untuk harga minimum
-              $k->min_harga = $k->kamar->min('harga') ?? 0;
-              $k->kamar_count = $k->kamar_count ?? 0;
-              return $k;
-          });
+        $kos = Kos::withCount([
+            'kamar' => function ($query) {
+                $query->where('status_kamar', 'tersedia');
+            }
+        ])->with([
+                    'kamar' => function ($query) {
+                        $query->where('status_kamar', 'tersedia')
+                            ->select('id_kos', 'harga', 'status_kamar')
+                            ->orderBy('harga', 'asc');
+                    }
+                ])->where('status_kos', 'aktif')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get()
+            ->map(function ($k) {
+                // Tambahkan properti untuk harga minimum
+                $k->min_harga = $k->kamar->min('harga') ?? 0;
+                $k->kamar_count = $k->kamar_count ?? 0;
+                return $k;
+            });
 
         return view('public.kos.peta', compact('kos'));
     }
