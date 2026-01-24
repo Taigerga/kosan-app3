@@ -12,12 +12,13 @@ class Pembayaran extends Model
     protected $table = 'pembayaran';
     protected $primaryKey = 'id_pembayaran';
 
-    protected $fillable = [
+protected $fillable = [
         'id_kontrak',
         'id_penghuni',
         'bulan_tahun',
         'tanggal_jatuh_tempo',
         'tanggal_bayar',
+        'tanggal_pembayaran',
         'jumlah',
         'bukti_pembayaran',
         'metode_pembayaran',
@@ -28,9 +29,12 @@ class Pembayaran extends Model
         'jenis_pembayaran',
     ];
 
-    protected $casts = [
+protected $casts = [
         'tanggal_jatuh_tempo' => 'date',
         'tanggal_bayar' => 'date',
+        'tanggal_pembayaran' => 'date',
+        'tanggal_mulai_sewa' => 'date',
+        'tanggal_akhir_sewa' => 'date',
         'jumlah' => 'decimal:2'
     ];
 

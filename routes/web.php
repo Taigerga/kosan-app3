@@ -190,6 +190,37 @@ Route::prefix('pemilik')->as('pemilik.')->group(function () {
 /* --------------------------------------------------------------------------
  *  HELPERS
  * -------------------------------------------------------------------------- */
+// Test route for payment notifications
+Route::get('/test-payment-notification/{id}', function($id) {
+    try {
+        $pembayaran = \App\Models\Pembayaran::with(['penghuni', 'kontrak.kos', 'kontrak.kamar'])->find($id);
+        if (!$pembayaran) return 'Pembayaran tidak ditemukan';
+        
+        $notificationService = app(\App\Services\ALLNotificationService::class);
+        
+        // Test pending notification to penghuni
+        $paymentData = [
+            'kosName' => $pembayaran->kontrak->kos->nama_kos,
+            'roomNumber' => $pembayaran->kontrak->kamar->nomor_kamar ?? null,
+            'amount' => $pembayaran->jumlah,
+            'paymentDate' => $pembayaran->tanggal_pembayaran->format('d/m/Y'),
+            'period' => $pembayaran->tanggal_mulai_sewa->format('d/m/Y') . ' - ' . $pembayaran->tanggal_akhir_sewa->format('d/m/Y'),
+            'penghuniName' => $pembayaran->penghuni->nama,
+            'metodePembayaran' => $pembayaran->metode_pembayaran,
+        ];
+        
+        $result = $notificationService->sendPaymentWhatsAppNotification(
+            '62812345678', // test number
+            'pending_penghuni',
+            $paymentData
+        );
+        
+        return 'Payment notification test sent successfully';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 function testMail(string $mailable, int $id): string
 {
     $kontrak = \App\Models\KontrakSewa::find($id);

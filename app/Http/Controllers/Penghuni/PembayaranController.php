@@ -5,13 +5,23 @@ namespace App\Http\Controllers\Penghuni;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Pembayaran;
 use App\Models\KontrakSewa;
+use App\Models\Pemilik;
+use App\Services\ALLNotificationService;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class PembayaranController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(ALLNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function index()
     {
         $user = Auth::guard('penghuni')->user();
@@ -215,7 +225,7 @@ class PembayaranController extends Controller
             $buktiPembayaranPath = $buktiPembayaran->storeAs('bukti_pembayaran', $fileName, 'public');
         }
 
-        try {
+try {
             // Create Single Payment Record with Date Range
             // Previously it looped months. Now we prefer 1 record for the range.
             // BUT user said "Satu pembayaran = satu bukti transfer untuk multiple bulan".
@@ -243,6 +253,9 @@ class PembayaranController extends Controller
                     'tanggal_selesai' => $tanggalAkhir
                 ]);
             }
+
+            // Send notifications
+            $this->sendPaymentNotifications($pembayaran, $kontrak, $user);
 
             return redirect()->route('penghuni.pembayaran.index')
                 ->with('success', 'Pembayaran berhasil dikirim! Menunggu konfirmasi pemilik.');
@@ -310,6 +323,64 @@ class PembayaranController extends Controller
             $endDate->addMonths($jumlah - 1)->endOfMonth();
         }
 
-        return $endDate;
+return $endDate;
+    }
+
+    /**
+     * Send payment notifications to penghuni and pemilik
+     */
+    private function sendPaymentNotifications($pembayaran, $kontrak, $penghuni)
+    {
+        try {
+            // Get pemilik data
+            $pemilik = $kontrak->kos->pemilik;
+            
+            // Prepare payment data
+            $paymentData = [
+                'kosName' => $kontrak->kos->nama_kos,
+                'roomNumber' => $kontrak->kamar->nomor_kamar ?? null,
+                'amount' => $pembayaran->jumlah,
+                'paymentDate' => $pembayaran->tanggal_pembayaran ? $pembayaran->tanggal_pembayaran->format('d/m/Y') : $pembayaran->created_at->format('d/m/Y'),
+                'period' => $this->formatPaymentPeriod($pembayaran),
+                'penghuniName' => $penghuni->nama,
+                'metodePembayaran' => $pembayaran->metode_pembayaran,
+            ];
+
+            // Send notification to penghuni (menunggu verifikasi)
+            $this->notificationService->sendDualPaymentNotification(
+                $penghuni,
+                'pending_penghuni',
+                $paymentData,
+                false
+            );
+
+            // Send notification to pemilik (pembayaran baru)
+            if ($pemilik) {
+                $this->notificationService->sendDualPaymentNotification(
+                    $pemilik,
+                    'pending_pemilik',
+                    $paymentData,
+                    true
+                );
+            }
+
+        } catch (\Exception $e) {
+            // Log error but don't stop the process
+            Log::error('Failed to send payment notifications: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Format payment period for display
+     */
+    private function formatPaymentPeriod($pembayaran)
+    {
+        if ($pembayaran->tanggal_mulai_sewa && $pembayaran->tanggal_akhir_sewa) {
+            $start = $pembayaran->tanggal_mulai_sewa->format('d/m/Y');
+            $end = $pembayaran->tanggal_akhir_sewa->format('d/m/Y');
+            return "{$start} - {$end}";
+        }
+        
+        return $pembayaran->bulan_tahun;
     }
 }

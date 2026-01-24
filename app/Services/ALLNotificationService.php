@@ -300,6 +300,232 @@ class ALLNotificationService
                "Terima kasih telah menggunakan layanan AyoKos.";
     }
 
+/**
+     * Send payment notification via WhatsApp
+     */
+    public function sendPaymentWhatsAppNotification($phoneNumber, $type, $paymentData)
+    {
+        $message = $this->buildPaymentWhatsAppMessage($type, $paymentData);
+        
+        return $this->sendWhatsAppNotification($phoneNumber, $message, 'payment_' . $type);
+    }
+
+    /**
+     * Send payment email notification
+     */
+    public function sendPaymentEmailNotification($to, $type, $paymentData)
+    {
+        $subject = $this->buildPaymentEmailSubject($type, $paymentData);
+        $view = $this->getPaymentEmailView($type);
+        
+        $data = array_merge($paymentData, [
+            'type' => $type,
+            'emailMessage' => $this->buildPaymentEmailMessage($type, $paymentData)
+        ]);
+        
+        return $this->sendEmailNotification($to, $subject, $view, $data);
+    }
+
+    /**
+     * Send dual payment notification (WhatsApp + Email)
+     */
+    public function sendDualPaymentNotification($user, $type, $paymentData, $isPemilik = false)
+    {
+        $results = [];
+        $paymentData['userName'] = $user->nama;
+        $paymentData['isPemilik'] = $isPemilik;
+        
+        // Send WhatsApp
+        if (!empty($user->no_hp)) {
+            try {
+                $results['whatsapp'] = $this->sendPaymentWhatsAppNotification(
+                    $user->no_hp, 
+                    $type, 
+                    $paymentData
+                );
+            } catch (\Exception $e) {
+                $results['whatsapp_error'] = $e->getMessage();
+                Log::error("ALLNotificationService: Failed WhatsApp for {$user->nama}: " . $e->getMessage());
+            }
+        }
+        
+        // Send Email
+        if (!empty($user->email)) {
+            try {
+                $results['email'] = $this->sendPaymentEmailNotification(
+                    $user->email,
+                    $type,
+                    $paymentData
+                );
+            } catch (\Exception $e) {
+                $results['email_error'] = $e->getMessage();
+                Log::error("ALLNotificationService: Failed Email for {$user->email}: " . $e->getMessage());
+            }
+        }
+        
+        return $results;
+    }
+
+    /**
+     * Build WhatsApp message for payment notifications
+     */
+    private function buildPaymentWhatsAppMessage($type, $paymentData)
+    {
+        $kosName = $paymentData['kosName'] ?? '';
+        $roomNumber = $paymentData['roomNumber'] ?? '';
+        $amount = $paymentData['amount'] ?? 0;
+        $paymentDate = $paymentData['paymentDate'] ?? '';
+        $period = $paymentData['period'] ?? '';
+        
+        $roomInfo = $roomNumber ? "Kamar: {$roomNumber}\n" : "";
+        $amountFormatted = "Rp " . number_format($amount, 0, ',', '.');
+        
+        switch ($type) {
+            case 'pending_penghuni':
+                return "⏳ *MENUNGGU VERIFIKASI PEMBAYARAN*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "🕐 Dibayar: {$paymentDate}\n\n" .
+                       "Pembayaran Anda sedang diverifikasi oleh pemilik.";
+            
+            case 'pending_pemilik':
+                return "💳 *PEMBAYARAN BARU DARI PENGHUNI*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "👤 Penghuni: {$paymentData['penghuniName']}\n" .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "🕐 Dibayar: {$paymentDate}\n\n" .
+                       "Silakan verifikasi pembayaran ini.";
+            
+            case 'approved_penghuni':
+                return "✅ *PEMBAYARAN DISETUJUI*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "✅ Status: Lunas\n\n" .
+                       "Terima kasih! Pembayaran Anda telah dikonfirmasi.";
+            
+            case 'approved_pemilik':
+                return "✅ *PEMBAYARAN TELAH DISETUJUI*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "👤 Penghuni: {$paymentData['penghuniName']}\n" .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "✅ Status: Lunas\n\n" .
+                       "Anda telah menyetujui pembayaran ini.";
+            
+            case 'rejected_penghuni':
+                return "❌ *PEMBAYARAN DITOLAK*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "❌ Status: Ditolak\n\n" .
+                       "Pembayaran Anda ditolak. Silakan upload ulang bukti pembayaran.";
+            
+            case 'rejected_pemilik':
+                return "❌ *PEMBAYARAN TELAH DITOLAK*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "👤 Penghuni: {$paymentData['penghuniName']}\n" .
+                       "💰 Jumlah: *{$amountFormatted}*\n" .
+                       "📅 Periode: {$period}\n" .
+                       "❌ Status: Ditolak\n\n" .
+                       "Anda telah menolak pembayaran ini.";
+            
+            default:
+                return "📋 *INFORMASI PEMBAYARAN*\n\n" .
+                       "Kos: *{$kosName}*\n" .
+                       $roomInfo .
+                       "Status: {$type}";
+        }
+    }
+
+    /**
+     * Build email subject for payment notifications
+     */
+    private function buildPaymentEmailSubject($type, $paymentData)
+    {
+        $kosName = $paymentData['kosName'] ?? '';
+        $prefix = ($paymentData['isPemilik'] ?? false) ? "[PEMILIK] " : "";
+        
+        switch ($type) {
+            case 'pending_penghuni':
+                return $prefix . "⏳ Menunggu Verifikasi Pembayaran - {$kosName}";
+            case 'pending_pemilik':
+                return $prefix . "💳 Pembayaran Baru dari Penghuni - {$kosName}";
+            case 'approved_penghuni':
+                return $prefix . "✅ Pembayaran Disetujui - {$kosName}";
+            case 'approved_pemilik':
+                return $prefix . "✅ Pembayaran Telah Disetujui - {$kosName}";
+            case 'rejected_penghuni':
+                return $prefix . "❌ Pembayaran Ditolak - {$kosName}";
+            case 'rejected_pemilik':
+                return $prefix . "❌ Pembayaran Telah Ditolak - {$kosName}";
+            default:
+                return $prefix . "📋 Informasi Pembayaran - {$kosName}";
+        }
+    }
+
+    /**
+     * Build email message for payment notifications
+     */
+    private function buildPaymentEmailMessage($type, $paymentData)
+    {
+        $kosName = $paymentData['kosName'] ?? '';
+        $roomNumber = $paymentData['roomNumber'] ?? '';
+        $amount = $paymentData['amount'] ?? 0;
+        $paymentDate = $paymentData['paymentDate'] ?? '';
+        $period = $paymentData['period'] ?? '';
+        $userName = $paymentData['userName'] ?? '';
+        $isPemilik = $paymentData['isPemilik'] ?? false;
+        
+        $roomInfo = $roomNumber ? " (Kamar {$roomNumber})" : "";
+        $amountFormatted = "Rp " . number_format($amount, 0, ',', '.');
+        
+        switch ($type) {
+            case 'pending_penghuni':
+                return "Pembayaran Anda sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong> (dibayar pada {$paymentDate}) sedang <strong>menunggu verifikasi</strong> dari pemilik.";
+            
+            case 'pending_pemilik':
+                return "Ada pembayaran baru dari <strong>{$paymentData['penghuniName']}</strong> sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong> (dibayar pada {$paymentDate}). Silakan verifikasi pembayaran ini.";
+            
+            case 'approved_penghuni':
+                return "Pembayaran Anda sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong> telah <strong>disetujui</strong>. Status pembayaran: Lunas.";
+            
+            case 'approved_pemilik':
+                return "Anda telah <strong>menyetujui</strong> pembayaran dari <strong>{$paymentData['penghuniName']}</strong> sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong>. Status pembayaran: Lunas.";
+            
+            case 'rejected_penghuni':
+                return "Pembayaran Anda sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong> <strong>ditolak</strong>. Silakan upload ulang bukti pembayaran yang valid.";
+            
+            case 'rejected_pemilik':
+                return "Anda telah <strong>menolak</strong> pembayaran dari <strong>{$paymentData['penghuniName']}</strong> sebesar <strong>{$amountFormatted}</strong> untuk kos <strong>{$kosName}</strong>{$roomInfo} periode <strong>{$period}</strong>. Penghuni perlu upload ulang bukti pembayaran.";
+            
+            default:
+                return "Informasi pembayaran untuk kos <strong>{$kosName}</strong>{$roomInfo}.";
+        }
+    }
+
+    /**
+     * Get email view for payment notifications
+     */
+    private function getPaymentEmailView($type)
+    {
+        if (strpos($type, 'penghuni') !== false) {
+            return 'emails.penghuni.pembayaran_notification';
+        } elseif (strpos($type, 'pemilik') !== false) {
+            return 'emails.pemilik.pembayaran_notification';
+        }
+        
+        return 'emails.penghuni.pembayaran_notification'; // default
+    }
+
     /**
      * Format phone number for WhatsApp
      */
