@@ -13,6 +13,9 @@ classDiagram
         +getKos()
         +filterKos(criteria)
         +findKos(id)
+        #array $fillable
+        #string $table = 'kos'
+        #string $primaryKey = 'id_kos'
     }
 
     class Kamar {
@@ -25,6 +28,11 @@ classDiagram
         +getKamar()
         +createKamar(data)
         +updateKamar(id, data)
+        #array $fillable
+        #array $casts
+        #array $appends
+        #string $table = 'kamar'
+        #string $primaryKey = 'id_kamar'
     }
 
     class KontrakSewa {
@@ -37,6 +45,10 @@ classDiagram
         +belongsTo(Kamar)
         +approve()
         +reject()
+        #array $fillable
+        #array $casts
+        #string $table = 'kontrak_sewa'
+        #string $primaryKey = 'id_kontrak'
     }
 
     class Pembayaran {
@@ -47,6 +59,10 @@ classDiagram
         +belongsTo(KontrakSewa)
         +approve()
         +reject()
+        #array $fillable
+        #array $casts
+        #string $table = 'pembayaran'
+        #string $primaryKey = 'id_pembayaran'
     }
 
     class Review {
@@ -59,6 +75,10 @@ classDiagram
         +belongsTo(Penghuni)
         +createReview(data)
         +updateReview(id, data)
+        #array $fillable
+        #array $casts
+        #string $table = 'reviews'
+        #string $primaryKey = 'id_review'
     }
 
     class Pemilik {
@@ -68,6 +88,11 @@ classDiagram
         +hasMany(Kos)
         +getProfile()
         +updateProfile(data)
+        #array $fillable
+        #array $hidden
+        #array $casts
+        #string $table = 'pemilik'
+        #string $primaryKey = 'id_pemilik'
     }
 
     class Penghuni {
@@ -78,6 +103,11 @@ classDiagram
         +hasMany(Review)
         +getProfile()
         +updateProfile(data)
+        #array $fillable
+        #array $hidden
+        #array $casts
+        #string $table = 'penghuni'
+        #string $primaryKey = 'id_penghuni'
     }
 
     %% Controllers - Logika bisnis dan pemrosesan request (dengan namespace)
@@ -124,6 +154,8 @@ classDiagram
         +reject(id) : tolak kontrak
         +selesai(id) : selesai kontrak
         +destroy(id) : hapus kontrak
+        #NotificationService notificationService
+        #NotificationEmailService emailService
     }
 
     class Penghuni_PembayaranController {

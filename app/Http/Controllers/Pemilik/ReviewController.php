@@ -28,8 +28,12 @@ class ReviewController extends Controller
         $reviews = Review::with(['kos', 'penghuni'])
             ->whereIn('id_kos', $kosIds->toArray())
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(2);
 
-        return view('pemilik.reviews.index', compact('reviews'));
+        // Hitung statistik keseluruhan (bukan per halaman)
+        $overall_avg_rating = Review::whereIn('id_kos', $kosIds->toArray())->avg('rating');
+        $latest_review = Review::whereIn('id_kos', $kosIds->toArray())->orderBy('created_at', 'desc')->first();
+
+        return view('pemilik.reviews.index', compact('reviews', 'overall_avg_rating', 'latest_review'));
     }
 }

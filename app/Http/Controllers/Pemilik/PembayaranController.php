@@ -13,20 +13,20 @@ class PembayaranController extends Controller
     {
         $user = Auth::guard('pemilik')->user();
         
-        $pembayaran = Pembayaran::with(['penghuni', 'kontrak.kos'])
+        $query = Pembayaran::with(['penghuni', 'kontrak.kos'])
             ->whereHas('kontrak.kos', function($query) use ($user) {
                 $query->where('id_pemilik', $user->id_pemilik);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            });
 
         $statistics = [
-            'total' => $pembayaran->count(),
-            'lunas' => $pembayaran->where('status_pembayaran', 'lunas')->count(),
-            'pending' => $pembayaran->where('status_pembayaran', 'pending')->count(),
-            'belum' => $pembayaran->where('status_pembayaran', 'belum')->count(),
-            'terlambat' => $pembayaran->where('status_pembayaran', 'terlambat')->count(),
+            'total' => (clone $query)->count(),
+            'lunas' => (clone $query)->where('status_pembayaran', 'lunas')->count(),
+            'pending' => (clone $query)->where('status_pembayaran', 'pending')->count(),
+            'belum' => (clone $query)->where('status_pembayaran', 'belum')->count(),
+            'terlambat' => (clone $query)->where('status_pembayaran', 'terlambat')->count(),
         ];
+
+        $pembayaran = $query->orderBy('created_at', 'desc')->paginate(5);
 
         return view('pemilik.pembayaran.index', compact('pembayaran', 'statistics'));
     }

@@ -219,7 +219,7 @@
                     yPosition += 10;
 
                     const riwayatKontrakData = @json($riwayatKontrak);
-                    const riwayatTableData = riwayatKontrakData.slice(0, 5).map((kontrak, index) => [
+                    const riwayatTableData = riwayatKontrakData.map((kontrak, index) => [
                         index + 1,
                         kontrak.kos?.nama_kos || '-',
                         kontrak.kamar?.nomor_kamar || '-',

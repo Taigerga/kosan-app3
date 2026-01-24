@@ -283,37 +283,17 @@
                 </table>
             </div>
             
-            <!-- Table Footer -->
-            @if($pembayaran->hasPages())
-            <div class="border-t border-dark-border px-6 py-4">
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-dark-border">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-dark-muted">
-                        Menampilkan {{ $pembayaran->firstItem() ?? 0 }} - {{ $pembayaran->lastItem() ?? 0 }} dari {{ $pembayaran->total() }} pembayaran
+                        Menampilkan {{ $pembayaran->firstItem() }} - {{ $pembayaran->lastItem() }} dari {{ $pembayaran->total() }} pembayaran
                     </div>
                     <div class="flex space-x-2">
-                        @if($pembayaran->onFirstPage())
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </span>
-                        @else
-                            <a href="{{ $pembayaran->previousPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </a>
-                        @endif
-                        
-                        @if($pembayaran->hasMorePages())
-                            <a href="{{ $pembayaran->nextPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </a>
-                        @else
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </span>
-                        @endif
+                        {{ $pembayaran->links('vendor.pagination.custom-dark') }}
                     </div>
                 </div>
             </div>
-            @endif
         </div>
 
         <!-- Back to Dashboard -->

@@ -71,6 +71,19 @@ class AnalisisController extends Controller
             })
             ->where('kos.id_pemilik', $pemilikId)
             ->groupBy('kos.id_kos', 'kos.nama_kos')
+            ->paginate(10);
+
+        // Data lengkap untuk PDF
+        $penghuniPerKosFull = Kos::selectRaw('
+                kos.nama_kos,
+                COUNT(kontrak_sewa.id_penghuni) as jumlah_penghuni
+            ')
+            ->leftJoin('kontrak_sewa', function($join) {
+                $join->on('kos.id_kos', '=', 'kontrak_sewa.id_kos')
+                     ->where('kontrak_sewa.status_kontrak', 'aktif');
+            })
+            ->where('kos.id_pemilik', $pemilikId)
+            ->groupBy('kos.id_kos', 'kos.nama_kos')
             ->get();
 
         // 6. Data Tipe Kamar
@@ -97,6 +110,22 @@ class AnalisisController extends Controller
             ->where('kos.id_pemilik', $pemilikId)
             ->groupBy('kos.id_kos', 'kos.nama_kos')
             ->orderBy('total_pendapatan', 'desc')
+            ->paginate(10);
+
+        // Data lengkap untuk PDF
+        $pendapatanPerKosFull = Kos::selectRaw('
+                kos.nama_kos,
+                COALESCE(SUM(pembayaran.jumlah), 0) as total_pendapatan
+            ')
+            ->leftJoin('kontrak_sewa', 'kos.id_kos', '=', 'kontrak_sewa.id_kos')
+            ->leftJoin('pembayaran', function($join) {
+                $join->on('kontrak_sewa.id_kontrak', '=', 'pembayaran.id_kontrak')
+                     ->where('pembayaran.status_pembayaran', 'lunas')
+                     ->whereYear('pembayaran.tanggal_bayar', date('Y'));
+            })
+            ->where('kos.id_pemilik', $pemilikId)
+            ->groupBy('kos.id_kos', 'kos.nama_kos')
+            ->orderBy('total_pendapatan', 'desc')
             ->get();
 
         $pemilik = auth()->guard('pemilik')->user();
@@ -106,8 +135,10 @@ class AnalisisController extends Controller
             'jenisKos',
             'statusKontrak',
             'penghuniPerKos',
+            'penghuniPerKosFull',
             'tipeKamar',
             'pendapatanPerKos',
+            'pendapatanPerKosFull',
             'pemilik'
         ));
     }

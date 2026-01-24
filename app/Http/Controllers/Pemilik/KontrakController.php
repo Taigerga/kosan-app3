@@ -35,6 +35,12 @@ class KontrakController extends Controller
             ->pluck('id_kos')
             ->toArray();
 
+        // Hitung total keseluruhan untuk statistik
+        $kontrakPendingCount = KontrakSewa::whereIn('id_kos', $kosIds)->where('status_kontrak', 'pending')->count();
+        $kontrakAktifCount = KontrakSewa::whereIn('id_kos', $kosIds)->where('status_kontrak', 'aktif')->count();
+        $kontrakSelesaiCount = KontrakSewa::whereIn('id_kos', $kosIds)->where('status_kontrak', 'selesai')->count();
+        $kontrakDitolakCount = KontrakSewa::whereIn('id_kos', $kosIds)->where('status_kontrak', 'ditolak')->count();
+
         // Kontrak Pending
         $kontrakPending = KontrakSewa::with(['penghuni', 'kos', 'kamar'])
             ->whereIn('id_kos', $kosIds)
@@ -55,19 +61,23 @@ class KontrakController extends Controller
             ->with(['penghuni', 'kos', 'kamar'])
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
-        
+
         // HANYA status 'ditolak' saja
         $kontrakDitolak = KontrakSewa::whereIn('id_kos', $kosIds)
             ->where('status_kontrak', 'ditolak')
             ->with(['penghuni', 'kos', 'kamar'])
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
-        
+
         return view('pemilik.kontrak.index', compact(
-            'kontrakPending', 
-            'kontrakAktif', 
-            'kontrakSelesai', 
-            'kontrakDitolak'
+            'kontrakPending',
+            'kontrakAktif',
+            'kontrakSelesai',
+            'kontrakDitolak',
+            'kontrakPendingCount',
+            'kontrakAktifCount',
+            'kontrakSelesaiCount',
+            'kontrakDitolakCount'
         ));
 
         

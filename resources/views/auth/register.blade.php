@@ -737,14 +737,14 @@
                                            id="rolePenghuni" {{ old('role') == 'penghuni' ? 'checked' : '' }} hidden required>
                                     <i class="fas fa-user"></i>
                                     <div class="fw-semibold">Penghuni</div>
-                                    <small class="text-muted">Saya ingin mencari kos</small>
+                                    <small class="text-white">Saya ingin mencari kos</small>
                                 </div>
                                 <div class="role-card @if(old('role') == 'pemilik') active @endif" onclick="selectRole('pemilik')">
                                     <input type="radio" name="role" value="pemilik" 
                                            id="rolePemilik" {{ old('role') == 'pemilik' ? 'checked' : '' }} hidden required>
                                     <i class="fas fa-building"></i>
                                     <div class="fw-semibold">Pemilik</div>
-                                    <small class="text-muted">Saya ingin menyewakan kos</small>
+                                    <small class="text-white">Saya ingin menyewakan kos</small>
                                 </div>
                             </div>
                             @error('role')
@@ -755,13 +755,6 @@
                         <div class="alert alert-info mb-4">
                             <i class="fas fa-info-circle me-2"></i>
                             <strong>Penting:</strong> Pastikan data yang Anda isi sudah benar. Data tidak dapat diubah setelah pendaftaran.
-                        </div>
-                        
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                            <label class="form-check-label text-white" for="agreeTerms">
-                                Saya menyetujui <a href="#" class="text-primary">Syarat & Ketentuan</a> dan <a href="#" class="text-primary">Kebijakan Privasi</a>
-                            </label>
                         </div>
                         
                         <div class="form-navigation">

@@ -34,10 +34,18 @@ class KamarController extends Controller
             $query->where('tipe_kamar', $request->tipe);
         }
 
+        // Hitung statistik keseluruhan
+        $stats = [
+            'total_kamar' => (clone $query)->count(),
+            'tersedia' => (clone $query)->where('status_kamar', 'tersedia')->count(),
+            'terisi' => (clone $query)->where('status_kamar', 'terisi')->count(),
+            'maintenance' => (clone $query)->where('status_kamar', 'maintenance')->count(),
+        ];
+
         $kamar = $query->orderBy('created_at', 'desc')->paginate(10);
         $kos = Kos::where('id_pemilik', $user->id_pemilik)->get();
 
-        return view('pemilik.kamar.index', compact('kamar', 'kos'));
+        return view('pemilik.kamar.index', compact('kamar', 'kos', 'stats'));
     }
 
     public function create()

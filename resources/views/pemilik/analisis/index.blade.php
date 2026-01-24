@@ -64,9 +64,9 @@
                 </div>
                 <div>
                     <p class="text-sm text-primary-100 font-medium mb-1">Total Pendapatan Tahun Ini</p>
-                    <p class="text-2xl font-bold text-white" data-total-pendapatan>
-                        Rp {{ number_format($pendapatanPerKos->sum('total_pendapatan'), 0, ',', '.') }}
-                    </p>
+                     <p class="text-2xl font-bold text-white" data-total-pendapatan>
+                         Rp {{ number_format($pendapatanPerKosFull->sum('total_pendapatan'), 0, ',', '.') }}
+                     </p>
                 </div>
             </div>
         </div>
@@ -79,9 +79,9 @@
                 </div>
                 <div>
                     <p class="text-sm text-green-100 font-medium mb-1">Total Penghuni Aktif</p>
-                    <p class="text-2xl font-bold text-white" data-total-penghuni>
-                        {{ $penghuniPerKos->sum('jumlah_penghuni') }}
-                    </p>
+                     <p class="text-2xl font-bold text-white" data-total-penghuni>
+                         {{ $penghuniPerKosFull->sum('jumlah_penghuni') }}
+                     </p>
                 </div>
             </div>
         </div>
@@ -226,26 +226,39 @@
                                 <p class="text-lg font-bold text-green-400">
                                     Rp {{ number_format($kos->total_pendapatan, 0, ',', '.') }}
                                 </p>
-                                <div class="w-32 h-1 bg-dark-border rounded-full overflow-hidden mt-1">
-                                    <div class="h-full bg-green-500 rounded-full" 
-                                         style="width: {{ ($kos->total_pendapatan / ($pendapatanPerKos->max('total_pendapatan') ?: 1)) * 100 }}%">
-                                    </div>
-                                </div>
+                                 <div class="w-32 h-1 bg-dark-border rounded-full overflow-hidden mt-1">
+                                     <div class="h-full bg-green-500 rounded-full"
+                                          style="width: {{ ($kos->total_pendapatan / ($pendapatanPerKosFull->max('total_pendapatan') ?: 1)) * 100 }}%">
+                                     </div>
+                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
                 
-                @if($pendapatanPerKos->isEmpty())
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-dark-border rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-chart-line text-dark-muted text-2xl"></i>
-                        </div>
-                        <p class="text-dark-muted">Belum ada data pendapatan</p>
-                    </div>
-                @endif
-            </div>
-        </div>
+                 @if($pendapatanPerKos->isEmpty())
+                     <div class="text-center py-8">
+                         <div class="w-16 h-16 bg-dark-border rounded-full flex items-center justify-center mx-auto mb-4">
+                             <i class="fas fa-chart-line text-dark-muted text-2xl"></i>
+                         </div>
+                         <p class="text-dark-muted">Belum ada data pendapatan</p>
+                     </div>
+                 @endif
+
+                 @if($pendapatanPerKos->hasPages())
+                 <div class="px-6 py-4 border-t border-dark-border">
+                     <div class="flex items-center justify-between">
+                         <div class="text-sm text-dark-muted">
+                             Menampilkan {{ $pendapatanPerKos->firstItem() }} - {{ $pendapatanPerKos->lastItem() }} dari {{ $pendapatanPerKos->total() }} kos
+                         </div>
+                         <div class="flex space-x-2">
+                             {{ $pendapatanPerKos->links('vendor.pagination.custom-dark') }}
+                         </div>
+                     </div>
+                 </div>
+                 @endif
+             </div>
+         </div>
 
         <!-- Tabel: Penghuni per Kos -->
         <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
@@ -274,34 +287,47 @@
                             </div>
                             <div class="text-right">
                                 <div class="flex items-center justify-end">
-                                    <div class="w-24 h-6 bg-dark-border rounded-full overflow-hidden mr-3">
-                                        <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" 
-                                             style="width: {{ ($kos->jumlah_penghuni / ($penghuniPerKos->max('jumlah_penghuni') ?: 1)) * 100 }}%">
-                                        </div>
-                                    </div>
+                                     <div class="w-24 h-6 bg-dark-border rounded-full overflow-hidden mr-3">
+                                         <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
+                                              style="width: {{ ($kos->jumlah_penghuni / ($penghuniPerKosFull->max('jumlah_penghuni') ?: 1)) * 100 }}%">
+                                         </div>
+                                     </div>
                                     <span class="text-lg font-bold text-white">
                                         {{ $kos->jumlah_penghuni }}
                                     </span>
                                 </div>
-                                <p class="text-xs text-dark-muted mt-1">
-                                    {{ round(($kos->jumlah_penghuni / ($penghuniPerKos->sum('jumlah_penghuni') ?: 1)) * 100, 1) }}% dari total
-                                </p>
+                                 <p class="text-xs text-dark-muted mt-1">
+                                     {{ round(($kos->jumlah_penghuni / ($penghuniPerKosFull->sum('jumlah_penghuni') ?: 1)) * 100, 1) }}% dari total
+                                 </p>
                             </div>
                         </div>
                     </div>
                 @endforeach
                 
-                @if($penghuniPerKos->isEmpty())
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-dark-border rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-users text-dark-muted text-2xl"></i>
-                        </div>
-                        <p class="text-dark-muted">Belum ada data penghuni</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
+                 @if($penghuniPerKos->isEmpty())
+                     <div class="text-center py-8">
+                         <div class="w-16 h-16 bg-dark-border rounded-full flex items-center justify-center mx-auto mb-4">
+                             <i class="fas fa-users text-dark-muted text-2xl"></i>
+                         </div>
+                         <p class="text-dark-muted">Belum ada data penghuni</p>
+                     </div>
+                 @endif
+
+                 @if($penghuniPerKos->hasPages())
+                 <div class="px-6 py-4 border-t border-dark-border">
+                     <div class="flex items-center justify-between">
+                         <div class="text-sm text-dark-muted">
+                             Menampilkan {{ $penghuniPerKos->firstItem() }} - {{ $penghuniPerKos->lastItem() }} dari {{ $penghuniPerKos->total() }} kos
+                         </div>
+                         <div class="flex space-x-2">
+                             {{ $penghuniPerKos->links('vendor.pagination.custom-dark') }}
+                         </div>
+                     </div>
+                 </div>
+                 @endif
+             </div>
+         </div>
+     </div>
 </div>
 
 <!-- Include Chart.js -->

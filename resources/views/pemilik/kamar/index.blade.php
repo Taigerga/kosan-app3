@@ -128,11 +128,11 @@
                     <div class="p-3 rounded-lg bg-green-900/30">
                         <i class="fas fa-bed text-green-400 text-xl"></i>
                     </div>
-                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
-                        {{ $kamar->count() > 0 ? '+' . $kamar->count() : '0' }}
-                    </span>
+                     <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                         {{ $stats['tersedia'] }}
+                     </span>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">{{ $kamar->count() }}</h3>
+                 <h3 class="text-2xl font-bold text-white mb-1">{{ $stats['total_kamar'] }}</h3>
                 <p class="text-sm text-dark-muted">Total Kamar</p>
             </div>
 
@@ -146,7 +146,7 @@
                         {{ $kamar->where('status_kamar', 'tersedia')->count() }}
                     </span>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">{{ $kamar->where('status_kamar', 'tersedia')->count() }}</h3>
+                 <h3 class="text-2xl font-bold text-white mb-1">{{ $stats['tersedia'] }}</h3>
                 <p class="text-sm text-dark-muted">Tersedia</p>
             </div>
 
@@ -156,11 +156,11 @@
                     <div class="p-3 rounded-lg bg-purple-900/30">
                         <i class="fas fa-users text-purple-400 text-xl"></i>
                     </div>
-                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
-                        {{ $kamar->where('status_kamar', 'terisi')->count() }}
-                    </span>
+                     <span class="text-sm font-medium px-2 py-1 rounded-full bg-purple-900/20 text-purple-300">
+                         {{ $stats['terisi'] }}
+                     </span>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">{{ $kamar->where('status_kamar', 'terisi')->count() }}</h3>
+                 <h3 class="text-2xl font-bold text-white mb-1">{{ $stats['terisi'] }}</h3>
                 <p class="text-sm text-dark-muted">Terisi</p>
             </div>
 
@@ -170,12 +170,12 @@
                     <div class="p-3 rounded-lg bg-yellow-900/30">
                         <i class="fas fa-tools text-yellow-400 text-xl"></i>
                     </div>
-                    <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
-                        {{ $kamar->where('status_kamar', 'maintenance')->count() }}
-                    </span>
+                     <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
+                         {{ $stats['maintenance'] }}
+                     </span>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">{{ $kamar->where('status_kamar', 'maintenance')->count() }}
-                </h3>
+                 <h3 class="text-2xl font-bold text-white mb-1">{{ $stats['maintenance'] }}
+                 </h3>
                 <p class="text-sm text-dark-muted">Maintenance</p>
             </div>
         </div>
@@ -344,34 +344,13 @@
 
         <!-- Table Footer -->
         @if($kamar->hasPages())
-            <div class="border-t border-dark-border px-6 py-4">
+            <div class="px-6 py-4 border-t border-dark-border">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-dark-muted">
-                        Menampilkan {{ $kamar->firstItem() ?? 0 }} - {{ $kamar->lastItem() ?? 0 }} dari {{ $kamar->total() }}
-                        kamar
+                        Menampilkan {{ $kamar->firstItem() }} - {{ $kamar->lastItem() }} dari {{ $kamar->total() }} kamar
                     </div>
                     <div class="flex space-x-2">
-                        @if($kamar->onFirstPage())
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </span>
-                        @else
-                            <a href="{{ $kamar->previousPageUrl() }}"
-                                class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </a>
-                        @endif
-
-                        @if($kamar->hasMorePages())
-                            <a href="{{ $kamar->nextPageUrl() }}"
-                                class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </a>
-                        @else
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </span>
-                        @endif
+                        {{ $kamar->links('vendor.pagination.custom-dark') }}
                     </div>
                 </div>
             </div>

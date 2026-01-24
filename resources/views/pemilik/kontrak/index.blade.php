@@ -36,10 +36,10 @@
                 <p class="text-dark-muted">Kelola semua permohonan dan kontrak sewa kos Anda</p>
             </div>
             <div class="mt-4 md:mt-0">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-900/30 text-primary-300 border border-primary-700/30">
-                    <i class="fas fa-file-contract mr-2"></i>
-                    Total: {{ $kontrakPending->count() + $kontrakAktif->count() + $kontrakSelesai->count() + $kontrakDitolak->count() }} kontrak
-                </span>
+                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-900/30 text-primary-300 border border-primary-700/30">
+                     <i class="fas fa-file-contract mr-2"></i>
+                     Total: {{ $kontrakPendingCount + $kontrakAktifCount + $kontrakSelesaiCount + $kontrakDitolakCount }} kontrak
+                 </span>
             </div>
         </div>
     </div>
@@ -426,31 +426,13 @@
             </div>
             <!-- Table Footer -->
             @if($kontrakDitolak->hasPages())
-            <div class="border-t border-dark-border px-6 py-4">
+            <div class="px-6 py-4 border-t border-dark-border">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-dark-muted">
-                        Menampilkan {{ $kontrakDitolak->firstItem() ?? 0 }} - {{ $kontrakDitolak->lastItem() ?? 0 }} dari {{ $kontrakDitolak->total() }} kontrak
+                        Menampilkan {{ $kontrakDitolak->firstItem() }} - {{ $kontrakDitolak->lastItem() }} dari {{ $kontrakDitolak->total() }} kontrak
                     </div>
                     <div class="flex space-x-2">
-                        @if($kontrakDitolak->onFirstPage())
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </span>
-                        @else
-                            <a href="{{ $kontrakDitolak->previousPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
-                            </a>
-                        @endif
-                        
-                        @if($kontrakDitolak->hasMorePages())
-                            <a href="{{ $kontrakDitolak->nextPageUrl() }}" class="px-3 py-1 rounded-lg bg-dark-border text-dark-text hover:bg-dark-border/80 transition">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </a>
-                        @else
-                            <span class="px-3 py-1 rounded-lg bg-dark-border/50 text-dark-muted cursor-not-allowed">
-                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
-                            </span>
-                        @endif
+                        {{ $kontrakDitolak->links('vendor.pagination.custom-dark') }}
                     </div>
                 </div>
             </div>

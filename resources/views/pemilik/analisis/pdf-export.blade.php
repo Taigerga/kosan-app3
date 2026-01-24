@@ -226,7 +226,7 @@
                     pdf.text('Pendapatan per Kos', 20, yPosition);
                     yPosition += 10;
 
-                    const pendapatanPerKosData = @json($pendapatanPerKos);
+                    const pendapatanPerKosData = @json($pendapatanPerKosFull);
                     const pendapatanTableData = pendapatanPerKosData.map((kos, index) => [
                         index + 1,
                         kos.nama_kos,
@@ -257,7 +257,7 @@
                     pdf.text('Penghuni per Kos', 20, yPosition);
                     yPosition += 10;
 
-                    const penghuniPerKosData = @json($penghuniPerKos);
+                    const penghuniPerKosData = @json($penghuniPerKosFull);
                     const penghuniTableData = penghuniPerKosData.map((kos, index) => [
                         index + 1,
                         kos.nama_kos,
