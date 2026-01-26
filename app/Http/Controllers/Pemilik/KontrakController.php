@@ -96,11 +96,10 @@ class KontrakController extends Controller
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses!');
             }
 
-            // Update status kontrak
+            // Update status kontrak menjadi aktif tapi tanggal masih kosong
             $kontrak->update([
                 'status_kontrak' => 'aktif',
-                'tanggal_mulai' => now(),
-                'tanggal_selesai' => now()->addMonths($kontrak->durasi_sewa)
+                // Tanggal mulai dan selesai akan diisi saat pembayaran pertama kali dibuat
             ]);
 
             // Tidak membuat atau mengubah data pembayaran apapun di sini.

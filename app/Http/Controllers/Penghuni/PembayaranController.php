@@ -11,6 +11,7 @@ use App\Models\KontrakSewa;
 use App\Models\Pemilik;
 use App\Services\ALLNotificationService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class PembayaranController extends Controller
@@ -146,124 +147,132 @@ class PembayaranController extends Controller
 
     public function store(Request $request)
     {
-        $user = Auth::guard('penghuni')->user();
-
-        $request->validate([
-            'id_kontrak' => 'required|exists:kontrak_sewa,id_kontrak',
-            'jumlah_waktu' => 'required|integer|min:1', // generic name
-            'metode_pembayaran' => 'required|in:transfer,qris',
-            'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        $kontrak = KontrakSewa::with('kos')->where('id_penghuni', $user->id_penghuni)
-            ->where('id_kontrak', $request->id_kontrak)
-            ->firstOrFail();
-
-        $tipeSewa = $kontrak->kos->tipe_sewa;
-
-        // Validation max limits
-        $maxLimit = match ($tipeSewa) {
-            'harian' => 365,
-            'mingguan' => 52,
-            'tahunan' => 5,
-            default => 12
-        };
-
-        if ($request->jumlah_waktu > $maxLimit) {
-            return back()->with('error', "Maksimal pembayaran adalah $maxLimit " . ($tipeSewa == 'bulanan' ? 'bulan' : ($tipeSewa == 'mingguan' ? 'minggu' : ($tipeSewa == 'tahunan' ? 'tahun' : 'dari'))))->withInput();
-        }
-
-        // Tentukan tanggal mulai
-        $tanggalMulai = $this->getTanggalMulaiOtomatis($kontrak);
-
-        if (!$tanggalMulai) {
-            // Fallback if needed, usually means contract ended long ago or error
-            $tanggalMulai = Carbon::now();
-        }
-
-        // Calculate End Date based on type
-        $tanggalAkhir = $tanggalMulai->copy();
-        if ($tipeSewa == 'harian') {
-            $tanggalAkhir = $tanggalAkhir->addDays($request->jumlah_waktu - 1);
-        } elseif ($tipeSewa == 'mingguan') {
-            // 1 week = 7 days. If start is Mon, end is Sun (6 days later)
-            $days = $request->jumlah_waktu * 7;
-            $tanggalAkhir = $tanggalAkhir->addDays($days - 1);
-        } elseif ($tipeSewa == 'tahunan') {
-            $tanggalAkhir = $tanggalAkhir->addYears((int) $request->jumlah_waktu)->subDay();
-        } else {
-            // Bulanan
-            $tanggalAkhir = $tanggalAkhir->addMonths($request->jumlah_waktu - 1)->endOfMonth();
-        }
-
-        // Validate Advance Payment rules
-        $tanggalSelesaiKontrak = Carbon::parse($kontrak->tanggal_selesai);
-        $gracePeriodEnd = $tanggalSelesaiKontrak->copy()->addDays(7);
-
-        // Check Payment Type (Advance or Routine)
-        $jenisPembayaran = 'rutin';
-        $keterangan = 'Pembayaran rutin';
-
-        if ($tanggalMulai->greaterThan($tanggalSelesaiKontrak)) {
-            $jenisPembayaran = 'advance';
-            $keterangan = 'Pembayaran di muka (perpanjangan otomatis)';
-
-            // Allow advance only within grace period? The user logic had this check.
-            // If paying FAR in future, maybe invalid.
-            if ($tanggalMulai->greaterThan($gracePeriodEnd)) {
-                // return back()->with('error', 'Pembayaran advance hanya bisa dilakukan dalam 7 hari setelah kontrak berakhir.');
-                // Allow for now but warn? Stick to user logic:
-                // "Pembayaran advance hanya bisa dilakukan dalam 7 hari setelah kontrak berakhir."
-                // But for harian/mingguan this might be too strict? let's keep it safe.
-            }
-        }
-
-        // Upload bukti pembayaran
-        if ($request->hasFile('bukti_pembayaran')) {
-            $buktiPembayaran = $request->file('bukti_pembayaran');
-            $fileName = time() . '_' . $user->id_penghuni . '_' . uniqid() . '.' . $buktiPembayaran->getClientOriginalExtension();
-            $buktiPembayaranPath = $buktiPembayaran->storeAs('bukti_pembayaran', $fileName, 'public');
-        }
-
-try {
-            // Create Single Payment Record with Date Range
-            // Previously it looped months. Now we prefer 1 record for the range.
-            // BUT user said "Satu pembayaran = satu bukti transfer untuk multiple bulan".
-            // If I merge into one record, it's cleaner.
-
-            $pembayaran = Pembayaran::create([
-                'id_kontrak' => $kontrak->id_kontrak,
-                'id_penghuni' => $user->id_penghuni,
-                'bulan_tahun' => $tanggalMulai->format('Y-m'), // Main month
-                'tanggal_mulai_sewa' => $tanggalMulai,
-                'tanggal_akhir_sewa' => $tanggalAkhir,
-                'tanggal_jatuh_tempo' => $tanggalMulai, // Start date is due date
-                'jumlah' => $kontrak->harga_sewa * $request->jumlah_waktu,
-                'metode_pembayaran' => $request->metode_pembayaran,
-                'bukti_pembayaran' => $buktiPembayaranPath,
-                'status_pembayaran' => 'pending',
-                'jenis_pembayaran' => $jenisPembayaran,
-                'keterangan' => $keterangan . " (" . $request->jumlah_waktu . " " . $tipeSewa . ")",
-                'tanggal_pembayaran' => Carbon::now(),
+        try {
+            Log::info('PembayaranController::store - START', [
+                'request_params' => $request->except(['bukti_pembayaran']),
+                'has_file' => $request->hasFile('bukti_pembayaran'),
+                'user_id' => Auth::guard('penghuni')->id()
             ]);
 
-            // Auto Extend Contract if needed
-            if ($tanggalAkhir->greaterThan($tanggalSelesaiKontrak)) {
-                $kontrak->update([
-                    'tanggal_selesai' => $tanggalAkhir
-                ]);
+            $user = Auth::guard('penghuni')->user();
+
+            Log::debug('Store validation started');
+            $validated = $request->validate([
+                'id_kontrak' => 'required|exists:kontrak_sewa,id_kontrak',
+                'jumlah_waktu' => 'required|integer|min:1',
+                'metode_pembayaran' => 'required|in:transfer,qris',
+                'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Increased to 5MB just in case
+            ]);
+
+            $kontrak = KontrakSewa::with(['kos.pemilik', 'kamar'])
+                ->where('id_penghuni', $user->id_penghuni)
+                ->where('id_kontrak', $request->id_kontrak)
+                ->firstOrFail();
+
+            $tipeSewa = strtolower($kontrak->kos->tipe_sewa);
+            $jumlahWaktu = (int) $request->jumlah_waktu;
+
+            // Validation max limits
+            $maxLimit = match ($tipeSewa) {
+                'harian' => 365,
+                'mingguan' => 52,
+                'tahunan' => 5,
+                default => 12
+            };
+
+            if ($jumlahWaktu > $maxLimit) {
+                return back()->with('error', "Maksimal pembayaran adalah $maxLimit " . ($tipeSewa == 'bulanan' ? 'bulan' : ($tipeSewa == 'mingguan' ? 'minggu' : ($tipeSewa == 'tahunan' ? 'tahun' : 'hari'))))->withInput();
             }
 
-            // Send notifications
-            $this->sendPaymentNotifications($pembayaran, $kontrak, $user);
+            // Tentukan tanggal mulai
+            $tanggalMulai = $this->getTanggalMulaiOtomatis($kontrak);
 
-            return redirect()->route('penghuni.pembayaran.index')
-                ->with('success', 'Pembayaran berhasil dikirim! Menunggu konfirmasi pemilik.');
+            // Jika kontrak belum memiliki tanggal_mulai (baru disetujui), mulai dari hari ini
+            if (!$kontrak->tanggal_mulai || !$tanggalMulai) {
+                $tanggalMulai = Carbon::now();
+            }
+
+            // Calculate End Date based on type
+            $tanggalAkhir = $tanggalMulai->copy();
+            if ($tipeSewa == 'harian') {
+                $tanggalAkhir = $tanggalAkhir->addDays($jumlahWaktu - 1);
+            } elseif ($tipeSewa == 'mingguan') {
+                $tanggalAkhir = $tanggalAkhir->addWeeks($jumlahWaktu)->subDay();
+            } elseif ($tipeSewa == 'tahunan') {
+                $tanggalAkhir = $tanggalAkhir->addYears($jumlahWaktu)->subDay();
+            } else { // bulanan
+                $tanggalAkhir = $tanggalAkhir->addMonths($jumlahWaktu)->subDay();
+            }
+
+            // Determine payment type
+            $jenisPembayaran = 'rutin';
+            $keterangan = 'Pembayaran rutin';
+
+            if ($kontrak->tanggal_selesai) {
+                $tanggalSelesaiKontrak = Carbon::parse($kontrak->tanggal_selesai);
+                if ($tanggalMulai->greaterThan($tanggalSelesaiKontrak)) {
+                    $jenisPembayaran = 'advance';
+                    $keterangan = 'Pembayaran di muka (perpanjangan otomatis)';
+                }
+            } else {
+                $tanggalSelesaiKontrak = null;
+            }
+
+            // Upload bukti pembayaran
+            if ($request->hasFile('bukti_pembayaran')) {
+                $buktiPembayaran = $request->file('bukti_pembayaran');
+                $fileName = time() . '_' . $user->id_penghuni . '_' . uniqid() . '.' . $buktiPembayaran->getClientOriginalExtension();
+                $buktiPembayaranPath = $buktiPembayaran->storeAs('bukti_pembayaran', $fileName, 'public');
+
+                if (!$buktiPembayaranPath) {
+                    throw new \Exception('Gagal menyimpan file bukti pembayaran.');
+                }
+            } else {
+                return back()->with('error', 'File bukti pembayaran harus diupload')->withInput();
+            }
+
+            // wrap in transaction to ensure safety
+            \DB::beginTransaction();
+            try {
+                $pembayaran = Pembayaran::create([
+                    'id_kontrak' => $kontrak->id_kontrak,
+                    'id_penghuni' => $user->id_penghuni,
+                    'bulan_tahun' => $tanggalMulai->format('Y-m'),
+                    'tanggal_mulai_sewa' => $tanggalMulai,
+                    'tanggal_akhir_sewa' => $tanggalAkhir,
+                    'tanggal_jatuh_tempo' => $tanggalMulai,
+                    'jumlah' => $kontrak->harga_sewa * $jumlahWaktu,
+                    'metode_pembayaran' => $request->metode_pembayaran,
+                    'bukti_pembayaran' => $buktiPembayaranPath,
+                    'status_pembayaran' => 'pending',
+                    'jenis_pembayaran' => $jenisPembayaran,
+                    'keterangan' => $keterangan . " (" . $jumlahWaktu . " " . $tipeSewa . ")",
+                ]);
+
+                \DB::commit();
+                Log::info('Pembayaran record created (pending status)', ['id' => $pembayaran->id_pembayaran]);
+
+                // Notifications in separate try-catch so it doesn't break the user experience
+                try {
+                    $this->sendPaymentNotifications($pembayaran, $kontrak, $user);
+                } catch (\Exception $ne) {
+                    Log::error('Notification error (ignoring): ' . $ne->getMessage());
+                }
+
+                return redirect()->route('penghuni.pembayaran.index')
+                    ->with('success', 'Pembayaran berhasil dikirim! Menunggu konfirmasi pemilik.');
+
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                if (isset($buktiPembayaranPath)) {
+                    Storage::disk('public')->delete($buktiPembayaranPath);
+                }
+                Log::error('Database transaction failed in store: ' . $e->getMessage());
+                throw $e;
+            }
 
         } catch (\Exception $e) {
-            if (isset($buktiPembayaranPath)) {
-                Storage::disk('public')->delete($buktiPembayaranPath);
-            }
+            Log::error('PembayaranController::store - FAILED: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
@@ -300,8 +309,11 @@ try {
         }
 
         // If no payment, return contract start date or Now?
-        // Usually start from Contract Start
-        return Carbon::parse($kontrak->tanggal_mulai);
+        // If no contract dates (baru disetujui), start from today
+        if ($kontrak->tanggal_mulai) {
+            return Carbon::parse($kontrak->tanggal_mulai);
+        }
+        return Carbon::now();
     }
 
     /**
@@ -314,16 +326,17 @@ try {
         $endDate = $startDate->copy();
 
         if ($tipeSewa == 'harian') {
-            $endDate->addDays($jumlah - 1);
+            $endDate->addDays((int) $jumlah - 1);
         } elseif ($tipeSewa == 'mingguan') {
-            $endDate->addWeeks($jumlah)->subDay();
+            $totalHari = (int) $jumlah * 7;
+            $endDate->addDays($totalHari - 1);
         } elseif ($tipeSewa == 'tahunan') {
-            $endDate->addYears($jumlah)->subDay();
+            $endDate->addYears((int) $jumlah)->subDay();
         } else {
-            $endDate->addMonths($jumlah - 1)->endOfMonth();
+            $endDate->addMonths((int) $jumlah)->subDay();
         }
 
-return $endDate;
+        return $endDate;
     }
 
     /**
@@ -333,14 +346,31 @@ return $endDate;
     {
         try {
             // Get pemilik data
+            Log::info('Getting pemilik data', [
+                'kontrak_id' => $kontrak->id_kontrak,
+                'kos_id' => $kontrak->id_kos
+            ]);
+
             $pemilik = $kontrak->kos->pemilik;
-            
+
+            if (!$pemilik) {
+                Log::error('Pemilik not found for kontrak', ['kontrak_id' => $kontrak->id_kontrak]);
+                return ['error' => 'Pemilik not found'];
+            }
+
+            Log::info('Pemilik data found', [
+                'pemilik_id' => $pemilik->id_pemilik,
+                'pemilik_name' => $pemilik->nama,
+                'pemilik_email' => $pemilik->email,
+                'pemilik_phone' => $pemilik->no_hp
+            ]);
+
             // Prepare payment data
             $paymentData = [
                 'kosName' => $kontrak->kos->nama_kos,
                 'roomNumber' => $kontrak->kamar->nomor_kamar ?? null,
                 'amount' => $pembayaran->jumlah,
-                'paymentDate' => $pembayaran->tanggal_pembayaran ? $pembayaran->tanggal_pembayaran->format('d/m/Y') : $pembayaran->created_at->format('d/m/Y'),
+                'paymentDate' => $pembayaran->created_at ? $pembayaran->created_at->format('d/m/Y') : now()->format('d/m/Y'),
                 'period' => $this->formatPaymentPeriod($pembayaran),
                 'penghuniName' => $penghuni->nama,
                 'metodePembayaran' => $pembayaran->metode_pembayaran,
@@ -380,7 +410,7 @@ return $endDate;
             $end = $pembayaran->tanggal_akhir_sewa->format('d/m/Y');
             return "{$start} - {$end}";
         }
-        
+
         return $pembayaran->bulan_tahun;
     }
 }

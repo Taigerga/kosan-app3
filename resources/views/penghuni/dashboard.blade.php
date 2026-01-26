@@ -158,29 +158,30 @@
                                                 <span class="text-xs px-2 py-1 rounded-full 
                                                     {{ $kontrak->statusWarna == 'green' ? 'bg-green-900/30 text-green-300' :
                             ($kontrak->statusWarna == 'yellow' ? 'bg-yellow-900/30 text-yellow-300' :
-                                'bg-red-900/30 text-red-300') }}">
-                                                    {{ $kontrak->sudahBerakhir ? 'Berakhir' : 'Aktif' }}
+                                ($kontrak->statusWarna == 'red' ? 'bg-red-900/30 text-red-300' :
+                                    'bg-gray-900/30 text-gray-300')) }}">
+                                                    {{ $kontrak->statusText ?? ($kontrak->sudahBerakhir ? 'Berakhir' : 'Aktif') }}
                                                 </span>
                                             </div>
                                             <p class="text-sm text-dark-muted mb-3">Kamar {{ $kontrak->kamar->nomor_kamar }}</p>
 
+                                            {{-- Progress bar sementara dihapus untuk menghindari error --}}
+                                            @if($kontrak->persentaseAkhir !== null)
                                             <div class="mb-3">
                                                 <div class="flex justify-between text-xs text-dark-muted mb-1">
                                                     <span>Sisa waktu kontrak</span>
                                                     <span>{{ round($kontrak->persentaseAkhir) }}%</span>
                                                 </div>
-                                                <div class="w-full bg-dark-border rounded-full h-2">
-                                                    <div class="h-2 rounded-full 
-                                                        {{ $kontrak->statusWarna == 'green' ? 'bg-green-500' :
-                            ($kontrak->statusWarna == 'yellow' ? 'bg-yellow-500' : 'bg-red-500') }}"
-                                                        style="width: {{ $kontrak->persentaseAkhir }}%">
-                                                    </div>
-                                                </div>
                                             </div>
+                                            @endif
 
                                             <div class="flex items-center justify-between text-sm">
                                                 <span class="text-dark-muted">
-                                                    {{ $kontrak->sisaHari }} hari tersisa
+                                                    @if($kontrak->sisaHari !== null)
+                                                        {{ $kontrak->sisaHari }} hari tersisa
+                                                    @else
+                                                        {{ $kontrak->statusText }}
+                                                    @endif
                                                 </span>
                                                 <span class="font-bold text-white">
                                                     Rp {{ number_format($kontrak->harga_sewa, 0, ',', '.') }}/bulan
@@ -294,7 +295,7 @@
                     </h2>
                     @php
                         $kontrakBerakhirSegera = $kontrakAktif->filter(function ($kontrak) {
-                            return $kontrak->sisaHari <= 30 && !$kontrak->sudahBerakhir;
+                            return $kontrak->sisaHari <= 15 && !$kontrak->sudahBerakhir;
                         });
                     @endphp
                     @if($kontrakBerakhirSegera->count() > 0)

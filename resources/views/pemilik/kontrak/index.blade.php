@@ -208,7 +208,7 @@
                                         @if($kontrak->tanggal_mulai && $kontrak->tanggal_selesai)
                                             {{ $kontrak->tanggal_mulai->format('d M Y') }} - {{ $kontrak->tanggal_selesai->format('d M Y') }}
                                         @else
-                                            Periode belum ditentukan
+                                            <span class="text-yellow-400">Belum ada periode (menunggu pembayaran pertama)</span>
                                         @endif
                                     </p>
                                 </div>

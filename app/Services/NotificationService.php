@@ -26,6 +26,14 @@ class NotificationService
         $this->whatsapp = $whatsapp;
     }
 
+    /**
+     * Helper untuk format tanggal yang aman (handle null)
+     */
+    private function formatTanggalSafely($tanggal, $fallbackText = 'Belum ditentukan')
+    {
+        return $tanggal ? $tanggal->format('d F Y') : $fallbackText;
+    }
+
     // ==================== NOTIFIKASI AWAL PENGAJUAN ====================
 
     public function sendMenungguPersetujuan($kontrakId)
@@ -75,13 +83,16 @@ class NotificationService
             Log::error("Failed to send email KontrakDiterima: " . $e->getMessage());
         }
 
+        // Handle null tanggal_mulai (baru disetujui tapi belum ada pembayaran)
+        $tanggalMulaiText = $kontrak->tanggal_mulai ? $kontrak->tanggal_mulai->format('d F Y') : 'Menunggu pembayaran pertama';
+        
         $message = "✅ *SELAMAT! PERMOHONAN DISETUJUI*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Kabar gembira! Permohonan ngekos Anda di *{$kontrak->kos->nama_kos}* telah **DISETUJUI** oleh pemilik.\n\n"
-            . "📅 Mulai Sewa: " . $kontrak->tanggal_mulai->format('d F Y') . "\n"
+            . "📅 Mulai Sewa: {$tanggalMulaiText}\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
-            . "Silakan cek email Anda untuk detail kontrak sewa.\n\n"
+            . ($kontrak->tanggal_mulai ? "Silakan cek email Anda untuk detail kontrak sewa.\n\n" : "Silakan lakukan pembayaran pertama untuk mengaktifkan masa sewa Anda.\n\n")
             . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
@@ -222,11 +233,16 @@ class NotificationService
             return false;
         }
 
+        // Skip jika tanggal_selesai null
+        if (!$kontrak->tanggal_selesai) {
+            return false;
+        }
+
         $sisaHari = (int) ceil(Carbon::now()->diffInDays($kontrak->tanggal_selesai));
         $message = "⏰ *Pengingat Kontrak Kos*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Masa kontrak Anda di *{$kontrak->kos->nama_kos}* akan berakhir dalam *{$sisaHari} hari*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "Silakan hubungi pemilik kos untuk perpanjangan atau persiapan lainnya.\n\n"
             . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
@@ -251,11 +267,16 @@ class NotificationService
             return false;
         }
 
+        // Skip jika tanggal_selesai null
+        if (!$kontrak->tanggal_selesai) {
+            return false;
+        }
+
         $sisaHari = (int) ceil(Carbon::now()->diffInDays($kontrak->tanggal_selesai));
         $message = "⚠️ *Pengingat Penting Kontrak Kos*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Masa kontrak Anda di *{$kontrak->kos->nama_kos}* akan berakhir dalam *{$sisaHari} hari*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*Segera lakukan perpanjangan atau persiapan pindah!*\n\n"
@@ -277,14 +298,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_h1_dikirim) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_h1_dikirim) {
             return false;
         }
 
         $message = "🚨 *PENGINGAT TERAKHIR KONTRAK KOS*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "*BESOK* masa kontrak Anda di *{$kontrak->kos->nama_kos}* akan BERAKHIR!\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
             . "*HUBUNGI PEMILIK KOS SEGERA!*\n"
@@ -307,14 +328,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_hari_ini_dikirim) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_hari_ini_dikirim) {
             return false;
         }
 
         $message = "⏳ *HARI INI KONTRAK BERAKHIR*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Hari ini adalah *HARI TERAKHIR* kontrak Anda di *{$kontrak->kos->nama_kos}*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "*TINDAKAN YANG HARUS DILAKUKAN:*\n"
             . "1. Lakukan pembayaran terakhir jika belum\n"
@@ -338,14 +359,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_terlambat_dikirim) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_terlambat_dikirim) {
             return false;
         }
 
         $message = "❌ *KONTRAK SUDAH BERAKHIR*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Masa kontrak Anda di *{$kontrak->kos->nama_kos}* sudah BERAKHIR sejak *{$hariTerlambat} hari* yang lalu.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
             . "*STATUS SAAT INI: KONTRAK TIDAK AKTIF*\n\n"
             . "Silakan hubungi pemilik kos untuk:\n"
@@ -372,7 +393,7 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->kos->pemilik) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
         }
 
@@ -380,7 +401,7 @@ class NotificationService
         $message = "📋 *Pengingat Kontrak Penghuni*\n\n"
             . "Halo {$kontrak->kos->pemilik->nama},\n"
             . "Kontrak penghuni *{$kontrak->penghuni->nama}* di *{$kontrak->kos->nama_kos}* akan berakhir dalam *{$sisaHari} hari*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n\n"
             . "Silakan koordinasi dengan penghuni untuk perpanjangan atau persiapan check-out.\n\n"
@@ -396,7 +417,7 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->kos->pemilik) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
         }
 
@@ -404,7 +425,7 @@ class NotificationService
         $message = "⚠️ *Pengingat Penting Kontrak Penghuni*\n\n"
             . "Halo {$kontrak->kos->pemilik->nama},\n"
             . "Kontrak penghuni *{$kontrak->penghuni->nama}* di *{$kontrak->kos->nama_kos}* akan berakhir dalam *{$sisaHari} hari*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
@@ -421,14 +442,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->kos->pemilik) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
         }
 
         $message = "🚨 *PENGINGAT TERAKHIR KONTRAK PENGHUNI*\n\n"
             . "Halo {$kontrak->kos->pemilik->nama},\n"
             . "*BESOK* kontrak penghuni *{$kontrak->penghuni->nama}* di *{$kontrak->kos->nama_kos}* akan BERAKHIR!\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n"
             . "💰 Biaya sewa: Rp " . number_format($kontrak->harga_sewa, 0, ',', '.') . "\n\n"
@@ -446,14 +467,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->kos->pemilik) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
         }
 
         $message = "⏳ *HARI INI KONTRAK PENGHUNI BERAKHIR*\n\n"
             . "Halo {$kontrak->kos->pemilik->nama},\n"
             . "Hari ini adalah *HARI TERAKHIR* kontrak penghuni *{$kontrak->penghuni->nama}* di *{$kontrak->kos->nama_kos}*.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n\n"
             . "*TINDAKAN YANG HARUS DILAKUKAN:*\n"
@@ -473,14 +494,14 @@ class NotificationService
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->kos->pemilik) {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
         }
 
         $message = "❌ *KONTRAK PENGHUNI SUDAH BERAKHIR*\n\n"
             . "Halo {$kontrak->kos->pemilik->nama},\n"
             . "Kontrak penghuni *{$kontrak->penghuni->nama}* di *{$kontrak->kos->nama_kos}* sudah BERAKHIR sejak *{$hariTerlambat} hari* yang lalu.\n\n"
-            . "📅 Tanggal berakhir: " . $kontrak->tanggal_selesai->format('d F Y') . "\n"
+            . "📅 Tanggal berakhir: " . $this->formatTanggalSafely($kontrak->tanggal_selesai) . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n"
             . "👤 Penghuni: {$kontrak->penghuni->nama} ({$kontrak->penghuni->no_hp})\n\n"
             . "*STATUS SAAT INI: KONTRAK TIDAK AKTIF*\n\n"
@@ -578,7 +599,7 @@ class NotificationService
     {
         $kontrak = KontrakSewa::find($kontrakId);
 
-        if (!$kontrak || $kontrak->status_kontrak !== 'aktif') {
+        if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai) {
             return;
         }
 

@@ -115,8 +115,12 @@
                                     <div>
                                         <p class="text-sm text-dark-muted mb-1">Periode</p>
                                         <p class="font-medium text-white">
-                                            {{ $kontrak->tanggal_mulai->format('d M Y') }} -
-                                            {{ $kontrak->tanggal_selesai->format('d M Y') }}
+                                            @if($kontrak->tanggal_mulai && $kontrak->tanggal_selesai)
+                                                {{ $kontrak->tanggal_mulai->format('d M Y') }} -
+                                                {{ $kontrak->tanggal_selesai->format('d M Y') }}
+                                            @else
+                                                <span class="text-yellow-400">Menunggu pembayaran pertama</span>
+                                            @endif
                                         </p>
                                     </div>
                                 </div>

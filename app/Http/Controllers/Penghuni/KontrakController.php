@@ -149,8 +149,8 @@ class KontrakController extends Controller
 
             // Update tanggal selesai
             $kontrak->update([
-                'tanggal_selesai' => $kontrak->tanggal_selesai->addMonths($request->durasi_perpanjangan),
-                'durasi_sewa' => $kontrak->durasi_sewa + $request->durasi_perpanjangan
+                'tanggal_selesai' => $kontrak->tanggal_selesai->addMonths((int)$request->durasi_perpanjangan),
+                'durasi_sewa' => $kontrak->durasi_sewa + (int)$request->durasi_perpanjangan
             ]);
             
             // TAMBAHKAN: Kirim EMAIL notifikasi ke pemilik tentang perpanjangan

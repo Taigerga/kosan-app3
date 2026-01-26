@@ -29,11 +29,25 @@ class DashboardController extends Controller
         // Tambahkan data sisa waktu untuk setiap kontrak
         $kontrakAktif->each(function($kontrak) {
             $sekarang = Carbon::now();
+            
+            // Handle null tanggal_selesai dan tanggal_mulai
+            if (!$kontrak->tanggal_selesai || !$kontrak->tanggal_mulai) {
+                // Kontrak baru disetujui tapi belum ada pembayaran
+                $kontrak->sisaHari = null;
+                $kontrak->totalHari = null;
+                $kontrak->persentaseAkhir = null;
+                $kontrak->statusWarna = 'gray'; // Warna khusus untuk kontrak tanpa periode
+                $kontrak->sudahBerakhir = false;
+                $kontrak->statusText = 'Menunggu pembayaran pertama';
+                return; // Skip ke next kontrak
+            }
+            
             $selesai = Carbon::parse($kontrak->tanggal_selesai);
+            $mulai = Carbon::parse($kontrak->tanggal_mulai);
             
             // Hitung sisa hari (convert ke integer)
             $sisaHari = (int) floor($sekarang->diffInDays($selesai, false));
-            $totalHari = (int) floor($kontrak->tanggal_mulai->diffInDays($kontrak->tanggal_selesai));
+            $totalHari = (int) floor($mulai->diffInDays($selesai));
             
             // Hitung persentase waktu tersisa
             $persentaseAkhir = $totalHari > 0 ? ($sisaHari / $totalHari) * 100 : 0;
@@ -52,6 +66,7 @@ class DashboardController extends Controller
             $kontrak->persentaseAkhir = max($persentaseAkhir, 0);
             $kontrak->statusWarna = $statusWarna;
             $kontrak->sudahBerakhir = $sisaHari < 0;
+            $kontrak->statusText = $sisaHari < 0 ? 'Kontrak telah berakhir' : 'Kontrak aktif';
         });
 
         $pembayaranTerakhir = Pembayaran::with(['kontrak.kos'])

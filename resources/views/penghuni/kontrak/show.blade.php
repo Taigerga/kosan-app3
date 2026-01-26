@@ -165,7 +165,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-dark-muted mb-1">Tanggal Mulai</p>
-                                <p class="font-medium text-white">{{ $kontrak->tanggal_mulai->format('d M Y') }}</p>
+                                <p class="font-medium text-white">{{ $kontrak->tanggal_mulai ? $kontrak->tanggal_mulai->format('d M Y') : 'Menunggu pembayaran pertama' }}</p>
                             </div>
                         </div>
                         
@@ -175,7 +175,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-dark-muted mb-1">Tanggal Selesai</p>
-                                <p class="font-medium text-white">{{ $kontrak->tanggal_selesai->format('d M Y') }}</p>
+                                <p class="font-medium text-white">{{ $kontrak->tanggal_selesai ? $kontrak->tanggal_selesai->format('d M Y') : 'Menunggu pembayaran pertama' }}</p>
                             </div>
                         </div>
                     </div>
@@ -347,13 +347,15 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 rounded-full bg-yellow-500 mr-3"></div>
-                        <div>
-                            <p class="text-sm font-medium text-white">Berakhir Kontrak</p>
-                            <p class="text-xs text-dark-muted">{{ $kontrak->tanggal_selesai->format('d M Y') }}</p>
-                        </div>
-                    </div>
+                     @if($kontrak->tanggal_selesai)
+                     <div class="flex items-center">
+                         <div class="w-3 h-3 rounded-full bg-yellow-500 mr-3"></div>
+                         <div>
+                             <p class="text-sm font-medium text-white">Berakhir Kontrak</p>
+                             <p class="text-xs text-dark-muted">{{ $kontrak->tanggal_selesai->format('d M Y') }}</p>
+                         </div>
+                     </div>
+                     @endif
                     @endif
                 </div>
             </div>

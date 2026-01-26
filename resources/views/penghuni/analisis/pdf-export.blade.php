@@ -323,7 +323,11 @@
 
         // Helper function untuk format number
         function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            // Pastikan number adalah angka, bukan string
+            const num = typeof number === 'string' ? parseFloat(number) : number;
+            
+            // Format dengan pemisah ribuan tanpa desimal kecuali jika ada
+            return num.toLocaleString('id-ID');
         }
     });
 </script>

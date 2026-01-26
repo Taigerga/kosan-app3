@@ -52,6 +52,25 @@
                 </div>
             </div>
 
+            <!-- Success/Error Messages from Session -->
+            @if(session('success'))
+                <div class="bg-green-900/30 border border-green-800/50 text-green-300 px-4 py-3 rounded-xl mb-6 backdrop-blur-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-3"></i>
+                        {{ session('success') }}
+                    </div>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-900/30 border border-red-800/50 text-red-300 px-4 py-3 rounded-xl mb-6 backdrop-blur-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i>
+                        {{ session('error') }}
+                    </div>
+                </div>
+            @endif
+
             <!-- Info Kontrak -->
             <div class="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
                 <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
@@ -68,11 +87,11 @@
                                 class="w-full pl-12 pr-10 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 appearance-none transition">
                                 @foreach($kontrakAktif as $k)
                                     <option value="{{ $k->id_kontrak }}" data-harga="{{ $k->harga_sewa }}"
-                                        data-mulai="{{ $k->tanggal_mulai->format('d M Y') }}"
-                                        data-selesai="{{ $k->tanggal_selesai->format('d M Y') }}"
+                                        data-mulai="{{ $k->tanggal_mulai ? $k->tanggal_mulai->format('d M Y') : '-' }}"
+                                        data-selesai="{{ $k->tanggal_selesai ? $k->tanggal_selesai->format('d M Y') : '-' }}"
                                         data-pemilik="{{ $k->kos->pemilik->nama }}" data-kos="{{ $k->kos->nama_kos }}"
                                         data-kamar="{{ $k->kamar->nomor_kamar }}"
-                                        data-grace-period="{{ \Carbon\Carbon::parse($k->tanggal_selesai)->addDays(7)->format('d M Y') }}"
+                                        data-grace-period="{{ $k->tanggal_selesai ? \Carbon\Carbon::parse($k->tanggal_selesai)->addDays(7)->format('d M Y') : '-' }}"
                                         data-nama-bank="{{ $k->kos->pemilik->nama_bank ?? 'Belum Diatur' }}"
                                         data-nomor-rekening="{{ $k->kos->pemilik->nomor_rekening ?? '-' }}"
                                         @if($k->id_kontrak == $selectedKontrak->id_kontrak) selected @endif>
@@ -117,8 +136,12 @@
                         <div>
                             <div class="text-dark-muted text-xs">Periode Kontrak</div>
                             <div class="font-medium text-white" id="info-periode">
-                                {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_mulai)->format('d M Y') }} -
-                                {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_selesai)->format('d M Y') }}
+                                @if($selectedKontrak->tanggal_mulai && $selectedKontrak->tanggal_selesai)
+                                    {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_mulai)->format('d M Y') }} -
+                                    {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_selesai)->format('d M Y') }}
+                                @else
+                                    <span class="text-yellow-400">Menunggu pembayaran pertama</span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -127,7 +150,11 @@
                         <div>
                             <div class="text-dark-muted text-xs">Tenggat Pembayaran</div>
                             <div class="font-medium text-yellow-300" id="info-grace-period">
-                                {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_selesai)->addDays(7)->format('d M Y') }}
+                                @if($selectedKontrak->tanggal_selesai)
+                                    {{ \Carbon\Carbon::parse($selectedKontrak->tanggal_selesai)->addDays(7)->format('d M Y') }}
+                                @else
+                                    -
+                                @endif
                             </div>
                             <div class="text-xs text-dark-muted mt-1">(7 hari setelah kontrak berakhir)</div>
                         </div>
@@ -205,7 +232,7 @@
                             <div class="text-sm text-yellow-200 grid grid-cols-2 gap-2">
                                 <div>
                                     <div class="text-yellow-400/80 text-xs">Mulai</div>
-                                    <div id="preview-mulai">Bulan berikutnya yang belum dibayar</div>
+                                    <div id="preview-mulai">{{ $unitLabel == 'Hari' ? 'Hari berikutnya yang belum dibayar' : ($unitLabel == 'Minggu' ? 'Minggu berikutnya yang belum dibayar' : ($unitLabel == 'Tahun' ? 'Tahun berikutnya yang belum dibayar' : 'Bulan berikutnya yang belum dibayar')) }}</div>
                                 </div>
                                 <div>
                                     <div class="text-yellow-400/80 text-xs">Selesai</div>

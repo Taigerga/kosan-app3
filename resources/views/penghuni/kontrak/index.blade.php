@@ -138,7 +138,7 @@
                                 <i class="fas fa-play-circle text-blue-400 text-sm"></i>
                                 <span class="text-sm text-dark-muted">Mulai</span>
                             </div>
-                            <div class="text-white font-medium">{{ $k->tanggal_mulai->format('d M Y') }}</div>
+                            <div class="text-white font-medium">{{ $k->tanggal_mulai ? $k->tanggal_mulai->format('d M Y') : '-' }}</div>
                         </div>
                         @endif
 
@@ -149,7 +149,7 @@
                                 <i class="fas fa-flag-checkered text-purple-400 text-sm"></i>
                                 <span class="text-sm text-dark-muted">Selesai</span>
                             </div>
-                            <div class="text-white font-medium">{{ $k->tanggal_selesai->format('d M Y') }}</div>
+                            <div class="text-white font-medium">{{ $k->tanggal_selesai ? $k->tanggal_selesai->format('d M Y') : '-' }}</div>
                         </div>
                         @endif
                     </div>
