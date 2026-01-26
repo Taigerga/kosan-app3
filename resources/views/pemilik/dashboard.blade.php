@@ -298,18 +298,13 @@
                                             {{ $kontrak->kos->nama_kos }} - Kamar {{ $kontrak->kamar->nomor_kamar }}
                                         </p>
                                         <div class="flex space-x-2">
-                                            <form method="POST"
-                                                action="{{ route('pemilik.kontrak.approve', $kontrak->id_kontrak) }}">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition"
-                                                    onclick="return confirm('Setujui kontrak ini?')">
-                                                    <i class="fas fa-check mr-1"></i>
-                                                    Setujui
-                                                </button>
-                                            </form>
+                                            <button onclick="showApproveModal('{{ route('pemilik.kontrak.approve', $kontrak->id_kontrak) }}', '{{ $kontrak->penghuni->nama ?? 'Penghuni' }}')"
+                                                    class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">
+                                                <i class="fas fa-check mr-1"></i>
+                                                Setujui
+                                            </button>
                                             <button
-                                                onclick="showRejectModal({{ $kontrak->id_kontrak }}, '{{ $kontrak->penghuni->nama }}')"
+                                                onclick="showRejectModal({{ $kontrak->id_kontrak }}, '{{ $kontrak->penghuni->nama ?? 'Penghuni' }}')"
                                                 class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">
                                                 <i class="fas fa-times mr-1"></i>
                                                 Tolak
@@ -411,28 +406,71 @@
     <div id="rejectModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-50">
         <div class="relative top-20 mx-auto p-5 border border-dark-border w-96 shadow-2xl rounded-2xl bg-dark-card">
             <div class="mt-3">
-                <h3 class="text-lg font-semibold text-white mb-4">Tolak Permohonan Kontrak</h3>
-                <p class="text-sm text-dark-muted mb-4" id="rejectUserName">Alasan penolakan untuk: <span
-                        class="text-white font-medium"></span></p>
-
+                <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-times-circle text-red-400 mr-2"></i>
+                    Tolak Permohonan Kontrak
+                </h3>
+                <p class="text-sm text-dark-muted mb-4" id="rejectUserName">
+                    Alasan penolakan untuk: <span class="text-white font-medium"></span>
+                </p>
+                
                 <form method="POST" action="" id="rejectForm">
                     @csrf
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-white mb-2">Alasan Penolakan *</label>
-                        <textarea name="alasan_ditolak"
-                            class="w-full px-3 py-2 bg-dark-bg border border-dark-border text-white rounded-lg focus:outline-none focus:border-primary-500"
-                            rows="4" placeholder="Berikan alasan penolakan yang jelas..." required></textarea>
+                        <textarea name="alasan_ditolak" 
+                                  class="w-full px-3 py-2 bg-dark-bg border border-dark-border text-white rounded-lg focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/30"
+                                  rows="4" 
+                                  placeholder="Berikan alasan penolakan yang jelas..."
+                                  required></textarea>
                     </div>
-
+                    
                     <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeRejectModal()"
-                            class="px-4 py-2 bg-dark-border text-white rounded-lg hover:bg-dark-border/80 transition">
+                        <button type="button" 
+                                onclick="closeRejectModal()"
+                                class="px-4 py-2 bg-dark-border text-white rounded-lg hover:bg-dark-border/80 transition">
                             Batal
                         </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        <button type="submit" 
+                                class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition shadow-lg">
                             <i class="fas fa-times mr-2"></i>
                             Tolak Kontrak
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Modal -->
+    <div id="approveModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border border-dark-border w-96 shadow-2xl rounded-2xl bg-dark-card">
+            <div class="mt-3">
+                <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    Setujui Permohonan Kontrak
+                </h3>
+                <p class="text-sm text-dark-muted mb-4" id="approveUserName">
+                    Konfirmasi persetujuan untuk: <span class="text-white font-medium"></span>
+                </p>
+                
+                <form method="POST" action="" id="approveForm">
+                    @csrf
+                    
+                    <p class="text-sm text-gray-300 mb-6">
+                        Apakah Anda yakin ingin menyetujui kontrak ini? Status kamar akan berubah menjadi terisi dan kontrak akan aktif.
+                    </p>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" 
+                                onclick="closeApproveModal()"
+                                class="px-4 py-2 bg-dark-border text-white rounded-lg hover:bg-dark-border/80 transition">
+                            Batal
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition shadow-lg">
+                            <i class="fas fa-check mr-2"></i>
+                            Setujui Kontrak
                         </button>
                     </div>
                 </form>
@@ -453,11 +491,27 @@
             document.getElementById('rejectForm').reset();
         }
 
+        // Approve modal functionality
+        function showApproveModal(actionUrl, userName) {
+            document.querySelector('#approveUserName span').textContent = userName;
+            document.getElementById('approveForm').action = actionUrl;
+            document.getElementById('approveModal').classList.remove('hidden');
+        }
+
+        function closeApproveModal() {
+            document.getElementById('approveModal').classList.add('hidden');
+        }
+
         // Close modal when clicking outside
-        window.onclick = function (event) {
-            const modal = document.getElementById('rejectModal');
-            if (event.target === modal) {
+        window.onclick = function(event) {
+            const rejectModal = document.getElementById('rejectModal');
+            const approveModal = document.getElementById('approveModal');
+            
+            if (event.target === rejectModal) {
                 closeRejectModal();
+            }
+            if (event.target === approveModal) {
+                closeApproveModal();
             }
         }
     </script>

@@ -262,9 +262,9 @@
                                     Rp {{ number_format($kos->total_pendapatan, 0, ',', '.') }}
                                 </p>
                                  <div class="w-32 h-1 bg-dark-border rounded-full overflow-hidden mt-1">
-                                     <div class="h-full bg-green-500 rounded-full"
-                                          style="width: {{ ($kos->total_pendapatan / ($pendapatanPerKosFull->max('total_pendapatan') ?: 1)) * 100 }}%">
-                                     </div>
+                                      <div class="h-full bg-green-500 rounded-full"
+                                           style="width: {{ ($pendapatanPerKosFull->max('total_pendapatan') > 0 ? ($kos->total_pendapatan / $pendapatanPerKosFull->max('total_pendapatan')) * 100 : 0) }}%">
+                                      </div>
                                  </div>
                             </div>
                         </div>
@@ -323,9 +323,9 @@
                             <div class="text-right">
                                 <div class="flex items-center justify-end">
                                      <div class="w-24 h-6 bg-dark-border rounded-full overflow-hidden mr-3">
-                                         <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
-                                              style="width: {{ ($kos->jumlah_penghuni / ($penghuniPerKosFull->max('jumlah_penghuni') ?: 1)) * 100 }}%">
-                                         </div>
+                                          <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
+                                               style="width: {{ ($penghuniPerKosFull->max('jumlah_penghuni') > 0 ? ($kos->jumlah_penghuni / $penghuniPerKosFull->max('jumlah_penghuni')) * 100 : 0) }}%">
+                                          </div>
                                      </div>
                                     <span class="text-lg font-bold text-white">
                                         {{ $kos->jumlah_penghuni }}
@@ -361,8 +361,77 @@
                  </div>
                  @endif
              </div>
-         </div>
-     </div>
+          </div>
+      </div>
+
+        <!-- Insight Section -->
+        <div class="bg-dark-card border border-dark-border rounded-2xl p-6 card-hover">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-400 mr-3"></i>
+                Insight Bisnis Anda
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                @php
+                    $kosTerbaik = $pendapatanPerKosFull->sortByDesc('total_pendapatan')->first();
+                    $kosPalingBanyakPenghuni = $penghuniPerKosFull->sortByDesc('jumlah_penghuni')->first();
+                    $rataPendapatan = $pendapatanPerKosFull->avg('total_pendapatan') ?? 0;
+                    $persentaseTerisi = ($statusKamar->where('status_kamar', 'terisi')->sum('jumlah') / ($statusKamar->sum('jumlah') ?: 1)) * 100;
+                @endphp
+                
+                <!-- Insight 1: Kos Terbaik -->
+                <div class="bg-primary-900/20 border border-primary-500/30 p-4 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-primary-900/30 flex items-center justify-center mr-3">
+                            <i class="fas fa-trophy text-primary-400"></i>
+                        </div>
+                        <h3 class="font-semibold text-white">Kos Terbaik</h3>
+                    </div>
+                    <p class="text-sm text-dark-muted">
+                        Kos 
+                        <span class="font-bold text-primary-300">{{ $kosTerbaik->nama_kos ?? '-' }}</span> 
+                        menghasilkan pendapatan tertinggi sebesar 
+                        <span class="font-bold text-primary-300">
+                            Rp {{ number_format($kosTerbaik->total_pendapatan ?? 0, 0, ',', '.') }}
+                        </span>
+                    </p>
+                </div>
+
+                <!-- Insight 2: Okupansi Tinggi -->
+                <div class="bg-green-900/20 border border-green-500/30 p-4 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-green-900/30 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-line text-green-400"></i>
+                        </div>
+                        <h3 class="font-semibold text-white">Tingkat Okupansi</h3>
+                    </div>
+                    <p class="text-sm text-dark-muted">
+                        Okupansi saat ini: 
+                        <span class="font-bold text-green-300">{{ number_format($persentaseTerisi, 1) }}%</span>
+                        dari total kamar, dengan 
+                        <span class="font-bold text-green-300">
+                            {{ $statusKamar->where('status_kamar', 'terisi')->sum('jumlah') }}
+                        </span> kamar terisi.
+                    </p>
+                </div>
+
+                <!-- Insight 3: Potensi Pengembangan -->
+                <div class="bg-purple-900/20 border border-purple-500/30 p-4 rounded-xl">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-purple-900/30 flex items-center justify-center mr-3">
+                            <i class="fas fa-users text-purple-400"></i>
+                        </div>
+                        <h3 class="font-semibold text-white">Penghuni Terbanyak</h3>
+                    </div>
+                    <p class="text-sm text-dark-muted">
+                        Kos 
+                        <span class="font-bold text-purple-300">{{ $kosPalingBanyakPenghuni->nama_kos ?? '-' }}</span> 
+                        memiliki penghuni terbanyak: 
+                        <span class="font-bold text-purple-300">{{ $kosPalingBanyakPenghuni->jumlah_penghuni ?? 0 }} orang</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Include Chart.js -->
@@ -735,6 +804,57 @@
     });
    
 </script>
+
+<style>
+    /* Custom chart styles for dark theme */
+    .chart-container {
+        position: relative;
+    }
+    
+    /* Custom scrollbar for tables */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #1e293b;
+        border-radius: 3px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 3px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+    
+    /* Table hover effects */
+    tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    tbody tr:hover {
+        background-color: rgba(51, 65, 85, 0.3);
+    }
+    
+    /* Card animations */
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Insight cards hover */
+    .grid > div:hover {
+        transform: translateY(-3px);
+        transition: transform 0.3s ease;
+    }
+</style>
 
 <!-- Include library PDF dan script export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

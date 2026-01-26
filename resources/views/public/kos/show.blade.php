@@ -55,9 +55,9 @@
                 <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                     <div class="flex-1">
                         <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">{{ $kos->nama_kos }}</h1>
-                        <div class="flex items-center text-dark-muted mb-4">
-                            <i class="fas fa-map-marker-alt text-primary-400 mr-2"></i>
-                            <span class="truncate">{{ $kos->alamat }}, {{ $kos->kecamatan }}, {{ $kos->kota }}</span>
+                        <div class="flex items-start text-dark-muted mb-4">
+                            <i class="fas fa-map-marker-alt text-primary-400 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <span class="leading-relaxed">{{ $kos->alamat }}, {{ $kos->kecamatan }}, {{ $kos->kota }}</span>
                         </div>
                         
                         <!-- Rating -->
@@ -81,15 +81,17 @@
                         </div>
                         @endif
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-primary-900/30 text-primary-300 border border-primary-700/30 capitalize">
-                            {{ $kos->jenis_kos }}
-                        </span>
-                        <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-green-900/30 text-green-300 border border-green-700/30">
-                            {{ $kos->kamar->count() }} Kamar
-                        </span>
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-primary-900/30 text-primary-300 border border-primary-700/30 capitalize whitespace-nowrap">
+                                {{ $kos->jenis_kos }}
+                            </span>
+                            <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-green-900/30 text-green-300 border border-green-700/30 whitespace-nowrap">
+                                {{ $kos->kamar->count() }} Kamar
+                            </span>
+                        </div>
                         <button onclick="shareKos()" 
-                                class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-900/30 text-blue-300 border border-blue-700/30 hover:bg-blue-800/40 transition-all duration-300 flex items-center">
+                                class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-900/30 text-blue-300 border border-blue-700/30 hover:bg-blue-800/40 transition-all duration-300 flex items-center whitespace-nowrap">
                             <i class="fas fa-share-alt mr-1"></i>
                             Bagikan
                         </button>

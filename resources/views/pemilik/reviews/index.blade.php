@@ -83,7 +83,7 @@
                 <div class="p-3 rounded-lg bg-primary-900/30">
                     <i class="fas fa-comment-alt text-primary-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-primary-900/20 text-primary-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-primary-900/20 text-primary-300">
                     Total
                 </span>
             </div>
@@ -96,7 +96,7 @@
                 <div class="p-3 rounded-lg bg-yellow-900/30">
                     <i class="fas fa-star text-yellow-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-yellow-900/20 text-yellow-300">
                     Rata-rata
                 </span>
             </div>
@@ -109,7 +109,7 @@
                 <div class="p-3 rounded-lg bg-green-900/30">
                     <i class="fas fa-calendar-alt text-green-400 text-xl"></i>
                 </div>
-                <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
+                <span class="text-sm font-medium px-2 py-1 rounded-full bg-green-900/20 text-green-300">
                     Terbaru
                 </span>
             </div>
