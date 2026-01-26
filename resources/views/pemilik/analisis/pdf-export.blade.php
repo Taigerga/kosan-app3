@@ -121,7 +121,9 @@
                         { id: 'pendapatanChart', title: 'Trend Pendapatan (12 Bulan Terakhir)' },
                         { id: 'statusKamarChart', title: 'Distribusi Status Kamar' },
                         { id: 'jenisKosChart', title: 'Distribusi Jenis Kos' },
-                        { id: 'statusKontrakChart', title: 'Status Kontrak' }
+                        { id: 'statusKontrakChart', title: 'Status Kontrak' },
+                        { id: 'reviewChart', title: 'Distribusi Rating' },
+                        { id: 'tipeKamarChart', title: 'Distribusi Tipe Kamar' }
                     ];
 
                     for (const chart of charts) {
@@ -212,6 +214,37 @@
                             yPosition += 5;
                             pdf.text(`Pendapatan Tertinggi: Rp ${formatNumber(maxPendapatan)}`, 20, yPosition);
                             yPosition += 5;
+                        } else if (chart.id === 'reviewChart') {
+                            const reviewData = @json($reviewData);
+                            const totalReviews = reviewData.reduce((sum, item) => sum + item.jumlah, 0);
+                            const avgRating = reviewData.reduce((sum, item) => sum + (item.rating * item.jumlah), 0) / totalReviews || 0;
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(0, 0, 0);
+                            pdf.text(`Total Review: ${totalReviews} review`, 20, yPosition);
+                            yPosition += 5;
+                            pdf.text(`Rating Rata-rata: ${avgRating.toFixed(1)} `, 20, yPosition);
+                            yPosition += 5;
+                        } else if (chart.id === 'tipeKamarChart') {
+                            const tipeKamarData = @json($tipeKamar);
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(0, 0, 0);
+                            let legendY = yPosition;
+                            const colors = [
+                                { name: 'Cyan', rgb: [6, 182, 212] },
+                                { name: 'Purple', rgb: [168, 85, 247] },
+                                { name: 'Pink', rgb: [236, 72, 153] },
+                                { name: 'Teal', rgb: [20, 184, 166] },
+                                { name: 'Orange', rgb: [251, 146, 60] }
+                            ];
+                            tipeKamarData.forEach((item, index) => {
+                                if (colors[index]) {
+                                    pdf.setFillColor(...colors[index].rgb);
+                                    pdf.rect(20, legendY - 3, 5, 5, 'F');
+                                    pdf.text(`${item.tipe_kamar}: ${item.jumlah} kamar`, 28, legendY);
+                                    legendY += 6;
+                                }
+                            });
+                            yPosition = legendY + 5;
                         }
                         yPosition += 5;
                     }

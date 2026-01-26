@@ -163,7 +163,21 @@
                                 @foreach($fasilitasList as $fasilitas)
                                     <option value="{{ $fasilitas->id_fasilitas }}" 
                                             {{ in_array($fasilitas->id_fasilitas, $selectedFacilities) ? 'selected' : '' }}>
-                                        <i class="fas fa-{{ $fasilitas->icon ?? 'check' }} mr-2"></i>
+                                        @php
+                                            $iconMap = [
+                                                'wifi' => 'wifi',
+                                                'laundry' => 'shirt',
+                                                'kitchen' => 'utensils',
+                                                'bath' => 'bath',
+                                                'hot-water' => 'temperature-high',
+                                                'motorcycle' => 'motorcycle',
+                                                'car' => 'car',
+                                                'cctv' => 'video',
+                                                'security' => 'shield-alt'
+                                            ];
+                                            $displayIcon = $iconMap[$fasilitas->icon] ?? 'check';
+                                        @endphp
+                                        <i class="fas fa-{{ $displayIcon }} mr-2"></i>
                                         {{ $fasilitas->nama_fasilitas }}
                                     </option>
                                 @endforeach
@@ -278,7 +292,21 @@
                             @endphp
                             @foreach($selectedFacilities as $fasilitas)
                             <span class="inline-flex items-center bg-purple-900/30 text-purple-300 px-3 py-1.5 rounded-full text-sm">
-                                <i class="fas fa-{{ $fasilitas->icon ?? 'check' }} mr-1"></i>
+                                @php
+                                    $iconMap = [
+                                        'wifi' => 'wifi',
+                                        'laundry' => 'shirt',
+                                        'kitchen' => 'utensils',
+                                        'bath' => 'bath',
+                                        'hot-water' => 'temperature-high',
+                                        'motorcycle' => 'motorcycle',
+                                        'car' => 'car',
+                                        'cctv' => 'video',
+                                        'security' => 'shield-alt'
+                                    ];
+                                    $displayIcon = $iconMap[$fasilitas->icon] ?? 'check';
+                                @endphp
+                                <i class="fas fa-{{ $displayIcon }} mr-1"></i>
                                 {{ $fasilitas->nama_fasilitas }}
                                 <a href="{{ request()->fullUrlWithQuery(['fasilitas' => array_diff($selectedFacilityIds, [$fasilitas->id_fasilitas])]) }}" class="ml-2 hover:text-white">
                                     &times;
@@ -367,7 +395,21 @@
                     <div class="flex flex-wrap gap-2 mb-4">
                         @foreach($k->fasilitas->take(3) as $fasilitas)
                         <span class="px-2 py-1 text-xs rounded-lg bg-slate-700/50 text-slate-400">
-                            <i class="fas fa-{{ $fasilitas->icon ?? 'check' }} mr-1"></i>
+                            @php
+                                $iconMap = [
+                                    'wifi' => 'wifi',
+                                    'laundry' => 'shirt',
+                                    'kitchen' => 'utensils',
+                                    'bath' => 'bath',
+                                    'hot-water' => 'temperature-high',
+                                    'motorcycle' => 'motorcycle',
+                                    'car' => 'car',
+                                    'cctv' => 'video',
+                                    'security' => 'shield-alt'
+                                ];
+                                $displayIcon = $iconMap[$fasilitas->icon] ?? 'check';
+                            @endphp
+                            <i class="fas fa-{{ $displayIcon }} mr-1"></i>
                             {{ $fasilitas->nama_fasilitas }}
                         </span>
                         @endforeach
@@ -512,7 +554,7 @@
         
         // Show advanced filters if any advanced filter is active
         document.addEventListener('DOMContentLoaded', function() {
-            const hasAdvancedFilters = {{ request()->hasAny(['min_harga', 'max_harga', 'min_rating', 'fasilitas', 'sort']) ? 'true' : 'false' }};
+            const hasAdvancedFilters = <?php echo request()->hasAny(['min_harga', 'max_harga', 'min_rating', 'fasilitas', 'sort']) ? 'true' : 'false'; ?>;
             
             if (hasAdvancedFilters) {
                 const filters = document.getElementById('advancedFilters');

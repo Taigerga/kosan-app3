@@ -224,65 +224,6 @@
                     </div>
                 </div>
 
-                <!-- Profile Picture Section -->
-                <div class="mb-8">
-                    <h3
-                        class="text-lg md:text-xl font-semibold text-white mb-6 pb-4 border-b border-dark-border flex items-center">
-                        <i class="fas fa-camera text-primary-400 mr-3"></i>
-                        Foto Profil
-                    </h3>
-
-                    <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
-                        <!-- Current Photo -->
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-dark-border overflow-hidden bg-gradient-to-br from-primary-900/30 to-indigo-900/30 flex items-center justify-center">
-                                @if($pemilik->foto_profil)
-                                    <img src="{{ Storage::url($pemilik->foto_profil) }}" alt="{{ $pemilik->nama }}"
-                                        class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="fas fa-user text-3xl text-dark-muted"></i>
-                                    </div>
-                                @endif
-                            </div>
-                            <p class="text-sm text-dark-muted mt-2">Foto saat ini</p>
-                        </div>
-
-                        <!-- Upload Section -->
-                        <div class="flex-1">
-                            <div
-                                class="border-2 border-dashed border-dark-border rounded-2xl p-6 text-center hover:border-primary-500/50 transition-colors">
-                                <div class="mb-4">
-                                    <i class="fas fa-cloud-upload-alt text-3xl text-dark-muted mb-3"></i>
-                                    <p class="text-white font-medium mb-1">Unggah foto baru</p>
-                                    <p class="text-dark-muted text-sm">PNG, JPG maksimal 2MB</p>
-                                </div>
-                                <div class="relative">
-                                    <input type="file" id="foto_profil" name="foto_profil" accept="image/*"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        onchange="previewImage(event)">
-                                    <label for="foto_profil"
-                                        class="inline-block px-6 py-3 bg-dark-border text-white rounded-xl hover:bg-dark-border/80 transition cursor-pointer">
-                                        <i class="fas fa-upload mr-2"></i>
-                                        Pilih File
-                                    </label>
-                                </div>
-                            </div>
-                            @error('foto_profil')
-                                <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-
-                            <!-- Image Preview -->
-                            <div id="imagePreview" class="mt-4 hidden">
-                                <p class="text-sm text-white mb-2">Pratinjau:</p>
-                                <div class="w-24 h-24 rounded-lg border border-dark-border overflow-hidden">
-                                    <img id="previewImage" class="w-full h-full object-cover" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Security Section -->
                 <div class="mb-8">

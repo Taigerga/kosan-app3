@@ -743,42 +743,50 @@
                     Kos Serupa
                 </h2>
                 <div class="space-y-4">
-                    <!-- Placeholder for similar kos -->
-                    <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-4 hover:border-primary-500/50 transition-all duration-300 cursor-pointer">
+                    @forelse($similarKos as $similar)
+                    <a href="{{ route('public.kos.show', $similar->id_kos) }}" 
+                       class="block bg-dark-bg/50 border border-dark-border rounded-xl p-4 hover:border-primary-500/50 transition-all duration-300">
                         <div class="flex space-x-4">
-                            <div class="w-16 h-16 bg-gradient-to-br from-dark-border to-dark-bg rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-home text-dark-muted"></i>
-                            </div>
+                            @if($similar->foto_utama)
+                                <img src="{{ asset('storage/' . $similar->foto_utama) }}" 
+                                     alt="{{ $similar->nama_kos }}" 
+                                     class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                            @else
+                                <div class="w-16 h-16 bg-gradient-to-br from-dark-border to-dark-bg rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-home text-dark-muted"></i>
+                                </div>
+                            @endif
                             <div class="flex-1 min-w-0">
-                                <h4 class="font-semibold text-white text-sm truncate">Kosan Serupa 1</h4>
-                                <p class="text-green-400 font-bold text-sm mt-1">Rp 1.200.000</p>
+                                <h4 class="font-semibold text-white text-sm truncate">{{ $similar->nama_kos }}</h4>
+                                <p class="text-green-400 font-bold text-sm mt-1">
+                                    @if($similar->kamar->count() > 0)
+                                        Rp {{ number_format($similar->kamar->min('harga'), 0, ',', '.') }}
+                                    @else
+                                        Penuh
+                                    @endif
+                                </p>
                                 <div class="flex items-center mt-2">
-                                    <span class="text-xs px-2 py-1 rounded bg-dark-border/50 text-dark-muted">
-                                        Putra
+                                    <span class="text-xs px-2 py-1 rounded bg-dark-border/50 text-dark-muted capitalize">
+                                        {{ $similar->jenis_kos }}
                                     </span>
-                                    <span class="text-xs text-dark-muted ml-2">{{ $kos->kota }}</span>
+                                    <span class="text-xs text-dark-muted ml-2">{{ $similar->kota }}</span>
+                                    @if($similar->id_pemilik == $kos->id_pemilik)
+                                        <span class="text-xs px-2 py-1 rounded bg-blue-900/30 text-blue-300 ml-2">
+                                            <i class="fas fa-user-tie mr-1"></i>Pemilik Sama
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-4 hover:border-primary-500/50 transition-all duration-300 cursor-pointer">
-                        <div class="flex space-x-4">
-                            <div class="w-16 h-16 bg-gradient-to-br from-dark-border to-dark-bg rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-home text-dark-muted"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-semibold text-white text-sm truncate">Kosan Serupa 2</h4>
-                                <p class="text-green-400 font-bold text-sm mt-1">Rp 1.500.000</p>
-                                <div class="flex items-center mt-2">
-                                    <span class="text-xs px-2 py-1 rounded bg-dark-border/50 text-dark-muted">
-                                        Putri
-                                    </span>
-                                    <span class="text-xs text-dark-muted ml-2">{{ $kos->kota }}</span>
-                                </div>
-                            </div>
+                    </a>
+                    @empty
+                    <div class="text-center py-6">
+                        <div class="w-12 h-12 bg-dark-border/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-building text-xl text-dark-muted"></i>
                         </div>
+                        <p class="text-sm text-dark-muted">Tidak ada kos serupa saat ini</p>
                     </div>
+                    @endforelse
                 </div>
                 <a href="{{ route('public.kos.index') }}?jenis_kos={{ $kos->jenis_kos }}&kota={{ $kos->kota }}" 
                    class="block text-center mt-6 text-primary-300 hover:text-primary-400 text-sm font-medium transition">

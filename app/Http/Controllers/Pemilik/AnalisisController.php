@@ -96,7 +96,19 @@ class AnalisisController extends Controller
             ->groupBy('tipe_kamar')
             ->get();
 
-        // 7. Data Pendapatan per Kos
+        // 7. Data Review/Rating
+        $reviewData = DB::table('reviews')
+            ->selectRaw('
+                rating,
+                COUNT(*) as jumlah
+            ')
+            ->join('kos', 'reviews.id_kos', '=', 'kos.id_kos')
+            ->where('kos.id_pemilik', $pemilikId)
+            ->groupBy('rating')
+            ->orderBy('rating', 'desc')
+            ->get();
+
+        // 8. Data Pendapatan per Kos
         $pendapatanPerKos = Kos::selectRaw('
                 kos.nama_kos,
                 COALESCE(SUM(pembayaran.jumlah), 0) as total_pendapatan
@@ -137,6 +149,7 @@ class AnalisisController extends Controller
             'penghuniPerKos',
             'penghuniPerKosFull',
             'tipeKamar',
+            'reviewData',
             'pendapatanPerKos',
             'pendapatanPerKosFull',
             'pemilik'

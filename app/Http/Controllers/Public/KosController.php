@@ -204,7 +204,80 @@ class KosController extends Controller
             ];
         }
 
-        return view('public.kos.show', compact('kos', 'totalReviews', 'averageRating', 'ratingDistribution'));
+        // Get similar kos
+        $similarKos = collect();
+
+        // 1. Kos dari pemilik yang sama (kecuali kos yang sedang dilihat)
+        $ownerKos = Kos::where('id_pemilik', $kos->id_pemilik)
+            ->where('id_kos', '!=', $kos->id_kos)
+            ->where('status_kos', 'aktif')
+            ->with(['kamar' => function ($query) {
+                $query->where('status_kamar', 'tersedia');
+            }])
+            ->inRandomOrder()
+            ->limit(2)
+            ->get();
+
+        $similarKos = $similarKos->concat($ownerKos);
+
+        // 2. Jika kurang dari 2 kos dari pemilik yang sama, tambahkan kos serupa berdasarkan jenis kelamin
+        if ($similarKos->count() < 2) {
+            $remainingSlots = 2 - $similarKos->count();
+            
+            // Prioritaskan jenis kos yang sama, fallback ke kos campuran
+            $similarByType = Kos::where('id_kos', '!=', $kos->id_kos)
+                ->where('status_kos', 'aktif')
+                ->where(function($query) use ($kos) {
+                    $query->where('jenis_kos', $kos->jenis_kos)
+                          ->orWhere('jenis_kos', 'campuran');
+                })
+                ->whereNotIn('id_kos', $similarKos->pluck('id_kos'))
+                ->with(['kamar' => function ($query) {
+                    $query->where('status_kamar', 'tersedia');
+                }])
+                ->inRandomOrder()
+                ->limit($remainingSlots)
+                ->get();
+
+            $similarKos = $similarKos->concat($similarByType);
+        }
+
+        // 3. Jika masih kurang, tambahkan kos lain dari kota yang sama secara random
+        if ($similarKos->count() < 2) {
+            $remainingSlots = 2 - $similarKos->count();
+            
+            $similarByCity = Kos::where('id_kos', '!=', $kos->id_kos)
+                ->where('status_kos', 'aktif')
+                ->where('kota', $kos->kota)
+                ->whereNotIn('id_kos', $similarKos->pluck('id_kos'))
+                ->with(['kamar' => function ($query) {
+                    $query->where('status_kamar', 'tersedia');
+                }])
+                ->inRandomOrder()
+                ->limit($remainingSlots)
+                ->get();
+
+            $similarKos = $similarKos->concat($similarByCity);
+        }
+
+        // 4. Terakhir, jika masih kurang, ambil random dari semua kos aktif
+        if ($similarKos->count() < 2) {
+            $remainingSlots = 2 - $similarKos->count();
+            
+            $randomKos = Kos::where('id_kos', '!=', $kos->id_kos)
+                ->where('status_kos', 'aktif')
+                ->whereNotIn('id_kos', $similarKos->pluck('id_kos'))
+                ->with(['kamar' => function ($query) {
+                    $query->where('status_kamar', 'tersedia');
+                }])
+                ->inRandomOrder()
+                ->limit($remainingSlots)
+                ->get();
+
+            $similarKos = $similarKos->concat($randomKos);
+        }
+
+        return view('public.kos.show', compact('kos', 'totalReviews', 'averageRating', 'ratingDistribution', 'similarKos'));
     }
 
     public function peta()

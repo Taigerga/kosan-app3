@@ -195,7 +195,42 @@
         </div>
     </div>
 
-    <!-- Row 3: Tabel Data -->
+    <!-- Row 3: Additional Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 5: Review/Rating -->
+        <div class="bg-dark-card border border-dark-border rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    Distribusi Rating
+                </h2>
+                <span class="text-xs px-3 py-1 rounded-full bg-yellow-900/30 text-yellow-300">
+                    {{ $reviewData->sum('jumlah') }} Review
+                </span>
+            </div>
+            <div class="h-72">
+                <canvas id="reviewChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 6: Tipe Kamar -->
+        <div class="bg-dark-card border border-dark-border rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-door-open text-cyan-400 mr-3"></i>
+                    Distribusi Tipe Kamar
+                </h2>
+                <span class="text-xs px-3 py-1 rounded-full bg-cyan-900/30 text-cyan-300">
+                    {{ $tipeKamar->sum('jumlah') }} Kamar
+                </span>
+            </div>
+            <div class="h-72">
+                <canvas id="tipeKamarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 4: Tabel Data -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Tabel: Pendapatan per Kos -->
         <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
@@ -344,6 +379,8 @@
         const statusKamarData = @json($statusKamar);
         const jenisKosData = @json($jenisKos);
         const statusKontrakData = @json($statusKontrak);
+        const reviewData = @json($reviewData);
+        const tipeKamarData = @json($tipeKamar);
 
         // Chart 1: Pendapatan 6 Bulan Terakhir
         const pendapatanCtx = document.getElementById('pendapatanChart').getContext('2d');
@@ -563,6 +600,124 @@
                         labels: {
                             color: '#e2e8f0',
                             padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                        titleColor: '#e2e8f0',
+                        bodyColor: '#cbd5e1',
+                        borderColor: '#334155'
+                    }
+                }
+            }
+        });
+
+        // Chart 5: Review/Rating
+        const reviewCtx = document.getElementById('reviewChart').getContext('2d');
+        new Chart(reviewCtx, {
+            type: 'bar',
+            data: {
+                labels: reviewData.map(item => `${item.rating} ⭐`),
+                datasets: [{
+                    label: 'Jumlah Review',
+                    data: reviewData.map(item => item.jumlah),
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.7)',    // 1 star - Red
+                        'rgba(234, 179, 8, 0.7)',    // 2 stars - Yellow
+                        'rgba(59, 130, 246, 0.7)',   // 3 stars - Blue
+                        'rgba(34, 197, 94, 0.7)',    // 4 stars - Green
+                        'rgba(139, 92, 246, 0.7)'    // 5 stars - Purple
+                    ],
+                    borderColor: [
+                        'rgb(239, 68, 68)',
+                        'rgb(234, 179, 8)',
+                        'rgb(59, 130, 246)',
+                        'rgb(34, 197, 94)',
+                        'rgb(139, 92, 246)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                        titleColor: '#e2e8f0',
+                        bodyColor: '#cbd5e1',
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y} review`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 6: Tipe Kamar
+        const tipeKamarCtx = document.getElementById('tipeKamarChart').getContext('2d');
+        new Chart(tipeKamarCtx, {
+            type: 'doughnut',
+            data: {
+                labels: tipeKamarData.map(item => {
+                    return item.tipe_kamar ? item.tipe_kamar.charAt(0).toUpperCase() + item.tipe_kamar.slice(1) : 'Tidak Diketahui';
+                }),
+                datasets: [{
+                    data: tipeKamarData.map(item => item.jumlah),
+                    backgroundColor: [
+                        'rgba(6, 182, 212, 0.8)',   // Cyan
+                        'rgba(168, 85, 247, 0.8)',  // Purple
+                        'rgba(236, 72, 153, 0.8)',  // Pink
+                        'rgba(20, 184, 166, 0.8)',   // Teal
+                        'rgba(251, 146, 60, 0.8)'    // Orange
+                    ],
+                    borderColor: [
+                        'rgb(6, 182, 212)',
+                        'rgb(168, 85, 247)',
+                        'rgb(236, 72, 153)',
+                        'rgb(20, 184, 166)',
+                        'rgb(251, 146, 60)'
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#e2e8f0',
+                            padding: 20,
                             font: {
                                 size: 12
                             }

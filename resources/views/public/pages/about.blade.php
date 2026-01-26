@@ -170,7 +170,7 @@
                 <div class="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full overflow-hidden relative">
                     <div class="absolute inset-0 bg-gradient-to-br from-green-600/20 to-emerald-600/20 group-hover:opacity-0 transition-opacity"></div>
                     <div class="w-full h-full flex items-center justify-center text-4xl font-bold text-white">
-                        AY
+                        MR
                     </div>
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-1">Muhammad Rizki</h3>
@@ -193,7 +193,7 @@
                 <div class="w-40 h-40 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full overflow-hidden relative">
                     <div class="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-pink-600/20 group-hover:opacity-0 transition-opacity"></div>
                     <div class="w-full h-full flex items-center justify-center text-4xl font-bold text-white">
-                        N
+                        MR
                     </div>
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-1">Muhammad Rizki</h3>
