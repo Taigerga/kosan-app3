@@ -118,7 +118,7 @@
 
                     // Konversi chart ke gambar
                     const charts = [
-                        { id: 'pendapatanChart', title: 'Trend Pendapatan (6 Bulan Terakhir)' },
+                        { id: 'pendapatanChart', title: 'Trend Pendapatan (12 Bulan Terakhir)' },
                         { id: 'statusKamarChart', title: 'Distribusi Status Kamar' },
                         { id: 'jenisKosChart', title: 'Distribusi Jenis Kos' },
                         { id: 'statusKontrakChart', title: 'Status Kontrak' }
@@ -208,7 +208,7 @@
                             const maxBulan = pendapatanData.find(d => d.total === maxPendapatan);
                             pdf.setFontSize(10);
                             pdf.setTextColor(0, 0, 0);
-                            pdf.text(`Total Pendapatan 6 Bulan: Rp ${formatNumber(totalPendapatan)}`, 20, yPosition);
+                            pdf.text(`Total Pendapatan 12 Bulan: Rp ${formatNumber(totalPendapatan)}`, 20, yPosition);
                             yPosition += 5;
                             pdf.text(`Pendapatan Tertinggi: Rp ${formatNumber(maxPendapatan)}`, 20, yPosition);
                             yPosition += 5;

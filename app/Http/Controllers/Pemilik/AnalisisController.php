@@ -17,7 +17,7 @@ class AnalisisController extends Controller
     {
         $pemilikId = auth()->guard('pemilik')->user()->id_pemilik;
         
-        // 1. Data Pendapatan per Bulan (6 bulan terakhir)
+        // 1. Data Pendapatan per Bulan (12 bulan terakhir)
         $pendapatanPerBulan = Pembayaran::selectRaw('
                 DATE_FORMAT(tanggal_bayar, "%Y-%m") as bulan,
                 SUM(jumlah) as total
@@ -26,7 +26,7 @@ class AnalisisController extends Controller
             ->join('kos', 'kontrak_sewa.id_kos', '=', 'kos.id_kos')
             ->where('kos.id_pemilik', $pemilikId)
             ->where('pembayaran.status_pembayaran', 'lunas')
-            ->where('pembayaran.tanggal_bayar', '>=', now()->subMonths(5)->startOfMonth())
+            ->where('pembayaran.tanggal_bayar', '>=', now()->subMonths(11)->startOfMonth())
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();

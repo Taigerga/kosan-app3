@@ -39,19 +39,18 @@ class RegisterController extends Controller
 
         $request->validate($rules, $messages);
 
-        // Cek unique constraints manual untuk email/username di kedua tabel
-        $emailExists = Penghuni::where('email', $request->email)->exists() ||
-            Pemilik::where('email', $request->email)->exists();
-        $usernameExists = Penghuni::where('username', $request->username)->exists() ||
-            Pemilik::where('username', $request->username)->exists();
-
-        if ($emailExists) {
-            return back()->withErrors(['email' => 'Email sudah digunakan.'])->withInput();
+        // Cek unique constraints manual untuk username di dalam role yang sama
+        if ($request->role === 'penghuni') {
+            $usernameExists = Penghuni::where('username', $request->username)->exists();
+        } else {
+            $usernameExists = Pemilik::where('username', $request->username)->exists();
         }
 
         if ($usernameExists) {
-            return back()->withErrors(['username' => 'Username sudah digunakan.'])->withInput();
+            return back()->withErrors(['username' => 'Username sudah digunakan untuk role ini.'])->withInput();
         }
+
+        // Email dan no HP boleh sama antar role, jadi tidak perlu validasi unique
 
         try {
             if ($request->role === 'penghuni') {

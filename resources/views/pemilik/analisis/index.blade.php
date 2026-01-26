@@ -114,7 +114,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-white flex items-center">
                     <i class="fas fa-money-bill-wave text-primary-400 mr-3"></i>
-                    Trend Pendapatan (6 Bulan)
+                    Trend Pendapatan (12 Bulan)
                 </h2>
                 <span class="text-xs px-3 py-1 rounded-full bg-primary-900/30 text-primary-300">
                     {{ date('Y') }}

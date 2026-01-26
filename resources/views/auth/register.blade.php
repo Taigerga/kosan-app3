@@ -551,7 +551,7 @@
                         <h4 class="mb-4 text-white"><i class="fas fa-user me-2 text-primary"></i>Data Pribadi</h4>
                         
                         <div class="mb-4">
-                            <label for="nama" class="form-label fw-semibold text-white">Nama Lengkap</label>
+                            <label for="nama" class="form-label fw-semibold text-white">Nama Lengkap <span class="text-danger">*</span></label>
                             <input type="text" name="nama" id="nama" 
                                    class="form-control @error('nama') is-invalid @enderror"
                                    value="{{ old('nama') }}" 
@@ -563,7 +563,7 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="email" class="form-label fw-semibold text-white">Email</label>
+                                <label for="email" class="form-label fw-semibold text-white">Email <span class="text-danger">*</span></label>
                                 <input type="email" name="email" id="email" 
                                        class="form-control @error('email') is-invalid @enderror"
                                        value="{{ old('email') }}" 
@@ -573,7 +573,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label for="no_hp_display" class="form-label fw-semibold text-white">No. HP</label>
+                                <label for="no_hp_display" class="form-label fw-semibold text-white">No. HP <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text" 
                                         style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); 
@@ -602,7 +602,7 @@
                         <div class="row">
 
                             <div class="col-md-6 mb-4">
-                                <label for="tanggal_lahir" class="form-label fw-semibold text-white">Tanggal Lahir</label>
+                                <label for="tanggal_lahir" class="form-label fw-semibold text-white">Tanggal Lahir <span class="text-danger">*</span></label>
                                 <input type="date" name="tanggal_lahir" id="tanggal_lahir" 
                                        class="form-control @error('tanggal_lahir') is-invalid @enderror"
                                        value="{{ old('tanggal_lahir') }}" 
@@ -617,7 +617,7 @@
                         </div>
                         
                         <div class="mb-4">
-                            <label class="form-label fw-semibold text-white">Jenis Kelamin</label>
+                            <label class="form-label fw-semibold text-white">Jenis Kelamin <span class="text-danger">*</span></label>
                             <div class="d-flex gap-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="jenis_kelamin" 
@@ -640,7 +640,7 @@
                         </div>
                         
                         <div class="mb-4">
-                            <label for="alamat" class="form-label fw-semibold text-white">Alamat</label>
+                            <label for="alamat" class="form-label fw-semibold text-white">Alamat <span class="text-danger">*</span></label>
                             <textarea name="alamat" id="alamat" 
                                       class="form-control @error('alamat') is-invalid @enderror"
                                       rows="3" 
@@ -665,7 +665,7 @@
                         <h4 class="mb-4 text-white"><i class="fas fa-key me-2 text-primary"></i>Data Akun</h4>
                         
                         <div class="mb-4">
-                            <label for="username" class="form-label fw-semibold text-white">Username</label>
+                            <label for="username" class="form-label fw-semibold text-white">Username <span class="text-danger">*</span></label>
                             <input type="text" name="username" id="username" 
                                    class="form-control @error('username') is-invalid @enderror"
                                    value="{{ old('username') }}" 
@@ -677,7 +677,7 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="password" class="form-label fw-semibold text-white">Password</label>
+                                <label for="password" class="form-label fw-semibold text-white">Password <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="password" name="password" id="password" 
                                            class="form-control @error('password') is-invalid @enderror"
@@ -691,7 +691,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label for="password_confirmation" class="form-label fw-semibold text-white">Konfirmasi Password</label>
+                                <label for="password_confirmation" class="form-label fw-semibold text-white">Konfirmasi Password <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="password" name="password_confirmation" id="password_confirmation" 
                                            class="form-control"
@@ -712,7 +712,7 @@
                                 </label>
                                 <img id="imagePreview" class="preview" alt="Preview">
                             </div>
-                            <p class="text-muted text-center small">Klik untuk upload foto (max 2MB)</p>
+                            <p class="text-muted text-center small">Klik untuk upload foto (opsional, max 2MB)</p>
                         </div>
                         
                         <div class="form-navigation">
@@ -730,7 +730,7 @@
                         <h4 class="mb-4 text-white"><i class="fas fa-check-circle me-2 text-primary"></i>Konfirmasi Pendaftaran</h4>
                         
                         <div class="mb-4">
-                            <label class="form-label fw-semibold text-white mb-3">Daftar Sebagai</label>
+                            <label class="form-label fw-semibold text-white mb-3">Daftar Sebagai <span class="text-danger">*</span></label>
                             <div class="role-selection">
                                 <div class="role-card @if(old('role') == 'penghuni') active @endif" onclick="selectRole('penghuni')">
                                     <input type="radio" name="role" value="penghuni" 
@@ -747,6 +747,9 @@
                                     <small class="text-white">Saya ingin menyewakan kos</small>
                                 </div>
                             </div>
+                            @error('role')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                             @error('role')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -875,28 +878,73 @@
     function validateStep(step) {
         let isValid = true;
         const stepElement = document.getElementById(`step${step}`);
-        const inputs = stepElement.querySelectorAll('input[required], textarea[required], select[required]');
         
-        inputs.forEach(input => {
-            // Validasi khusus untuk nomor HP
-            if (input.id === 'no_hp_display') {
-                if (!input.value.trim()) {
-                    input.classList.add('is-invalid');
-                    input.parentElement.nextElementSibling.innerHTML = 'Nomor HP wajib diisi';
-                    isValid = false;
-                } else if (input.value.length < 9 || input.value.length > 13) {
-                    input.classList.add('is-invalid');
-                    input.parentElement.nextElementSibling.innerHTML = 'Nomor HP harus 9-13 digit setelah 62';
-                    isValid = false;
-                } else {
-                    input.classList.remove('is-invalid');
-                    input.parentElement.nextElementSibling.innerHTML = '';
-                    
-                    // Update hidden input dengan nilai lengkap
-                    document.getElementById('no_hp').value = '62' + input.value;
+        console.log(`=== Validating Step ${step} ===`);
+        
+        if (step === 1) {
+            // Validasi field di step 1
+            const fields = ['nama', 'email', 'no_hp_display', 'tanggal_lahir', 'alamat'];
+            
+            // Validasi nama
+            const nama = document.getElementById('nama');
+            if (!nama || !nama.value.trim()) {
+                nama.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Nama kosong');
+            } else {
+                nama.classList.remove('is-invalid');
+                console.log('✅ Nama valid');
+            }
+            
+            // Validasi email
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !email.value.trim() || !emailRegex.test(email.value)) {
+                email.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Email tidak valid');
+            } else {
+                email.classList.remove('is-invalid');
+                console.log('✅ Email valid');
+            }
+            
+            // Validasi nomor HP
+            const noHpDisplay = document.getElementById('no_hp_display');
+            if (!noHpDisplay || !noHpDisplay.value.trim()) {
+                noHpDisplay.classList.add('is-invalid');
+                if (noHpDisplay.parentElement.nextElementSibling) {
+                    noHpDisplay.parentElement.nextElementSibling.innerHTML = 'Nomor HP wajib diisi';
                 }
-            } else if (input.id === 'tanggal_lahir') {
-                const birthDate = new Date(input.value);
+                isValid = false;
+                console.log('❌ Nomor HP kosong');
+            } else if (noHpDisplay.value.length < 9 || noHpDisplay.value.length > 13) {
+                noHpDisplay.classList.add('is-invalid');
+                if (noHpDisplay.parentElement.nextElementSibling) {
+                    noHpDisplay.parentElement.nextElementSibling.innerHTML = 'Nomor HP harus 9-13 digit setelah 62';
+                }
+                isValid = false;
+                console.log('❌ Nomor HP tidak valid');
+            } else {
+                noHpDisplay.classList.remove('is-invalid');
+                if (noHpDisplay.parentElement.nextElementSibling) {
+                    noHpDisplay.parentElement.nextElementSibling.innerHTML = '';
+                }
+                document.getElementById('no_hp').value = '62' + noHpDisplay.value;
+                console.log('✅ Nomor HP valid');
+            }
+            
+            // Validasi tanggal lahir
+            const tanggalLahir = document.getElementById('tanggal_lahir');
+            if (!tanggalLahir || !tanggalLahir.value) {
+                tanggalLahir.classList.add('is-invalid');
+                const errorDiv = document.getElementById('tanggal_lahir_error');
+                if (errorDiv) {
+                    errorDiv.innerHTML = 'Tanggal lahir wajib diisi';
+                }
+                isValid = false;
+                console.log('❌ Tanggal lahir kosong');
+            } else {
+                const birthDate = new Date(tanggalLahir.value);
                 const today = new Date();
                 let age = today.getFullYear() - birthDate.getFullYear();
                 const m = today.getMonth() - birthDate.getMonth();
@@ -905,44 +953,117 @@
                 }
                 
                 if (age < 17) {
-                    input.classList.add('is-invalid');
+                    tanggalLahir.classList.add('is-invalid');
                     const errorDiv = document.getElementById('tanggal_lahir_error');
                     if (errorDiv) {
                         errorDiv.innerHTML = 'Umur tidak boleh kurang dari 17 tahun';
                     }
                     isValid = false;
+                    console.log('❌ Umur kurang dari 17 tahun');
                 } else {
-                    input.classList.remove('is-invalid');
-                }
-            } else if (input.id === 'jenisKelaminL' || input.id === 'jenisKelaminP') {
-                // Validasi untuk radio button jenis kelamin
-                const jenisKelaminChecked = document.querySelector('input[name="jenis_kelamin"]:checked');
-                if (!jenisKelaminChecked) {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'invalid-feedback d-block';
-                    errorDiv.textContent = 'Jenis kelamin wajib dipilih';
-                    
-                    // Cari atau buat tempat untuk error message
-                    const container = input.closest('.mb-4');
-                    const existingError = container.querySelector('.invalid-feedback');
-                    if (existingError) {
-                        existingError.textContent = 'Jenis kelamin wajib dipilih';
-                    } else {
-                        container.appendChild(errorDiv);
-                    }
-                    isValid = false;
-                }
-            } else {
-                // Validasi untuk input lainnya
-                if (!input.value.trim()) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    input.classList.remove('is-invalid');
+                    tanggalLahir.classList.remove('is-invalid');
+                    console.log('✅ Tanggal lahir valid');
                 }
             }
-        });
+            
+            // Validasi alamat
+            const alamat = document.getElementById('alamat');
+            if (!alamat || !alamat.value.trim()) {
+                alamat.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Alamat kosong');
+            } else {
+                alamat.classList.remove('is-invalid');
+                console.log('✅ Alamat valid');
+            }
+            
+            // Validasi jenis kelamin
+            const jenisKelaminChecked = document.querySelector('input[name="jenis_kelamin"]:checked');
+            if (!jenisKelaminChecked) {
+                const container = document.querySelector('.mb-4:has(input[name="jenis_kelamin"])');
+                let errorDiv = container.querySelector('.invalid-feedback');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-block';
+                    container.appendChild(errorDiv);
+                }
+                errorDiv.textContent = 'Jenis kelamin wajib dipilih';
+                isValid = false;
+                console.log('❌ Jenis kelamin belum dipilih');
+            } else {
+                const container = document.querySelector('.mb-4:has(input[name="jenis_kelamin"])');
+                const errorDiv = container.querySelector('.invalid-feedback');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+                console.log('✅ Jenis kelamin valid');
+            }
+            
+        } else if (step === 2) {
+            // Validasi field di step 2
+            const username = document.getElementById('username');
+            if (!username || !username.value.trim()) {
+                username.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Username kosong');
+            } else {
+                username.classList.remove('is-invalid');
+                console.log('✅ Username valid');
+            }
+            
+            const password = document.getElementById('password');
+            if (!password || !password.value.trim()) {
+                password.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Password kosong');
+            } else if (password.value.length < 8) {
+                password.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Password kurang dari 8 karakter');
+            } else {
+                password.classList.remove('is-invalid');
+                console.log('✅ Password valid');
+            }
+            
+            const passwordConfirm = document.getElementById('password_confirmation');
+            if (!passwordConfirm || !passwordConfirm.value.trim()) {
+                passwordConfirm.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Konfirmasi password kosong');
+            } else if (password.value !== passwordConfirm.value) {
+                passwordConfirm.classList.add('is-invalid');
+                isValid = false;
+                console.log('❌ Password tidak sama');
+            } else {
+                passwordConfirm.classList.remove('is-invalid');
+                console.log('✅ Konfirmasi password valid');
+            }
+            
+        } else if (step === 3) {
+            // Validasi field di step 3
+            const roleChecked = document.querySelector('input[name="role"]:checked');
+            if (!roleChecked) {
+                const roleSelection = document.querySelector('.role-selection');
+                let errorDiv = roleSelection.querySelector('.invalid-feedback');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-block';
+                    roleSelection.appendChild(errorDiv);
+                }
+                errorDiv.textContent = 'Pilih peran anda';
+                isValid = false;
+                console.log('❌ Role belum dipilih');
+            } else {
+                const roleSelection = document.querySelector('.role-selection');
+                const errorDiv = roleSelection.querySelector('.invalid-feedback');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+                console.log('✅ Role valid');
+            }
+        }
         
+        console.log(`Step ${step} validation result: ${isValid ? 'VALID' : 'INVALID'}`);
         return isValid;
     }
     
@@ -1022,11 +1143,104 @@
         // Format nomor HP
         formatPhoneNumber();
         
-        // Tambahkan event listener untuk paste
+                // Tambahkan event listener untuk paste
         displayInput.addEventListener('paste', handlePhonePaste);
         
         // Tambahkan event listener untuk input real-time
         displayInput.addEventListener('input', formatPhoneNumber);
+        
+        // Tambahkan event listener untuk validasi real-time
+        ['nama', 'email', 'alamat'].forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('blur', function() {
+                    if (!this.value.trim()) {
+                        this.classList.add('is-invalid');
+                    } else {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            }
+        });
+        
+        // Validasi real-time untuk email
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.addEventListener('blur', function() {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!this.value.trim() || !emailRegex.test(this.value)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+        
+        // Validasi real-time untuk tanggal lahir
+        const tanggalLahirField = document.getElementById('tanggal_lahir');
+        if (tanggalLahirField) {
+            tanggalLahirField.addEventListener('change', function() {
+                if (!this.value) {
+                    this.classList.add('is-invalid');
+                    const errorDiv = document.getElementById('tanggal_lahir_error');
+                    if (errorDiv) {
+                        errorDiv.innerHTML = 'Tanggal lahir wajib diisi';
+                    }
+                } else {
+                    const birthDate = new Date(this.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const m = today.getMonth() - birthDate.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    
+                    if (age < 17) {
+                        this.classList.add('is-invalid');
+                        const errorDiv = document.getElementById('tanggal_lahir_error');
+                        if (errorDiv) {
+                            errorDiv.innerHTML = 'Umur tidak boleh kurang dari 17 tahun';
+                        }
+                    } else {
+                        this.classList.remove('is-invalid');
+                    }
+                }
+            });
+        }
+        
+        // Validasi real-time untuk jenis kelamin
+        document.querySelectorAll('input[name="jenis_kelamin"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const container = this.closest('.mb-4');
+                const errorDiv = container.querySelector('.invalid-feedback');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            });
+        });
+        
+        // Validasi real-time untuk username
+        const usernameField = document.getElementById('username');
+        if (usernameField) {
+            usernameField.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    this.classList.add('is-invalid');
+                    let error = this.parentElement.querySelector('.invalid-feedback');
+                    if (!error) {
+                        error = document.createElement('div');
+                        error.className = 'invalid-feedback';
+                        this.parentElement.appendChild(error);
+                    }
+                    error.textContent = 'Username wajib diisi';
+                } else {
+                    this.classList.remove('is-invalid');
+                    const error = this.parentElement.querySelector('.invalid-feedback');
+                    if (error) {
+                        error.remove();
+                    }
+                }
+            });
+        }
         
         // Validasi sebelum submit form
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
@@ -1034,32 +1248,100 @@
             let allValid = true;
             
             // Validasi step 1
-            if (!validateStep(1)) allValid = false;
+            // Validasi step 1
+            const step1Valid = validateStep(1);
+            if (!step1Valid) allValid = false;
             
             // Validasi step 2
+            const step2Valid = validateStep(2);
+            if (!step2Valid) allValid = false;
+            
+            // Manual validation untuk step 2 (username & password)
             const username = document.getElementById('username');
             const password = document.getElementById('password');
             const passwordConfirm = document.getElementById('password_confirmation');
             
             if (!username.value.trim()) {
                 username.classList.add('is-invalid');
+                // Tambahkan error message untuk username
+                let usernameError = username.parentElement.querySelector('.invalid-feedback');
+                if (!usernameError) {
+                    usernameError = document.createElement('div');
+                    usernameError.className = 'invalid-feedback';
+                    username.parentElement.appendChild(usernameError);
+                }
+                usernameError.textContent = 'Username wajib diisi';
                 allValid = false;
+            } else {
+                // Hapus error message jika sudah valid
+                const usernameError = username.parentElement.querySelector('.invalid-feedback');
+                if (usernameError) {
+                    usernameError.remove();
+                }
             }
             
-            if (!password.value.trim() || password.value.length < 8) {
+            if (!password.value.trim()) {
                 password.classList.add('is-invalid');
+                // Tambahkan error message untuk password
+                let passwordError = password.parentElement.querySelector('.invalid-feedback');
+                if (!passwordError) {
+                    passwordError = document.createElement('div');
+                    passwordError.className = 'invalid-feedback';
+                    password.parentElement.appendChild(passwordError);
+                }
+                passwordError.textContent = 'Password wajib diisi';
                 allValid = false;
+            } else if (password.value.length < 8) {
+                password.classList.add('is-invalid');
+                // Tambahkan error message untuk password
+                let passwordError = password.parentElement.querySelector('.invalid-feedback');
+                if (!passwordError) {
+                    passwordError = document.createElement('div');
+                    passwordError.className = 'invalid-feedback';
+                    password.parentElement.appendChild(passwordError);
+                }
+                passwordError.textContent = 'Password minimal 8 karakter';
+                allValid = false;
+            } else {
+                // Hapus error message jika sudah valid
+                const passwordError = password.parentElement.querySelector('.invalid-feedback');
+                if (passwordError) {
+                    passwordError.remove();
+                }
             }
             
-            if (password.value !== passwordConfirm.value) {
+            if (!passwordConfirm.value.trim()) {
                 passwordConfirm.classList.add('is-invalid');
-                passwordConfirm.parentElement.nextElementSibling.innerHTML = 'Password tidak sama';
+                // Tambahkan error message untuk konfirmasi password
+                let confirmError = passwordConfirm.parentElement.querySelector('.invalid-feedback');
+                if (!confirmError) {
+                    confirmError = document.createElement('div');
+                    confirmError.className = 'invalid-feedback';
+                    passwordConfirm.parentElement.appendChild(confirmError);
+                }
+                confirmError.textContent = 'Konfirmasi password wajib diisi';
                 allValid = false;
+            } else if (password.value !== passwordConfirm.value) {
+                passwordConfirm.classList.add('is-invalid');
+                // Tambahkan error message untuk konfirmasi password
+                let confirmError = passwordConfirm.parentElement.querySelector('.invalid-feedback');
+                if (!confirmError) {
+                    confirmError = document.createElement('div');
+                    confirmError.className = 'invalid-feedback';
+                    passwordConfirm.parentElement.appendChild(confirmError);
+                }
+                confirmError.textContent = 'Password tidak sama';
+                allValid = false;
+            } else {
+                // Hapus error message jika sudah valid
+                const confirmError = passwordConfirm.parentElement.querySelector('.invalid-feedback');
+                if (confirmError) {
+                    confirmError.remove();
+                }
             }
             
             // Validasi step 3
             const roleChecked = document.querySelector('input[name="role"]:checked');
-            const agreeTerms = document.getElementById('agreeTerms');
             
             if (!roleChecked) {
                 const roleError = document.createElement('div');
@@ -1069,10 +1351,9 @@
                 allValid = false;
             }
             
-            if (!agreeTerms.checked) {
-                agreeTerms.classList.add('is-invalid');
-                allValid = false;
-            }
+            // Debug: Log validation result
+            console.log('Form validation result:', allValid);
+            console.log('Invalid elements:', document.querySelectorAll('.is-invalid'));
             
             // Jika ada yang tidak valid, prevent submit
             if (!allValid) {
@@ -1084,9 +1365,38 @@
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
-                // Tampilkan toast error
-                const errorToast = new bootstrap.Toast(document.querySelector('.toast.bg-danger'));
+                // Tampilkan toast error dengan pesan yang lebih jelas
+                const errorToastContainer = document.querySelector('.custom-toast');
+                errorToastContainer.innerHTML = `
+                    <div class="toast align-items-center text-white bg-danger border-0 mb-3" role="alert" 
+                         aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <div>
+                                    <strong>Form belum lengkap!</strong>
+                                    <div>Mohon lengkapi semua field yang wajib diisi.</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                                    data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                `;
+                
+                // Tampilkan toast
+                const errorToastElement = errorToastContainer.querySelector('.toast');
+                const errorToast = new bootstrap.Toast(errorToastElement);
                 errorToast.show();
+                
+                // Alert fallback jika toast tidak muncul
+                setTimeout(() => {
+                    if (!errorToastElement.classList.contains('show')) {
+                        alert('Mohon lengkapi semua field yang wajib diisi!');
+                    }
+                }, 100);
+            } else {
+                console.log('Form valid, submitting...');
             }
         });
     });

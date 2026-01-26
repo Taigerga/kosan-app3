@@ -14,40 +14,42 @@
     </div>
 
     <!-- Profile Card -->
-    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
+    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden shadow-2xl">
         <!-- Cover Photo -->
-        <div class="h-48 bg-gradient-to-r from-green-900/50 to-emerald-900/50 relative">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-green-500 rounded-full -translate-y-1/3 translate-x-1/3 blur-3xl"></div>
+        <div class="h-40 bg-gradient-to-r from-green-600 to-emerald-700 relative">
+            <!-- Cover Pattern -->
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-4 right-4 w-32 h-32 bg-white rounded-full blur-2xl"></div>
+                <div class="absolute bottom-4 left-4 w-24 h-24 bg-green-400 rounded-full blur-2xl"></div>
             </div>
-            
+
             <!-- Profile Photo -->
             <div class="absolute -bottom-16 left-6 md:left-8">
                 <div class="relative">
                     @if($penghuni->foto_profil)
-                        <img src="{{ Storage::url($penghuni->foto_profil) }}" 
-                             alt="Foto Profil" 
-                             class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-4 border-dark-card shadow-2xl object-cover">
+                        <img src="{{ Storage::url($penghuni->foto_profil) }}" alt="Foto Profil"
+                            class="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-dark-card shadow-2xl object-cover">
                     @else
-                        <div class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-4 border-dark-card bg-gradient-to-br from-green-500/20 to-emerald-500/20 shadow-2xl flex items-center justify-center">
-                            <span class="text-3xl md:text-4xl font-bold text-green-300">{{ substr($penghuni->nama, 0, 1) }}</span>
+                        <div
+                            class="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-4 border-dark-card bg-gradient-to-br from-green-500/20 to-emerald-500/20 shadow-2xl flex items-center justify-center">
+                            <span
+                                class="text-4xl md:text-5xl text-green-300 font-bold">{{ substr($penghuni->nama, 0, 1) }}</span>
                         </div>
                     @endif
-                    
+
                     <!-- Upload Button -->
-                    <button onclick="openUploadModal()" 
-                            class="absolute -bottom-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white p-2 rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
-                        <i class="fas fa-camera text-sm"></i>
+                    <button onclick="openUploadModal()"
+                        class="absolute -bottom-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white p-2 md:p-3 rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-xl hover:scale-110">
+                        <i class="fas fa-camera text-sm md:text-base"></i>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Profile Info -->
-        <div class="pt-20 md:pt-24 px-6 md:px-8 pb-6 md:pb-8">
-            <div class="flex flex-col md:flex-row md:items-start justify-between">
-                <div class="mb-4 md:mb-0">
+        <div class="pt-20 md:pt-24 px-4 md:px-8 pb-6 md:pb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex-1">
                     <div class="flex items-center space-x-3 mb-2">
                         <h2 class="text-xl md:text-2xl font-bold text-white">{{ $penghuni->nama }}</h2>
                         @if($penghuni->status_penghuni == 'aktif')
@@ -62,146 +64,209 @@
                             </span>
                         @endif
                     </div>
-                    <p class="text-dark-muted mb-3">
+                    <p class="text-dark-muted mt-1 flex items-center">
                         <i class="fas fa-envelope mr-2 text-green-400"></i>
                         {{ $penghuni->email }}
                     </p>
-                    <div class="flex items-center text-sm text-dark-muted">
-                        <i class="fas fa-calendar-alt mr-2 text-blue-400"></i>
-                        Bergabung {{ $penghuni->created_at->format('d M Y') }}
+                    <div class="flex flex-wrap items-center gap-4 mt-2">
+                        <span class="text-dark-muted flex items-center">
+                            <i class="fas fa-phone mr-2 text-green-400"></i>
+                            {{ $penghuni->no_hp }}
+                        </span>
+                        <span class="text-dark-muted flex items-center">
+                            <i class="fas fa-calendar-alt mr-2 text-yellow-400"></i>
+                            Bergabung {{ $penghuni->created_at->format('d M Y') }}
+                        </span>
                     </div>
                 </div>
-                <a href="{{ route('penghuni.profile.edit') }}" 
-                   class="px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex items-center justify-center md:justify-start">
-                    <i class="fas fa-edit mr-2"></i>
-                    Edit Profil
-                </a>
+                <div class="flex space-x-3">
+                    <a href="{{ route('penghuni.profile.edit') }}"
+                        class="px-4 py-2 md:px-5 md:py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 flex items-center shadow-lg hover:shadow-xl hover:-translate-y-1">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Profil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            @php
+                $kontrakAktif = $penghuni->kontrakSewa()->where('status_kontrak', 'aktif')->count();
+                $totalReview = $penghuni->reviews()->count();
+                $totalPembayaran = $penghuni->pembayaran()->where('status_pembayaran', 'lunas')->count();
+            @endphp
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-6">
+                <!-- Kontrak Aktif -->
+                <div
+                    class="card-hover bg-gradient-to-br from-green-900/30 to-green-800/20 p-4 md:p-5 rounded-xl border border-green-800/30">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-green-900/50 rounded-lg mr-3 md:mr-4">
+                            <i class="fas fa-file-contract text-green-400 text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-green-300">Kontrak Aktif</p>
+                            <p class="text-xl md:text-2xl font-bold text-white">{{ $kontrakAktif }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Review -->
+                <div
+                    class="card-hover bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 p-4 md:p-5 rounded-xl border border-yellow-800/30">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-yellow-900/50 rounded-lg mr-3 md:mr-4">
+                            <i class="fas fa-star text-yellow-400 text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-yellow-300">Total Review</p>
+                            <p class="text-xl md:text-2xl font-bold text-white">{{ $totalReview }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pembayaran Lunas -->
+                <div
+                    class="card-hover bg-gradient-to-br from-blue-900/30 to-blue-800/20 p-4 md:p-5 rounded-xl border border-blue-800/30">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-blue-900/50 rounded-lg mr-3 md:mr-4">
+                            <i class="fas fa-credit-card text-blue-400 text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-blue-300">Pembayaran Lunas</p>
+                            <p class="text-xl md:text-2xl font-bold text-white">{{ $totalPembayaran }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div
+                    class="card-hover bg-gradient-to-br from-purple-900/30 to-purple-800/20 p-4 md:p-5 rounded-xl border border-purple-800/30">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 bg-purple-900/50 rounded-lg mr-3 md:mr-4">
+                            <i class="fas fa-user-tag text-purple-400 text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs md:text-sm text-purple-300">Status</p>
+                            <p class="text-xl md:text-2xl font-bold text-white capitalize">{{ $penghuni->status_penghuni }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Profile Details Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mt-6 md:mt-8">
                 <!-- Personal Information -->
-                <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-5 card-hover">
+                <div class="bg-dark-bg/50 p-5 md:p-6 rounded-xl border border-dark-border">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <i class="fas fa-user text-green-400 mr-3"></i>
+                        <i class="fas fa-user-circle text-green-400 mr-3"></i>
                         Informasi Pribadi
                     </h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Username</span>
-                            <span class="font-medium text-white">{{ $penghuni->username }}</span>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-dark-muted">Username</p>
+                            <p class="font-medium text-white">{{ $penghuni->username }}</p>
                         </div>
 
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Jenis Kelamin</span>
-                            <span class="font-medium text-white">
+                        <div>
+                            <p class="text-sm text-dark-muted">Jenis Kelamin</p>
+                            <p class="font-medium text-white">
                                 @if($penghuni->jenis_kelamin == 'L')
                                     <i class="fas fa-mars text-blue-400 mr-1"></i>Laki-laki
                                 @elseif($penghuni->jenis_kelamin == 'P')
                                     <i class="fas fa-venus text-pink-400 mr-1"></i>Perempuan
                                 @else
-                                    -
+                                    <span class="text-dark-muted">Belum diisi</span>
                                 @endif
-                            </span>
+                            </p>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Tanggal Lahir</span>
-                            <span class="font-medium text-white">
-                                {{ $penghuni->tanggal_lahir ? \Carbon\Carbon::parse($penghuni->tanggal_lahir)->format('d M Y') : '-' }}
-                            </span>
+
+                        <div>
+                            <p class="text-sm text-dark-muted">Tanggal Lahir</p>
+                            <p class="font-medium text-white">
+                                {{ $penghuni->tanggal_lahir ? \Carbon\Carbon::parse($penghuni->tanggal_lahir)->format('d M Y') : '<span class="text-dark-muted">Belum diisi</span>' }}
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Contact Information -->
-                <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-5 card-hover">
+                <div class="bg-dark-bg/50 p-5 md:p-6 rounded-xl border border-dark-border">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <i class="fas fa-phone-alt text-blue-400 mr-3"></i>
-                        Kontak
+                        <i class="fas fa-address-book text-blue-400 mr-3"></i>
+                        Informasi Kontak
                     </h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Nomor HP</span>
-                            <span class="font-medium text-white">
-                                <i class="fas fa-phone mr-2 text-green-400"></i>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-dark-muted">Nomor HP</p>
+                            <p class="font-medium text-white flex items-center">
+                                <i class="fas fa-phone text-green-400 mr-2"></i>
                                 {{ $penghuni->no_hp }}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Email</span>
-                            <span class="font-medium text-white truncate">
-                                <i class="fas fa-envelope mr-2 text-green-400"></i>
-                                {{ $penghuni->email }}
-                            </span>
+                            </p>
                         </div>
                         <div>
-                            <span class="text-sm text-dark-muted block mb-1">Alamat</span>
-                            <span class="font-medium text-white text-sm">
-                                <i class="fas fa-map-marker-alt mr-2 text-red-400"></i>
-                                {{ $penghuni->alamat ?: '-' }}
-                            </span>
+                            <p class="text-sm text-dark-muted">Email</p>
+                            <p class="font-medium text-white flex items-center">
+                                <i class="fas fa-envelope text-green-400 mr-2"></i>
+                                {{ $penghuni->email }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-dark-muted">Alamat</p>
+                            <p class="font-medium text-white">
+                                {{ $penghuni->alamat ?: '<span class="text-dark-muted">Belum diisi</span>' }}
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Account Information -->
-                <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-5 card-hover">
+                <div class="bg-dark-bg/50 p-5 md:p-6 rounded-xl border border-dark-border lg:col-span-2">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <i class="fas fa-shield-alt text-yellow-400 mr-3"></i>
+                        <i class="fas fa-key text-yellow-400 mr-3"></i>
                         Informasi Akun
                     </h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Role</span>
-                            <span class="font-medium text-white capitalize">
-                                <i class="fas fa-user-tag mr-2 text-purple-400"></i>
-                                {{ $penghuni->role }}
-                            </span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm text-dark-muted">Role</p>
+                                    <p class="font-medium text-white">
+                                        <span
+                                            class="px-3 py-1 rounded-full text-sm font-medium bg-green-900/30 text-green-300">
+                                            {{ ucfirst($penghuni->role) }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-dark-muted">Status Akun</p>
+                                    <p class="font-medium text-white">
+                                        <span
+                                            class="px-3 py-1 rounded-full text-sm font-medium 
+                                            {{ $penghuni->status_penghuni == 'aktif' ? 'bg-green-900/30 text-green-300' :
+                        ($penghuni->status_penghuni == 'calon' ? 'bg-yellow-900/30 text-yellow-300' : 'bg-red-900/30 text-red-300') }}">
+                                            {{ ucfirst($penghuni->status_penghuni) }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Status</span>
-                            <span class="font-medium capitalize
-                                {{ $penghuni->status_penghuni == 'aktif' ? 'text-green-400' : 
-                                   ($penghuni->status_penghuni == 'calon' ? 'text-yellow-400' : 'text-red-400') }}">
-                                <i class="fas 
-                                    {{ $penghuni->status_penghuni == 'aktif' ? 'fa-check-circle' : 
-                                       ($penghuni->status_penghuni == 'calon' ? 'fa-clock' : 'fa-times-circle') }} mr-2"></i>
-                                {{ $penghuni->status_penghuni }}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Terakhir Diupdate</span>
-                            <span class="font-medium text-white">
-                                <i class="fas fa-sync-alt mr-2 text-primary-400"></i>
-                                {{ $penghuni->updated_at->format('d M Y H:i') }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Stats -->
-                <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-5 card-hover">
-                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <i class="fas fa-chart-bar text-purple-400 mr-3"></i>
-                        Statistik
-                    </h3>
-                    <div class="space-y-3">
-                        @php
-                            $kontrakAktif = $penghuni->kontrakSewa()->where('status_kontrak', 'aktif')->count();
-                            $totalReview = $penghuni->reviews()->count();
-                            $totalPembayaran = $penghuni->pembayaran()->where('status_pembayaran', 'lunas')->count();
-                        @endphp
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Kontrak Aktif</span>
-                            <span class="font-bold text-xl text-green-400">{{ $kontrakAktif }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Total Review</span>
-                            <span class="font-bold text-xl text-yellow-400">{{ $totalReview }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-dark-muted">Pembayaran Lunas</span>
-                            <span class="font-bold text-xl text-blue-400">{{ $totalPembayaran }}</span>
+                        <div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm text-dark-muted">Terakhir Login</p>
+                                    <p class="font-medium text-white">
+                                        <i class="fas fa-clock text-dark-muted mr-2"></i>
+                                        {{ $penghuni->updated_at->format('d M Y H:i') }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-dark-muted">Member Sejak</p>
+                                    <p class="font-medium text-white">
+                                        <i class="fas fa-calendar-check text-dark-muted mr-2"></i>
+                                        {{ $penghuni->created_at->format('d M Y') }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -209,7 +274,7 @@
         </div>
     </div>
 
-    <!-- Additional Actions -->
+    <!-- Quick Actions -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <a href="{{ route('penghuni.kontrak.index') }}" 
            class="bg-dark-card border border-dark-border rounded-xl p-4 hover:border-green-500/50 transition-all duration-300 group">
@@ -252,173 +317,146 @@
     </div>
 </div>
 
-<!-- Upload Photo Modal -->
-<div id="uploadModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-    <div class="bg-dark-card border border-dark-border rounded-2xl p-6 max-w-md w-full animate-fadeIn">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Upload Foto Profil</h3>
-            <button onclick="closeUploadModal()" class="text-dark-muted hover:text-white">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <form id="uploadForm" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-white mb-2">Pilih Foto</label>
-                <div class="border-2 border-dashed border-dark-border rounded-xl p-6 text-center hover:border-green-500/50 transition">
-                    <i class="fas fa-cloud-upload-alt text-3xl text-dark-muted mb-2"></i>
-                    <p class="text-dark-muted text-sm mb-2">Drag & drop atau klik untuk upload</p>
-                    <input type="file" 
-                           name="foto_profil" 
-                           id="photoInput" 
-                           accept="image/*" 
-                           class="hidden" 
-                           required>
-                    <label for="photoInput" 
-                           class="inline-block px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer transition">
-                        <i class="fas fa-folder-open mr-2"></i>
-                        Pilih File
-                    </label>
+    <!-- Upload Photo Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-dark-card border border-dark-border rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white">Upload Foto Profil</h3>
+                <button onclick="closeUploadModal()" class="text-dark-muted hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form id="uploadForm" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-6">
+                    <!-- Upload Preview -->
+                    <div class="mb-4 text-center">
+                        <div id="imagePreview"
+                            class="w-32 h-32 mx-auto rounded-xl border-2 border-dashed border-dark-border bg-dark-bg/50 flex items-center justify-center mb-4">
+                            <i class="fas fa-user-circle text-4xl text-dark-muted"></i>
+                        </div>
+                        <p class="text-sm text-dark-muted">Pratinjau foto profil</p>
+                    </div>
+
+                    <!-- File Input -->
+                    <div class="relative">
+                        <input type="file" name="foto_profil" id="photoInput" accept="image/*" class="hidden" required>
+                        <label for="photoInput"
+                            class="block w-full px-4 py-3 border-2 border-dashed border-dark-border rounded-xl text-center cursor-pointer hover:border-green-500 transition">
+                            <i class="fas fa-cloud-upload-alt text-green-400 text-xl mb-2"></i>
+                            <p class="text-white font-medium">Pilih Foto</p>
+                            <p class="text-xs text-dark-muted mt-1">Format: JPG, PNG, GIF. Max: 2MB</p>
+                        </label>
+                    </div>
                 </div>
-                <p class="text-xs text-dark-muted mt-2">Format: JPG, PNG, maksimal 2MB</p>
-            </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button type="button" 
-                        onclick="closeUploadModal()" 
-                        class="px-4 py-2 border border-dark-border text-dark-text hover:text-white hover:border-dark-border/80 rounded-lg transition">
-                    Batal
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition flex items-center">
-                    <i class="fas fa-upload mr-2"></i>
-                    Upload
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Preview Modal -->
-<div id="previewModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-    <div class="bg-dark-card rounded-2xl p-6 max-w-lg w-full">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Preview Foto</h3>
-            <button onclick="closePreviewModal()" class="text-dark-muted hover:text-white">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <div id="imagePreview" class="rounded-xl overflow-hidden mb-4"></div>
-        <div class="flex justify-end space-x-3">
-            <button onclick="closePreviewModal()" class="px-4 py-2 border border-dark-border text-dark-text rounded-lg">
-                Batal
-            </button>
-            <button onclick="submitUpload()" class="px-4 py-2 bg-green-600 text-white rounded-lg">
-                Konfirmasi
-            </button>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeUploadModal()"
+                        class="px-4 py-2.5 border border-dark-border text-dark-muted rounded-xl hover:text-white hover:border-dark-border/80 transition">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 flex items-center">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-function openUploadModal() {
-    document.getElementById('uploadModal').classList.remove('hidden');
-    document.getElementById('uploadModal').classList.add('flex');
-}
+    @push('scripts')
+        <script>
+            // Image preview
+            const photoInput = document.getElementById('photoInput');
+            const imagePreview = document.getElementById('imagePreview');
 
-function closeUploadModal() {
-    document.getElementById('uploadModal').classList.add('hidden');
-    document.getElementById('uploadModal').classList.remove('flex');
-    document.getElementById('photoInput').value = '';
-}
+            photoInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-xl">`;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
 
-function closePreviewModal() {
-    document.getElementById('previewModal').classList.add('hidden');
-    document.getElementById('previewModal').classList.remove('flex');
-    document.getElementById('imagePreview').innerHTML = '';
-}
+            // Modal functions
+            function openUploadModal() {
+                document.getElementById('uploadModal').classList.remove('hidden');
+                document.getElementById('uploadModal').classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            }
 
-function previewImage(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            document.getElementById('imagePreview').innerHTML = `
-                <img src="${e.target.result}" 
-                     class="w-full h-64 object-cover rounded-xl" 
-                     alt="Preview">
-            `;
-            
-            // Close upload modal and open preview
-            closeUploadModal();
-            document.getElementById('previewModal').classList.remove('hidden');
-            document.getElementById('previewModal').classList.add('flex');
-        }
-        
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+            function closeUploadModal() {
+                document.getElementById('uploadModal').classList.add('hidden');
+                document.getElementById('uploadModal').classList.remove('flex');
+                document.getElementById('photoInput').value = '';
+                imagePreview.innerHTML = '<i class="fas fa-user-circle text-4xl text-dark-muted"></i>';
+                document.body.classList.remove('overflow-hidden');
+            }
 
-function submitUpload() {
-    const formData = new FormData(document.getElementById('uploadForm'));
-    
-    fetch('{{ route("penghuni.profile.upload-photo") }}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Upload gagal: ' + (data.message || 'Terjadi kesalahan'));
-            closePreviewModal();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat upload');
-        closePreviewModal();
-    });
-}
+            // Form submission
+            document.getElementById('uploadForm').addEventListener('submit', function (e) {
+                e.preventDefault();
 
-// Initialize event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // File input change event
-    document.getElementById('photoInput').addEventListener('change', function(e) {
-        previewImage(this);
-    });
-    
-    // Form submit event
-    document.getElementById('uploadForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitUpload();
-    });
-});
-</script>
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Uploading...';
+                submitBtn.disabled = true;
 
-<style>
-.animate-fadeIn {
-    animation: fadeIn 0.3s ease-out;
-}
+                const formData = new FormData(this);
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>
-@endpush
+                fetch('{{ route("penghuni.profile.upload-photo") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Success!';
+                            submitBtn.classList.remove('from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
+                            submitBtn.classList.add('from-green-500', 'to-green-600');
+
+                            // Reload page after 1 second
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            alert('Upload gagal: ' + (data.message || 'Terjadi kesalahan'));
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat upload');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
+            });
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeUploadModal();
+                }
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('uploadModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeUploadModal();
+                }
+            });
+        </script>
+    @endpush
 
 @endsection
