@@ -32,11 +32,29 @@
                 <!-- Profile Menu -->
                 <div class="profile-menu relative">
                     <button class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700/50">
-                        <div
-                            class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center">
-                            <span
-                                class="text-white font-medium">{{ substr(Auth::guard('pemilik')->user()->nama, 0, 1) }}</span>
-                        </div>
+                        @if(Auth::guard('pemilik')->user()->foto_profil)
+                            <?php
+                            $filePath = storage_path('app/public/' . Auth::guard('pemilik')->user()->foto_profil);
+                            $fileExists = file_exists($filePath);
+                            ?>
+                            @if($fileExists)
+                                <img src="{{ url('storage/' . Auth::guard('pemilik')->user()->foto_profil) }}" 
+                                     alt="{{ Auth::guard('pemilik')->user()->nama }}" 
+                                     class="w-8 h-8 rounded-full object-cover border-2 border-blue-400">
+                            @else
+                                <div
+                                    class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center">
+                                    <span
+                                        class="text-white font-medium">{{ substr(Auth::guard('pemilik')->user()->nama, 0, 1) }}</span>
+                                </div>
+                            @endif
+                        @else
+                            <div
+                                class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-full flex items-center justify-center">
+                                <span
+                                    class="text-white font-medium">{{ substr(Auth::guard('pemilik')->user()->nama, 0, 1) }}</span>
+                            </div>
+                        @endif
                         <span
                             class="text-sm font-medium text-white hidden md:inline">{{ Auth::guard('pemilik')->user()->nama }}</span>
                         <i class="fas fa-chevron-down text-slate-400 text-xs"></i>

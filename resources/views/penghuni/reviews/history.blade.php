@@ -200,7 +200,33 @@
                         <div class="flex-1">
                             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                                 <div>
-                                    <h3 class="text-xl font-semibold text-white mb-1">{{ $review->kos->nama_kos }}</h3>
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        @auth('penghuni')
+                                            @if(Auth::guard('penghuni')->user()->foto_profil)
+                                                <?php
+                                                $filePath = storage_path('app/public/' . Auth::guard('penghuni')->user()->foto_profil);
+                                                $fileExists = file_exists($filePath);
+                                                ?>
+                                                @if($fileExists)
+                                                    <img src="{{ url('storage/' . Auth::guard('penghuni')->user()->foto_profil) }}" 
+                                                         alt="{{ Auth::guard('penghuni')->user()->nama }}" 
+                                                         class="w-10 h-10 rounded-full object-cover border-2 border-green-400">
+                                                @else
+                                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                                        <span class="text-white font-medium text-sm">{{ strtoupper(substr(Auth::guard('penghuni')->user()->nama, 0, 1)) }}</span>
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-user text-white text-sm"></i>
+                                                </div>
+                                            @endif
+                                        @endauth
+                                        <div>
+                                            <h3 class="text-xl font-semibold text-white mb-1">{{ $review->kos->nama_kos }}</h3>
+                                            <p class="text-sm text-green-400">Review oleh {{ Auth::guard('penghuni')->user()->nama }}</p>
+                                        </div>
+                                    </div>
                                     <div class="flex items-center text-dark-muted text-sm mb-2">
                                         <i class="fas fa-map-marker-alt mr-2 text-primary-400"></i>
                                         <span>{{ $review->kos->alamat }}, {{ $review->kos->kota }}</span>

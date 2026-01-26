@@ -90,6 +90,42 @@
                         </span>
                     </div>
                 </div>
+                
+                <!-- Pemilik Info Card -->
+                @if($kos->pemilik)
+                <div class="bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border border-blue-800/30 rounded-xl p-4 mt-4">
+                    <div class="flex items-center space-x-4">
+                        @if($kos->pemilik->foto_profil)
+                            <?php
+                            $filePath = storage_path('app/public/' . $kos->pemilik->foto_profil);
+                            $fileExists = file_exists($filePath);
+                            ?>
+                            @if($fileExists)
+                                <img src="{{ url('storage/' . $kos->pemilik->foto_profil) }}" 
+                                     alt="{{ $kos->pemilik->nama }}" 
+                                     class="w-12 h-12 rounded-full object-cover border-2 border-blue-400">
+                            @else
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-semibold text-lg">{{ strtoupper(substr($kos->pemilik->nama, 0, 1)) }}</span>
+                                </div>
+                            @endif
+                        @else
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-tie text-white text-lg"></i>
+                            </div>
+                        @endif
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-white text-lg">Pemilik Kos</h3>
+                            <p class="text-sm text-blue-300">{{ $kos->pemilik->nama }}</p>
+                            <p class="text-xs text-dark-muted mt-1">Terverifikasi • {{ $kos->created_at->format('Y') }}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-green-400 font-medium">Aktif</span>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Description -->
@@ -336,11 +372,29 @@
                     <div class="border-b border-dark-border pb-6 last:border-b-0">
                         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-indigo-500/20 rounded-full flex items-center justify-center">
-                                    <span class="text-white font-semibold text-lg">
-                                        {{ strtoupper(substr($review->penghuni->nama, 0, 1)) }}
-                                    </span>
-                                </div>
+                                @if($review->penghuni->foto_profil)
+                                    <?php
+                                    $filePath = storage_path('app/public/' . $review->penghuni->foto_profil);
+                                    $fileExists = file_exists($filePath);
+                                    ?>
+                                    @if($fileExists)
+                                        <img src="{{ url('storage/' . $review->penghuni->foto_profil) }}" 
+                                             alt="{{ $review->penghuni->nama }}" 
+                                             class="w-12 h-12 rounded-full object-cover border-2 border-primary-400">
+                                    @else
+                                        <div class="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-indigo-500/20 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-semibold text-lg">
+                                                {{ strtoupper(substr($review->penghuni->nama, 0, 1)) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-indigo-500/20 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-semibold text-lg">
+                                            {{ strtoupper(substr($review->penghuni->nama, 0, 1)) }}
+                                        </span>
+                                    </div>
+                                @endif
                                 <div>
                                     <h4 class="font-semibold text-white">{{ $review->penghuni->nama }}</h4>
                                     <p class="text-sm text-dark-muted">

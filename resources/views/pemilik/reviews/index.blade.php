@@ -213,9 +213,25 @@
                             
                             <div class="bg-dark-bg/50 border border-dark-border rounded-xl p-3">
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-white text-xs"></i>
-                                    </div>
+                                    @if($review->penghuni && $review->penghuni->foto_profil)
+                                        <?php
+                                        $filePath = storage_path('app/public/' . $review->penghuni->foto_profil);
+                                        $fileExists = file_exists($filePath);
+                                        ?>
+                                        @if($fileExists)
+                                            <img src="{{ url('storage/' . $review->penghuni->foto_profil) }}" 
+                                                 alt="{{ $review->penghuni->nama }}" 
+                                                 class="w-8 h-8 rounded-full object-cover border-2 border-green-400">
+                                        @else
+                                            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                                <span class="text-white font-medium text-xs">{{ strtoupper(substr($review->penghuni->nama, 0, 1)) }}</span>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-white text-xs"></i>
+                                        </div>
+                                    @endif
                                     <div>
                                         <p class="text-xs text-dark-muted">Penghuni</p>
                                         <p class="text-sm font-medium text-white">{{ optional($review->penghuni)->nama ?? 'Penghuni' }}</p>
