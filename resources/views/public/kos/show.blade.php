@@ -88,6 +88,11 @@
                         <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-green-900/30 text-green-300 border border-green-700/30">
                             {{ $kos->kamar->count() }} Kamar
                         </span>
+                        <button onclick="shareKos()" 
+                                class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-900/30 text-blue-300 border border-blue-700/30 hover:bg-blue-800/40 transition-all duration-300 flex items-center">
+                            <i class="fas fa-share-alt mr-1"></i>
+                            Bagikan
+                        </button>
                     </div>
                 </div>
                 
@@ -826,6 +831,86 @@
     // Confirm delete review
     function confirmDeleteReview() {
         return confirm('Apakah Anda yakin ingin menghapus review ini? Tindakan ini tidak dapat dibatalkan.');
+    }
+
+    // Share function
+    function shareKos() {
+        const url = window.location.href;
+        
+        // Try to use Web Share API first (for mobile)
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ $kos->nama_kos }}',
+                text: 'Lihat kos ini: {{ $kos->nama_kos }} - {{ $kos->alamat }}, {{ $kos->kota }}',
+                url: url
+            }).catch(err => {
+                // If share fails, fallback to copy
+                copyToClipboard(url);
+            });
+        } else {
+            // Fallback to copy to clipboard
+            copyToClipboard(url);
+        }
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard(text) {
+        // Create a temporary textarea element
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            showNotification('Link berhasil disalin!');
+        } catch (err) {
+            // Fallback for modern browsers
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('Link berhasil disalin!');
+                }).catch(() => {
+                    showNotification('Gagal menyalin link', 'error');
+                });
+            } else {
+                showNotification('Gagal menyalin link', 'error');
+            }
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 flex items-center space-x-2 transition-all duration-300 transform translate-x-full`;
+        
+        if (type === 'success') {
+            notification.classList.add('bg-green-500', 'text-white');
+            notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+        } else {
+            notification.classList.add('bg-red-500', 'text-white');
+            notification.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+            notification.classList.add('translate-x-0');
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 
     // Leaflet map initialization
