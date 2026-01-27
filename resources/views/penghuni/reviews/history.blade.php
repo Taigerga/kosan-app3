@@ -284,15 +284,12 @@
                                     Edit Review
                                 </a>
                                 
-                                <form action="{{ route('penghuni.reviews.destroy', $review->id_review) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus review ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition flex items-center">
-                                        <i class="fas fa-trash mr-2"></i>
-                                        Hapus Review
-                                    </button>
-                                </form>
+                                <button type="button" 
+                                        onclick="showDeleteModal({{ $review->id_review }})"
+                                        class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition flex items-center">
+                                    <i class="fas fa-trash mr-2"></i>
+                                    Hapus Review
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -384,6 +381,80 @@
                 }, 300);
             }, 5000);
         });
+    });
+</script>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-dark-card border border-dark-border rounded-2xl max-w-md w-full p-6 relative">
+        <!-- Close Button -->
+        <button onclick="closeDeleteModal()" 
+                class="absolute top-4 right-4 text-dark-muted hover:text-white transition">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <!-- Modal Content -->
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Konfirmasi Hapus</h3>
+            <p class="text-dark-muted">Apakah Anda yakin ingin menghapus review ini? Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        
+        <!-- Form -->
+        <form id="delete-form" action="" method="POST">
+            @csrf
+            @method('DELETE')
+            
+            <!-- Buttons -->
+            <div class="flex gap-3">
+                <button type="button" 
+                        onclick="closeDeleteModal()"
+                        class="flex-1 px-4 py-2 bg-dark-bg border border-dark-border text-white rounded-xl hover:bg-dark-bg/80 transition">
+                    Batal
+                </button>
+                <button type="submit" 
+                        class="flex-1 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition">
+                    <i class="fas fa-trash mr-2"></i>
+                    Hapus
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Delete modal functions
+    function showDeleteModal(reviewId) {
+        const modal = document.getElementById('delete-modal');
+        const form = document.getElementById('delete-form');
+        form.action = `/penghuni/reviews/${reviewId}`;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modal on background click
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target.id === 'delete-modal') {
+            closeDeleteModal();
+        }
+    });
+    
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+            closeImage();
+        }
     });
 </script>
 

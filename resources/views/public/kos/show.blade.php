@@ -679,17 +679,31 @@
                         Butuh Bantuan?
                     </h3>
                     <div class="space-y-3">
-                        <a href="https://wa.me/6281234567890?text=Halo,%20saya%20tertarik%20dengan%20kos%20{{ urlencode($kos->nama_kos) }}%20di%20{{ urlencode($kos->alamat) }}" 
-                           target="_blank"
-                           class="flex items-center justify-center space-x-3 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 group">
-                            <i class="fab fa-whatsapp text-lg"></i>
-                            <span>Hubungi via WhatsApp</span>
-                        </a>
-                        <button onclick="alert('Nomor telepon pemilik: 081234567890')" 
-                                class="w-full px-4 py-3 bg-dark-bg/50 text-white rounded-xl hover:bg-dark-border/50 transition-all duration-300 border border-dark-border">
-                            <i class="fas fa-phone mr-2"></i>
-                            Telepon Pemilik
-                        </button>
+                        @if($kos->pemilik)
+                            @php
+                                $waNumber = $kos->pemilik->no_hp;
+                                if (str_starts_with($waNumber, '0')) {
+                                    $waNumber = '62' . substr($waNumber, 1);
+                                } elseif (str_starts_with($waNumber, '+')) {
+                                    $waNumber = substr($waNumber, 1);
+                                }
+                            @endphp
+                            <a href="https://wa.me/{{ $waNumber }}?text=Halo%20{{ urlencode($kos->pemilik->nama) }},%20saya%20tertarik%20dengan%20kos%20{{ urlencode($kos->nama_kos) }}%20di%20{{ urlencode($kos->alamat) }}" 
+                               target="_blank"
+                               class="flex items-center justify-center space-x-3 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 group">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                                <span>Hubungi via WhatsApp</span>
+                            </a>
+                            <button onclick="showContactModal()" 
+                                    class="w-full px-4 py-3 bg-dark-bg/50 text-white rounded-xl hover:bg-dark-border/50 transition-all duration-300 border border-dark-border">
+                                <i class="fas fa-phone mr-2"></i>
+                                Telepon Pemilik
+                            </button>
+                        @else
+                            <div class="bg-dark-bg/50 rounded-xl p-4 text-center border border-dark-border">
+                                <p class="text-dark-muted text-sm">Informasi kontak tidak tersedia</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -1074,6 +1088,16 @@
         document.head.appendChild(style);
         @endif
         
+        // Initialize Contact Modal
+        @if($kos->pemilik)
+        const contactModal = new Modal('contactModal');
+        window.contactModal = contactModal;
+        
+        window.showContactModal = function() {
+            contactModal.show();
+        };
+        @endif
+        
         // Hover effect for review actions
         document.querySelectorAll('.review-action-btn button').forEach(button => {
             button.addEventListener('mouseenter', function() {
@@ -1145,4 +1169,67 @@
         max-height: 80vh;
     }
 </style>
+
+@if($kos->pemilik)
+<!-- Contact Owner Modal -->
+<div id="contactModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-modal-close></div>
+    <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+        <div class="border-b border-dark-border p-5">
+            <h5 class="text-lg font-semibold text-white flex items-center">
+                <i class="fas fa-headset text-primary-400 mr-2"></i>
+                Hubungi Pemilik
+            </h5>
+        </div>
+        <div class="p-6 text-center">
+            <div class="mb-4 inline-block">
+                @if($kos->pemilik->foto_profil)
+                    <img src="{{ url('storage/' . $kos->pemilik->foto_profil) }}" 
+                         alt="{{ $kos->pemilik->nama }}" 
+                         class="w-20 h-20 rounded-full object-cover border-4 border-primary-500/20 mx-auto">
+                @else
+                    <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                        <i class="fas fa-user-tie text-white text-3xl"></i>
+                    </div>
+                @endif
+            </div>
+            <h5 class="text-xl font-bold text-white mb-1">{{ $kos->pemilik->nama }}</h5>
+            <p class="text-dark-muted text-sm mb-6">Pemilik {{ $kos->nama_kos }}</p>
+            
+            <div class="bg-dark-bg/50 rounded-2xl p-4 border border-dark-border mb-6">
+                <p class="text-xs text-dark-muted uppercase tracking-wider font-semibold mb-2">Nomor Telepon</p>
+                <p class="text-2xl font-bold text-primary-400 tracking-widest">{{ $kos->pemilik->no_hp }}</p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-3">
+                <a href="tel:{{ $kos->pemilik->no_hp }}" 
+                   class="flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-primary-500 to-indigo-500 text-white rounded-xl hover:from-primary-600 hover:to-indigo-600 transition-all duration-300 shadow-lg font-semibold group">
+                    <i class="fas fa-phone-alt group-hover:rotate-12 transition-transform"></i>
+                    <span>Telepon Sekarang</span>
+                </a>
+                
+                @php
+                    $waNumber = $kos->pemilik->no_hp;
+                    if (str_starts_with($waNumber, '0')) {
+                        $waNumber = '62' . substr($waNumber, 1);
+                    } elseif (str_starts_with($waNumber, '+')) {
+                        $waNumber = substr($waNumber, 1);
+                    }
+                @endphp
+                <a href="https://wa.me/{{ $waNumber }}?text=Halo%20{{ urlencode($kos->pemilik->nama) }},%20saya%20ingin%20bertanya%20tentang%20kos%20{{ urlencode($kos->nama_kos) }}" 
+                   target="_blank"
+                   class="flex items-center justify-center space-x-3 px-6 py-3 bg-green-900/20 text-green-400 border border-green-800/30 rounded-xl hover:bg-green-800/30 transition-all duration-300 font-semibold group">
+                    <i class="fab fa-whatsapp text-lg group-hover:scale-110 transition-transform"></i>
+                    <span>WhatsApp Pemilik</span>
+                </a>
+            </div>
+        </div>
+        <div class="p-4 bg-dark-bg/30 text-center border-t border-dark-border">
+            <button type="button" class="modal-close-btn text-dark-muted hover:text-white transition-colors text-sm font-medium">
+                Kembali
+            </button>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

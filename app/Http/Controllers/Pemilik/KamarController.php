@@ -13,9 +13,9 @@ class KamarController extends Controller
     public function index(Request $request)
     {
         $user = Auth::guard('pemilik')->user();
-        
+
         $query = Kamar::with('kos')
-            ->whereHas('kos', function($query) use ($user) {
+            ->whereHas('kos', function ($query) use ($user) {
                 $query->where('id_pemilik', $user->id_pemilik);
             });
 
@@ -67,7 +67,7 @@ class KamarController extends Controller
             'nomor_kamar' => 'required|string|max:10',
             'tipe_kamar' => 'required|in:Standar,Deluxe,VIP,Superior,Ekonomi',
             'harga' => 'required|numeric|min:0',
-            'luas_kamar' => 'nullable|string|max:20',
+            'luas_kamar' => 'required|string|max:20',
             'kapasitas' => 'required|integer|min:1',
             'fasilitas_kamar' => 'nullable|array', // Ubah menjadi array
             'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -86,18 +86,18 @@ class KamarController extends Controller
         // Handle file upload
         if ($request->hasFile('foto_kamar')) {
             $file = $request->file('foto_kamar');
-            
+
             // Gunakan DIRECTORY_SEPARATOR untuk cross-platform compatibility
             $filename = 'kamar_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
+
             // Simpan dengan path yang konsisten
             $path = $file->storeAs('kamar', $filename, 'public');
-            
+
             // Normalize path untuk Windows (ganti backslash dengan forward slash)
             $path = str_replace('\\', '/', $path);
-            
+
             $validated['foto_kamar'] = $path;
-            
+
             // Debug log
             \Log::info('Foto kamar disimpan:', [
                 'original_path' => $path,
@@ -123,7 +123,7 @@ class KamarController extends Controller
     {
         $user = Auth::guard('pemilik')->user();
         $kamar = Kamar::with('kos')
-            ->whereHas('kos', function($query) use ($user) {
+            ->whereHas('kos', function ($query) use ($user) {
                 $query->where('id_pemilik', $user->id_pemilik);
             })
             ->findOrFail($id);
@@ -138,9 +138,9 @@ class KamarController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::guard('pemilik')->user();
-        $kamar = Kamar::whereHas('kos', function($query) use ($user) {
-                $query->where('id_pemilik', $user->id_pemilik);
-            })
+        $kamar = Kamar::whereHas('kos', function ($query) use ($user) {
+            $query->where('id_pemilik', $user->id_pemilik);
+        })
             ->findOrFail($id);
 
         $validated = $request->validate([
@@ -148,7 +148,7 @@ class KamarController extends Controller
             'nomor_kamar' => 'required|string|max:10',
             'tipe_kamar' => 'required|in:Standar,Deluxe,VIP,Superior,Ekonomi',
             'harga' => 'required|numeric|min:0',
-            'luas_kamar' => 'nullable|string|max:20',
+            'luas_kamar' => 'required|string|max:20',
             'kapasitas' => 'required|integer|min:1',
             'fasilitas_kamar' => 'nullable|array', // Ubah menjadi array
             'foto_kamar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -196,9 +196,9 @@ class KamarController extends Controller
     public function destroy($id)
     {
         $user = Auth::guard('pemilik')->user();
-        $kamar = Kamar::whereHas('kos', function($query) use ($user) {
-                $query->where('id_pemilik', $user->id_pemilik);
-            })
+        $kamar = Kamar::whereHas('kos', function ($query) use ($user) {
+            $query->where('id_pemilik', $user->id_pemilik);
+        })
             ->findOrFail($id);
 
         // Hapus foto jika ada

@@ -5,17 +5,32 @@ namespace App\Http\Controllers\Pemilik;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Models\Kos;
 use App\Models\Fasilitas;
 
 class KosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::guard('pemilik')->user();
-        $kos = Kos::withCount('kamar')
-            ->where('id_pemilik', $user->id_pemilik)
-            ->orderBy('created_at', 'desc')
+        
+        $query = Kos::withCount('kamar')
+            ->where('id_pemilik', $user->id_pemilik);
+            
+        // Add search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_kos', 'like', '%' . $search . '%')
+                  ->orWhere('alamat', 'like', '%' . $search . '%')
+                  ->orWhere('kecamatan', 'like', '%' . $search . '%')
+                  ->orWhere('kota', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $kos = $query->orderBy('created_at', 'desc')
             ->paginate(12);
 
         return view('pemilik.kos.index', compact('kos'));

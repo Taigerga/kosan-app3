@@ -45,6 +45,36 @@
             </div>
         </div>
 
+        <!-- Search Bar -->
+        <div class="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
+            <form method="GET" action="{{ route('pemilik.kos.index') }}">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                class="w-full pl-10 pr-4 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 transition"
+                                placeholder="Cari nama kos, alamat, kecamatan, atau kota...">
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                            class="px-6 py-3 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-xl hover:from-primary-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold">
+                            <i class="fas fa-search mr-2"></i>
+                            Cari
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ route('pemilik.kos.index') }}"
+                                class="px-6 py-3 bg-dark-border border border-dark-border text-white rounded-xl hover:bg-dark-border/80 transition font-semibold">
+                                <i class="fas fa-times mr-2"></i>
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </form>
+        </div>
+
         @if(session('success'))
             <div class="bg-green-900/30 border border-green-800/50 text-green-300 px-4 py-3 rounded-xl mb-6">
                 <div class="flex items-center">

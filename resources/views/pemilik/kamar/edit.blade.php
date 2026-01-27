@@ -162,7 +162,7 @@
                     <div>
                         <label class="block text-sm font-medium text-white mb-3 flex items-center">
                             <i class="fas fa-ruler-combined text-primary-400 mr-2 w-5"></i>
-                            Luas Kamar
+                            Luas Kamar <span class="text-red-400 ml-1">*</span>
                         </label>
                         <div class="relative">
                             <i class="fas fa-expand absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-muted"></i>
@@ -171,6 +171,7 @@
                                    value="{{ old('luas_kamar', $kamar->luas_kamar) }}" 
                                    class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border text-white rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 transition"
                                    placeholder="Contoh: 3x4 m²"
+                                   required
                                    maxlength="20">
                         </div>
                     </div>
@@ -453,5 +454,67 @@
             }
         });
     });
+
+    // Form validation on submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const form = this;
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        // Clear previous error states
+        form.querySelectorAll('.border-rose-500').forEach(el => {
+            el.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
+        });
+
+        // 1. Validate required inputs/selects
+        const requiredInputs = form.querySelectorAll('input[required]:not([type="radio"]):not([type="checkbox"]), select[required]');
+        requiredInputs.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = field;
+                field.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/20');
+            }
+        });
+
+        // 2. Validate radio groups (like status_kamar)
+        const radioGroups = ['status_kamar'];
+        radioGroups.forEach(groupName => {
+            const radios = form.querySelectorAll(`input[name="${groupName}"]`);
+            if (radios.length > 0) {
+                const checked = form.querySelector(`input[name="${groupName}"]:checked`);
+                if (!checked) {
+                    isValid = false;
+                    const container = radios[0].closest('.grid');
+                    if (container) {
+                        container.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/20', 'p-2', 'rounded-xl');
+                    }
+                    if (!firstInvalidField) firstInvalidField = radios[0];
+                }
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            if (firstInvalidField) {
+                const scrollTarget = firstInvalidField.closest('div') || firstInvalidField;
+                scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (firstInvalidField.focus && !firstInvalidField.readOnly) {
+                    firstInvalidField.focus();
+                }
+            }
+            if (typeof showToast === 'function') {
+                showToast('Harap isi semua field yang wajib diisi', 'error');
+            } else {
+                alert('Harap isi semua field yang wajib diisi');
+            }
+        }
+    });
+
+    // Simple toast fallback if not defined in app.blade.php
+    if (typeof showToast !== 'function') {
+        window.showToast = function(message, type = 'info') {
+            alert(message);
+        };
+    }
 </script>
 @endsection

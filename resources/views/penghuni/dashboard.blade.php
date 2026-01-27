@@ -387,11 +387,11 @@
                         <ul class="space-y-2 text-sm text-dark-muted">
                             <li class="flex items-center">
                                 <i class="fas fa-envelope w-4 mr-3 text-blue-400"></i>
-                                <span>help@kosanapp.com</span>
+                                <span>valorant270306@gmail.com</span>
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-phone w-4 mr-3 text-blue-400"></i>
-                                <span>(021) 1234-5678</span>
+                                <span>082121730722</span>
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-clock w-4 mr-3 text-blue-400"></i>

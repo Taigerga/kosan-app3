@@ -29,7 +29,7 @@ class KontrakController extends Controller
     public function index()
     {
         $idPemilik = auth('pemilik')->id();
-        
+
         // Ambil semua kos milik pemilik ini
         $kosIds = \App\Models\Kos::where('id_pemilik', $idPemilik)
             ->pluck('id_kos')
@@ -80,7 +80,7 @@ class KontrakController extends Controller
             'kontrakDitolakCount'
         ));
 
-        
+
     }
 
     /**
@@ -90,7 +90,7 @@ class KontrakController extends Controller
     {
         try {
             $kontrak = KontrakSewa::with(['penghuni', 'kos'])->findOrFail($idKontrak);
-            
+
             // Verifikasi pemilik
             if ($kontrak->kos->id_pemilik != auth('pemilik')->id()) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses!');
@@ -102,6 +102,9 @@ class KontrakController extends Controller
                 // Tanggal mulai dan selesai akan diisi saat pembayaran pertama kali dibuat
             ]);
 
+            // Update status penghuni menjadi aktif
+            $kontrak->penghuni->update(['status_penghuni' => 'aktif']);
+
             // Tidak membuat atau mengubah data pembayaran apapun di sini.
 
             // Update status kamar jadi terisi
@@ -110,13 +113,13 @@ class KontrakController extends Controller
             // Kirim notifikasi WhatsApp
             $this->notificationService->sendPersetujuanDiterima($idKontrak);
             $this->notificationService->sendPersetujuanDiberikan($idKontrak);
-            
+
             // Kirim EMAIL notifikasi ke penghuni
             $this->emailService->sendKontrakDiterima($kontrak);
-            
+
             // Kirim EMAIL ke pemilik sendiri (opsional)
             $this->emailService->sendTenggatWaktuToPemilik($kontrak, 'aktif_baru');
-            
+
             return redirect()->route('pemilik.kontrak.index')
                 ->with('success', 'Kontrak disetujui. Notifikasi WhatsApp dan Email dikirim ke penghuni.');
 
@@ -133,7 +136,7 @@ class KontrakController extends Controller
     {
         try {
             $kontrak = KontrakSewa::with(['penghuni', 'kos'])->findOrFail($idKontrak);
-            
+
             // Verifikasi pemilik
             if ($kontrak->kos->id_pemilik != auth('pemilik')->id()) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses!');
@@ -147,12 +150,12 @@ class KontrakController extends Controller
             // ===== HAPUS RECORD PEMBAYARAN DEPOSIT =====
             $pembayaranDeposit = Pembayaran::where('id_kontrak', $kontrak->id_kontrak)
                 ->where('status_pembayaran', 'pending')
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('keterangan', 'like', '%Deposit%')
                         ->orWhere('keterangan', 'like', '%Uang Muka%');
                 })
                 ->first();
-                
+
             if ($pembayaranDeposit) {
                 $pembayaranDeposit->delete();
             }
@@ -163,7 +166,7 @@ class KontrakController extends Controller
 
             // Kirim notifikasi penolakan WhatsApp
             $this->notificationService->sendPersetujuanDitolak($idKontrak);
-            
+
             // Kirim EMAIL notifikasi ke penghuni
             $this->emailService->sendKontrakDitolak($kontrak);
 
@@ -181,7 +184,7 @@ class KontrakController extends Controller
     public function show($idKontrak)
     {
         $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->findOrFail($idKontrak);
-        
+
         // Verifikasi pemilik
         if ($kontrak->kos->id_pemilik != auth('pemilik')->id()) {
             abort(403, 'Anda tidak memiliki akses!');
@@ -197,7 +200,7 @@ class KontrakController extends Controller
     {
         try {
             $kontrak = KontrakSewa::with(['penghuni', 'kos'])->findOrFail($idKontrak);
-            
+
             // Verifikasi pemilik
             if ($kontrak->kos->id_pemilik != auth('pemilik')->id()) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses!');
@@ -207,9 +210,19 @@ class KontrakController extends Controller
                 'status_kontrak' => 'selesai'
             ]);
 
+            // Cek apakah masih ada kontrak aktif lainnya
+            $masihAdaKontrakAktif = KontrakSewa::where('id_penghuni', $kontrak->id_penghuni)
+                ->where('status_kontrak', 'aktif')
+                ->where('id_kontrak', '!=', $idKontrak)
+                ->exists();
+
+            if (!$masihAdaKontrakAktif) {
+                $kontrak->penghuni->update(['status_penghuni' => 'nonaktif']);
+            }
+
             // Kembalikan status kamar jadi tersedia
             $kontrak->kamar->update(['status_kamar' => 'tersedia']);
-            
+
             // TAMBAHKAN: Kirim EMAIL notifikasi ke penghuni tentang kontrak selesai
             $this->emailService->sendTenggatWaktuToPenghuni($kontrak, 'selesai');
             $this->emailService->sendTenggatWaktuToPemilik($kontrak, 'selesai');
@@ -221,7 +234,7 @@ class KontrakController extends Controller
             return redirect()->back()->with('error', 'Gagal menandai kontrak selesai: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * TAMBAHKAN: Metode untuk testing email
      */
@@ -229,12 +242,12 @@ class KontrakController extends Controller
     {
         try {
             $kontrak = KontrakSewa::with(['penghuni', 'kos'])->findOrFail($idKontrak);
-            
+
             if ($kontrak->kos->id_pemilik != auth('pemilik')->id()) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses!');
             }
-            
-            switch($type) {
+
+            switch ($type) {
                 case 'diterima':
                     $this->emailService->sendKontrakDiterima($kontrak);
                     $message = 'Email kontrak diterima berhasil dikirim ke ' . $kontrak->penghuni->email;
@@ -256,34 +269,34 @@ class KontrakController extends Controller
                 default:
                     return redirect()->back()->with('error', 'Tipe email tidak valid');
             }
-            
+
             return redirect()->back()->with('success', $message);
-            
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengirim email: ' . $e->getMessage());
         }
     }
-    
+
     public function destroy($id)
     {
         $kontrak = KontrakSewa::findOrFail($id);
         $pemilikId = auth()->guard('pemilik')->user()->id_pemilik;
-        
+
         // Pastikan kontrak milik pemilik yang login
         if ($kontrak->kos->id_pemilik != $pemilikId) {
             return redirect()->route('pemilik.kontrak.index')
                 ->with('error', 'Anda tidak memiliki akses untuk menghapus kontrak ini.');
         }
-        
+
         // Hanya boleh menghapus kontrak yang sudah selesai atau ditolak
         if (!in_array($kontrak->status_kontrak, ['selesai', 'ditolak'])) {
             return redirect()->route('pemilik.kontrak.index')
                 ->with('error', 'Kontrak aktif tidak dapat dihapus.');
         }
-        
+
         $namaPenghuni = $kontrak->penghuni->nama ?? 'Kontrak';
         $kontrak->delete();
-        
+
         return redirect()->route('pemilik.kontrak.index')
             ->with('success', "Riwayat kontrak $namaPenghuni berhasil dihapus.");
     }

@@ -20,16 +20,16 @@ class DashboardController extends Controller
         }
 
         $user = Auth::guard('penghuni')->user();
-        
+
         $kontrakAktif = KontrakSewa::with(['kos', 'kamar'])
             ->where('id_penghuni', $user->id_penghuni)
             ->where('status_kontrak', 'aktif')
             ->get();
 
         // Tambahkan data sisa waktu untuk setiap kontrak
-        $kontrakAktif->each(function($kontrak) {
+        $kontrakAktif->each(function ($kontrak) {
             $sekarang = Carbon::now();
-            
+
             // Handle null tanggal_selesai dan tanggal_mulai
             if (!$kontrak->tanggal_selesai || !$kontrak->tanggal_mulai) {
                 // Kontrak baru disetujui tapi belum ada pembayaran
@@ -41,17 +41,17 @@ class DashboardController extends Controller
                 $kontrak->statusText = 'Menunggu pembayaran pertama';
                 return; // Skip ke next kontrak
             }
-            
+
             $selesai = Carbon::parse($kontrak->tanggal_selesai);
             $mulai = Carbon::parse($kontrak->tanggal_mulai);
-            
+
             // Hitung sisa hari (convert ke integer)
             $sisaHari = (int) floor($sekarang->diffInDays($selesai, false));
             $totalHari = (int) floor($mulai->diffInDays($selesai));
-            
+
             // Hitung persentase waktu tersisa
             $persentaseAkhir = $totalHari > 0 ? ($sisaHari / $totalHari) * 100 : 0;
-            
+
             // Tentukan status warna
             if ($persentaseAkhir > 50) {
                 $statusWarna = 'green'; // Waktu masih banyak
@@ -60,7 +60,7 @@ class DashboardController extends Controller
             } else {
                 $statusWarna = 'red'; // Waktu hampir habis
             }
-            
+
             $kontrak->sisaHari = max($sisaHari, 0);
             $kontrak->totalHari = $totalHari;
             $kontrak->persentaseAkhir = max($persentaseAkhir, 0);
@@ -79,8 +79,8 @@ class DashboardController extends Controller
         $totalPembayaran = $this->hitungTotalPembayaran($user->id_penghuni);
 
         return view('penghuni.dashboard', compact(
-            'user', 
-            'kontrakAktif', 
+            'user',
+            'kontrakAktif',
             'pembayaranTerakhir',
             'totalPembayaran'
         ));
@@ -91,16 +91,9 @@ class DashboardController extends Controller
      */
     private function hitungTotalPembayaran($penghuniId)
     {
-        // 1. Pembayaran bulanan yang sudah lunas
-        $totalPembayaranBulanan = Pembayaran::where('id_penghuni', $penghuniId)
+        // Hanya hitung pembayaran yang sudah berstatus 'lunas'
+        return Pembayaran::where('id_penghuni', $penghuniId)
             ->where('status_pembayaran', 'lunas')
             ->sum('jumlah');
-        
-        // 2. Deposit dari kontrak aktif (uang muka pertama)
-        $totalDeposit = KontrakSewa::where('id_penghuni', $penghuniId)
-            ->where('status_kontrak', 'aktif')
-            ->sum('harga_sewa');
-        
-        return $totalPembayaranBulanan + $totalDeposit;
     }
 }
