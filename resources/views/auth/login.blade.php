@@ -415,15 +415,15 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 
-                <!-- Email/Username -->
+                <!--Username -->
                 <div class="mb-4">
                     <label for="username" class="form-label fw-semibold">
-                        <i class="fas fa-user me-2" style="color: var(--primary);"></i>Username atau Email
+                        <i class="fas fa-user me-2" style="color: var(--primary);"></i>Username 
                     </label>
                     <input type="text" name="username" id="username" 
                            class="form-control @error('username') is-invalid @enderror"
                            value="{{ old('username') }}" 
-                           placeholder="Masukkan username atau email" 
+                           placeholder="Masukkan username" 
                            required autofocus>
                     @error('username')
                         <div class="invalid-feedback">{{ $message }}</div>
