@@ -38,7 +38,7 @@ class NotificationService
 
     public function sendMenungguPersetujuan($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->notif_menunggu_dikirim) {
             return false;
@@ -51,13 +51,13 @@ class NotificationService
             Log::error("Failed to send email MenungguPersetujuan: " . $e->getMessage());
         }
 
-        $message = "⏳ *STATUS PENGAJUAN: MENUNGGU PERSETUJUAN*\n\n"
+        $message = "Pesan ini dikirim otomatis oleh sistem AyoKos\n"
+            . "⏳ *STATUS PENGAJUAN: MENUNGGU PERSETUJUAN*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Permohonan Anda untuk ngekos di *{$kontrak->kos->nama_kos}* sedang menunggu persetujuan dari pemilik.\n\n"
             . "📅 Tanggal Daftar: " . $kontrak->created_at->format('d F Y') . "\n"
             . "🏠 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
-            . "Mohon kesediaannya menunggu konfirmasi selanjutnya. Terima kasih.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
+            . "Mohon kesediaannya menunggu konfirmasi selanjutnya.";
 
         $success = $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
 
@@ -70,9 +70,10 @@ class NotificationService
 
     public function sendPersetujuanDiterima($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_disetujui_dikirim) {
+            Log::warning("sendPersetujuanDiterima skipped or data missing", ['id' => $kontrakId, 'status' => $kontrak->status_kontrak ?? 'null']);
             return false;
         }
 
@@ -84,8 +85,8 @@ class NotificationService
         }
 
         // Handle null tanggal_mulai (baru disetujui tapi belum ada pembayaran)
-        $tanggalMulaiText = $kontrak->tanggal_mulai ? $kontrak->tanggal_mulai->format('d F Y') : 'Menunggu pembayaran pertama';
-        
+        $tanggalMulaiText = $kontrak->tanggal_mulai ? \Carbon\Carbon::parse($kontrak->tanggal_mulai)->format('d F Y') : 'Menunggu pembayaran pertama';
+
         $message = "✅ *SELAMAT! PERMOHONAN DISETUJUI*\n\n"
             . "Halo {$kontrak->penghuni->nama},\n"
             . "Kabar gembira! Permohonan ngekos Anda di *{$kontrak->kos->nama_kos}* telah **DISETUJUI** oleh pemilik.\n\n"
@@ -106,7 +107,7 @@ class NotificationService
 
     public function sendPersetujuanDitolak($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'ditolak' || $kontrak->notif_tolak_dikirim) {
             return false;
@@ -137,13 +138,7 @@ class NotificationService
 
     public function sendPengajuanBaru($kontrakId)
     {
-        // Start bot MANUAL hanya saat pertama kali
-        if (!$this->whatsapp->isBotStarted()) {
-            $this->whatsapp->startBot();
-            sleep(3); // Tunggu bot initialize
-        }
-
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || !$kontrak->kos->pemilik) {
             return false;
@@ -162,8 +157,7 @@ class NotificationService
             . "👤 Nama: {$kontrak->penghuni->nama}\n"
             . "🏠 Kos: {$kontrak->kos->nama_kos}\n"
             . "🛏 Kamar: {$kontrak->kamar->nomor_kamar}\n\n"
-            . "Mohon segera login ke aplikasi untuk melihat detail dan melakukan konfirmasi.\n\n"
-            . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
+            . "Mohon segera login ke aplikasi untuk melihat detail dan melakukan konfirmasi.";
 
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
@@ -173,6 +167,7 @@ class NotificationService
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
 
         if (!$kontrak || !$kontrak->kos->pemilik) {
+            Log::error("sendPersetujuanDiberikan failed - data missing", ['id' => $kontrakId]);
             return false;
         }
 
@@ -191,12 +186,14 @@ class NotificationService
             . "Sistem telah mengirimkan notifikasi kepada penghuni perihal persetujuan ini.\n\n"
             . "_Pesan ini dikirim otomatis oleh sistem AyoKos_";
 
+        Log::info("Attempting to send WA to Pemilik", ['phone' => $kontrak->kos->pemilik->no_hp]);
+
         return $this->whatsapp->sendMessage($kontrak->kos->pemilik->no_hp, $message);
     }
 
     public function sendPersetujuanDitolakPemilik($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || !$kontrak->kos->pemilik) {
             return false;
@@ -227,7 +224,7 @@ class NotificationService
      */
     public function sendPengingat7Hari($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_7hari_dikirim) {
             return false;
@@ -261,7 +258,7 @@ class NotificationService
      */
     public function sendPengingat3Hari($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || $kontrak->notif_3hari_dikirim) {
             return false;
@@ -296,7 +293,7 @@ class NotificationService
      */
     public function sendPengingatH1($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_h1_dikirim) {
             return false;
@@ -326,7 +323,7 @@ class NotificationService
      */
     public function sendPengingatHariIni($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_hari_ini_dikirim) {
             return false;
@@ -357,7 +354,7 @@ class NotificationService
      */
     public function sendNotifikasiTerlambat($kontrakId, $hariTerlambat)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || $kontrak->notif_terlambat_dikirim) {
             return false;
@@ -391,7 +388,7 @@ class NotificationService
      */
     public function sendPengingat7HariPemilik($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
@@ -415,7 +412,7 @@ class NotificationService
      */
     public function sendPengingat3HariPemilik($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
@@ -440,7 +437,7 @@ class NotificationService
      */
     public function sendPengingatH1Pemilik($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
@@ -465,7 +462,7 @@ class NotificationService
      */
     public function sendPengingatHariIniPemilik($kontrakId)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
@@ -492,7 +489,7 @@ class NotificationService
      */
     public function sendNotifikasiTerlambatPemilik($kontrakId, $hariTerlambat)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || $kontrak->status_kontrak !== 'aktif' || !$kontrak->tanggal_selesai || !$kontrak->kos->pemilik) {
             return false;
@@ -522,7 +519,7 @@ class NotificationService
      */
     public function sendNotifikasiPermintaanPerpanjangan($kontrakId, $durasiTambahan)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik', 'kamar'])->find($kontrakId);
 
         if (!$kontrak || !$kontrak->kos->pemilik) {
             return false;
@@ -545,7 +542,7 @@ class NotificationService
      */
     public function sendNotifikasiPerpanjanganDisetujui($kontrakId, $tanggalBaruSelesai)
     {
-        $kontrak = KontrakSewa::with(['penghuni', 'kos'])->find($kontrakId);
+        $kontrak = KontrakSewa::with(['penghuni', 'kos', 'kamar'])->find($kontrakId);
 
         if (!$kontrak) {
             return false;

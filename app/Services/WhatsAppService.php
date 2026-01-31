@@ -29,7 +29,7 @@ class WhatsAppService
 
         try {
             $nodeScriptPath = base_path('app/Services/WhatsAppBot/whatsapp-bot.js');
-            
+
             if (!file_exists($nodeScriptPath)) {
                 Log::error('WhatsApp bot script not found: ' . $nodeScriptPath);
                 return false;
@@ -49,9 +49,9 @@ class WhatsAppService
             Log::info('WhatsApp bot started in background');
             $this->botStarted = true;
             $this->isBotRunning = true;
-            
+
             return true;
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to start WhatsApp bot: ' . $e->getMessage());
             return false;
@@ -65,7 +65,7 @@ class WhatsAppService
     {
         try {
             $formattedPhone = $this->formatPhoneNumber($phone);
-            
+
             $messageData = [
                 'id' => uniqid(),
                 'type' => 'send_message',
@@ -94,14 +94,14 @@ class WhatsAppService
                 'phone' => $formattedPhone,
                 'message_id' => $messageData['id']
             ]);
-            
+
             // Start bot jika belum running (hanya untuk message pertama)
             if (!$this->botStarted) {
                 $this->startBot();
             }
-            
+
             return true;
-            
+
         } catch (\Exception $e) {
             Log::error('Error queueing WhatsApp message: ' . $e->getMessage());
             return false;
@@ -111,19 +111,19 @@ class WhatsAppService
     private function formatPhoneNumber($phone)
     {
         $phone = preg_replace('/\D/', '', $phone);
-        
+
         if (substr($phone, 0, 1) === '0') {
             $phone = '62' . substr($phone, 1);
         }
-        
+
         if (substr($phone, 0, 3) === '+62') {
             $phone = '62' . substr($phone, 3);
         }
-        
+
         if (strlen($phone) < 10) {
             throw new \Exception("Invalid phone number length: " . $phone);
         }
-        
+
         return $phone;
     }
 
@@ -134,7 +134,7 @@ class WhatsAppService
     {
         $queueCount = 0;
         $pendingCount = 0;
-        
+
         if (file_exists($this->messageQueueFile)) {
             $queueData = file_get_contents($this->messageQueueFile);
             $queue = json_decode($queueData, true) ?? [];
@@ -187,7 +187,7 @@ class WhatsAppService
             } else {
                 exec("pkill -f 'whatsapp-bot.js' 2>/dev/null");
             }
-            
+
             $this->botStarted = false;
             $this->isBotRunning = false;
             Log::info('WhatsApp bot stopped');

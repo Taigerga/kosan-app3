@@ -166,6 +166,7 @@ class KontrakController extends Controller
 
             // Kirim notifikasi penolakan WhatsApp
             $this->notificationService->sendPersetujuanDitolak($idKontrak);
+            $this->notificationService->sendPersetujuanDitolakPemilik($idKontrak);
 
             // Kirim EMAIL notifikasi ke penghuni
             $this->emailService->sendKontrakDitolak($kontrak);
