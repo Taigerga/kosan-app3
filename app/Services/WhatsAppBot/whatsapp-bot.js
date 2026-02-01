@@ -139,7 +139,7 @@ class WhatsAppBot {
                 connectTimeoutMs: 60000,
                 defaultQueryTimeoutMs: 0,
                 emitOwnEvents: true,
-                browser: ['AyoKos', 'Chrome', '1.0.0'],
+                browser: ['Chrome', 'Linux', '120.0.6099'],
             });
 
             // Setup event handlers
