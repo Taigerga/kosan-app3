@@ -16,38 +16,6 @@ const __dirname = path.dirname(__filename);
 
 class WhatsAppBot {
     constructor() {
-        // 0. LOCK FILE (Mencegah bot jalan double)
-        this.lockFile = path.join(__dirname, 'bot.lock');
-        if (fs.existsSync(this.lockFile)) {
-            const stats = fs.statSync(this.lockFile);
-            const now = new Date().getTime();
-            const lastModified = stats.mtime.getTime();
-
-            // Jeda 5 menit untuk toleransi heartbeat
-            if (now - lastModified < 300000) {
-                console.log('⚠️ WhatsApp Bot sudah berjalan (Lock file aktif). Force exit.');
-                process.exit(0);
-            }
-        }
-
-        // Buat lock file & Heartbeat (update mtime tiap 30 detik)
-        fs.writeFileSync(this.lockFile, new Date().toISOString());
-        this.heartbeat = setInterval(() => {
-            if (fs.existsSync(this.lockFile)) {
-                fs.utimesSync(this.lockFile, new Date(), new Date());
-            } else {
-                fs.writeFileSync(this.lockFile, new Date().toISOString());
-            }
-        }, 30000);
-
-        // Hapus lock file & heartbeat saat process exit
-        process.on('exit', () => {
-            if (this.heartbeat) clearInterval(this.heartbeat);
-            if (fs.existsSync(this.lockFile)) fs.unlinkSync(this.lockFile);
-        });
-        process.on('SIGINT', () => process.exit());
-        process.on('SIGTERM', () => process.exit());
-
         this.sock = null;
         this.isConnected = false;
 
