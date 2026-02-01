@@ -527,24 +527,23 @@ class ALLNotificationService
     }
 
     /**
-      * Format phone number for WhatsApp
-      */
+     * Format phone number for WhatsApp
+     */
     private function formatPhoneNumber($phone)
     {
-        $phone = preg_replace('/\D/', '', $phone);
-
+        // Remove any non-digit characters
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        
+        // If starts with 0, convert to 62
         if (substr($phone, 0, 1) === '0') {
             $phone = '62' . substr($phone, 1);
         }
-
-        if (substr($phone, 0, 3) === '+62') {
-            $phone = '62' . substr($phone, 3);
+        
+        // If starts with 8, add 62
+        if (substr($phone, 0, 1) === '8') {
+            $phone = '62' . $phone;
         }
-
-        if (strlen($phone) < 10) {
-            throw new \Exception("Invalid phone number length: " . $phone);
-        }
-
-        return $phone;
+        
+        return $phone . '@c.us'; // Baileys format
     }
 }
