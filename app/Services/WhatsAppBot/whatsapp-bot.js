@@ -18,6 +18,7 @@ class WhatsAppBot {
     constructor() {
         this.sock = null;
         this.isConnected = false;
+        this.isReconnecting = false;
 
         // 1. FOLDER AUTH (Untuk simpan session login)
         this.authFolder = path.join(__dirname, 'auth_info');
@@ -42,6 +43,21 @@ class WhatsAppBot {
         this.isProcessing = false;
         this.init();
         this.startQueueWatcher();
+    }
+
+    async cleanupConnection() {
+        if (this.sock) {
+            try {
+                this.sock.ev.removeAllListeners('connection.update');
+                this.sock.ev.removeAllListeners('creds.update');
+                await this.sock.end();
+                console.log('🧹 Socket lama dibersihkan');
+            } catch (err) {
+                console.log('⚠️ Error saat cleanup socket:', err.message);
+            }
+            this.sock = null;
+        }
+        this.isConnected = false;
     }
 
     async init() {
@@ -76,6 +92,7 @@ class WhatsAppBot {
         if (connection === 'open') {
             console.log('✅ WhatsApp TERHUBUNG!');
             this.isConnected = true;
+            this.isReconnecting = false;
         }
 
         if (connection === 'close') {
@@ -84,9 +101,16 @@ class WhatsAppBot {
 
             console.log('🔌 Koneksi terputus. Sebab:', lastDisconnect?.error?.message);
 
-            if (shouldReconnect) {
-                console.log('🔄 Mencoba menghubungkan ulang dalam 5 detik...');
-                setTimeout(() => this.init(), 5000);
+            if (shouldReconnect && !this.isReconnecting) {
+                this.isReconnecting = true;
+                console.log('🔄 Menunggu 10 detik sebelum reconnect...');
+                setTimeout(async () => {
+                    await this.cleanupConnection();
+                    this.isReconnecting = false;
+                    this.init();
+                }, 10000);
+            } else if (shouldReconnect) {
+                console.log('⏳ Reconnect sedang berlangsung, skip...');
             } else {
                 console.log('🚨 Sesi dikeluarkan (Logged Out). Hapus folder auth_info dan scan ulang.');
             }
