@@ -147,11 +147,13 @@ class WhatsAppBot {
 
         this.isProcessing = true;
         try {
-            // --- FILTER 1: JAM OPERASIONAL (06:00 - 21:00) ---
-            const hour = new Date().getHours();
-            console.log(`🕐 Current hour: ${hour}`);
+            // --- FILTER 1: JAM OPERASIONAL (06:00 - 21:00) WIB ---
+            // Offset +7 untuk WIB (UTC+7)
+            const now = new Date();
+            const hour = (now.getUTCHours() + 7) % 24;
+            console.log(`🕐 Current hour (WIB): ${hour} (UTC: ${now.getUTCHours()})`);
             if (hour < 6 || hour >= 21) {
-                console.log('⏰ Di luar jam operasional (06:00-21:00). Skip proses.');
+                console.log('⏰ Di luar jam operasional (06:00-21:00 WIB). Skip proses.');
                 return;
             }
 
