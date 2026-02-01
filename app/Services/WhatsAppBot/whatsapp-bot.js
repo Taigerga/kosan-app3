@@ -125,6 +125,12 @@ class WhatsAppBot {
     }
 
     startQueueWatcher() {
+        // Log status setiap 30 detik
+        setInterval(() => {
+            const now = new Date();
+            console.log(`📊 [${now.toLocaleTimeString()}] Status: connected=${this.isConnected}, processing=${this.isProcessing}, sentToday=${this.sentToday}/${this.dailyLimit}`);
+        }, 30000);
+
         // Gunakan timeout rekursif agar tidak tumpang tindih (anti-spam)
         const check = async () => {
             await this.processQueue();
@@ -134,14 +140,18 @@ class WhatsAppBot {
     }
 
     async processQueue() {
-        if (this.isProcessing || !this.isConnected || !this.sock) return;
+        if (this.isProcessing || !this.isConnected || !this.sock) {
+            console.log(`⏸️ Skip: processing=${this.isProcessing}, connected=${this.isConnected}, hasSock=${!!this.sock}`);
+            return;
+        }
 
         this.isProcessing = true;
         try {
             // --- FILTER 1: JAM OPERASIONAL (06:00 - 21:00) ---
             const hour = new Date().getHours();
+            console.log(`🕐 Current hour: ${hour}`);
             if (hour < 6 || hour >= 21) {
-                // Bot berhenti beroperasi di luar jam ini
+                console.log('⏰ Di luar jam operasional (06:00-21:00). Skip proses.');
                 return;
             }
 
@@ -163,11 +173,16 @@ class WhatsAppBot {
             try {
                 messages = JSON.parse(fs.readFileSync(this.queueFile, 'utf8'));
             } catch (e) {
+                console.error('❌ Error baca file:', e.message);
                 return;
             }
 
             const pending = messages.filter(m => m.status !== 'sent');
-            if (pending.length === 0) return;
+            console.log(`📊 Total pesan: ${messages.length}, Pending: ${pending.length}`);
+            if (pending.length === 0) {
+                console.log('✅ Tidak ada pesan pending.');
+                return;
+            }
 
             // Ambil pesan pertama dari antrean
             const msg = pending[0];
