@@ -16,9 +16,40 @@ const __dirname = path.dirname(__filename);
 
 class WhatsAppBot {
     constructor() {
+        // 0. LOCK FILE (Mencegah bot jalan double)
+        this.lockFile = path.join(__dirname, 'bot.lock');
+        if (fs.existsSync(this.lockFile)) {
+            const stats = fs.statSync(this.lockFile);
+            const now = new Date().getTime();
+            const lastModified = stats.mtime.getTime();
+
+            // Jeda 5 menit untuk toleransi heartbeat
+            if (now - lastModified < 300000) {
+                console.log('⚠️ WhatsApp Bot sudah berjalan (Lock file aktif). Force exit.');
+                process.exit(0);
+            }
+        }
+
+        // Buat lock file & Heartbeat (update mtime tiap 30 detik)
+        fs.writeFileSync(this.lockFile, new Date().toISOString());
+        this.heartbeat = setInterval(() => {
+            if (fs.existsSync(this.lockFile)) {
+                fs.utimesSync(this.lockFile, new Date(), new Date());
+            } else {
+                fs.writeFileSync(this.lockFile, new Date().toISOString());
+            }
+        }, 30000);
+
+        // Hapus lock file & heartbeat saat process exit
+        process.on('exit', () => {
+            if (this.heartbeat) clearInterval(this.heartbeat);
+            if (fs.existsSync(this.lockFile)) fs.unlinkSync(this.lockFile);
+        });
+        process.on('SIGINT', () => process.exit());
+        process.on('SIGTERM', () => process.exit());
+
         this.sock = null;
         this.isConnected = false;
-        this.isReconnecting = false;
 
         // 1. FOLDER AUTH (Untuk simpan session login)
         this.authFolder = path.join(__dirname, 'auth_info');
@@ -43,21 +74,6 @@ class WhatsAppBot {
         this.isProcessing = false;
         this.init();
         this.startQueueWatcher();
-    }
-
-    async cleanupConnection() {
-        if (this.sock) {
-            try {
-                this.sock.ev.removeAllListeners('connection.update');
-                this.sock.ev.removeAllListeners('creds.update');
-                await this.sock.end();
-                console.log('🧹 Socket lama dibersihkan');
-            } catch (err) {
-                console.log('⚠️ Error saat cleanup socket:', err.message);
-            }
-            this.sock = null;
-        }
-        this.isConnected = false;
     }
 
     async init() {
@@ -92,7 +108,6 @@ class WhatsAppBot {
         if (connection === 'open') {
             console.log('✅ WhatsApp TERHUBUNG!');
             this.isConnected = true;
-            this.isReconnecting = false;
         }
 
         if (connection === 'close') {
@@ -101,16 +116,9 @@ class WhatsAppBot {
 
             console.log('🔌 Koneksi terputus. Sebab:', lastDisconnect?.error?.message);
 
-            if (shouldReconnect && !this.isReconnecting) {
-                this.isReconnecting = true;
-                console.log('🔄 Menunggu 10 detik sebelum reconnect...');
-                setTimeout(async () => {
-                    await this.cleanupConnection();
-                    this.isReconnecting = false;
-                    this.init();
-                }, 10000);
-            } else if (shouldReconnect) {
-                console.log('⏳ Reconnect sedang berlangsung, skip...');
+            if (shouldReconnect) {
+                console.log('🔄 Mencoba menghubungkan ulang dalam 5 detik...');
+                setTimeout(() => this.init(), 5000);
             } else {
                 console.log('🚨 Sesi dikeluarkan (Logged Out). Hapus folder auth_info dan scan ulang.');
             }
@@ -125,12 +133,6 @@ class WhatsAppBot {
     }
 
     startQueueWatcher() {
-        // Log status setiap 30 detik
-        setInterval(() => {
-            const now = new Date();
-            console.log(`📊 [${now.toLocaleTimeString()}] Status: connected=${this.isConnected}, processing=${this.isProcessing}, sentToday=${this.sentToday}/${this.dailyLimit}`);
-        }, 30000);
-
         // Gunakan timeout rekursif agar tidak tumpang tindih (anti-spam)
         const check = async () => {
             await this.processQueue();
@@ -140,20 +142,14 @@ class WhatsAppBot {
     }
 
     async processQueue() {
-        if (this.isProcessing || !this.isConnected || !this.sock) {
-            console.log(`⏸️ Skip: processing=${this.isProcessing}, connected=${this.isConnected}, hasSock=${!!this.sock}`);
-            return;
-        }
+        if (this.isProcessing || !this.isConnected || !this.sock) return;
 
         this.isProcessing = true;
         try {
-            // --- FILTER 1: JAM OPERASIONAL (06:00 - 21:00) WIB ---
-            // Offset +7 untuk WIB (UTC+7)
-            const now = new Date();
-            const hour = (now.getUTCHours() + 7) % 24;
-            console.log(`🕐 Current hour (WIB): ${hour} (UTC: ${now.getUTCHours()})`);
+            // --- FILTER 1: JAM OPERASIONAL (06:00 - 21:00) ---
+            const hour = new Date().getHours();
             if (hour < 6 || hour >= 21) {
-                console.log('⏰ Di luar jam operasional (06:00-21:00 WIB). Skip proses.');
+                // Bot berhenti beroperasi di luar jam ini
                 return;
             }
 
@@ -175,16 +171,11 @@ class WhatsAppBot {
             try {
                 messages = JSON.parse(fs.readFileSync(this.queueFile, 'utf8'));
             } catch (e) {
-                console.error('❌ Error baca file:', e.message);
                 return;
             }
 
             const pending = messages.filter(m => m.status !== 'sent');
-            console.log(`📊 Total pesan: ${messages.length}, Pending: ${pending.length}`);
-            if (pending.length === 0) {
-                console.log('✅ Tidak ada pesan pending.');
-                return;
-            }
+            if (pending.length === 0) return;
 
             // Ambil pesan pertama dari antrean
             const msg = pending[0];
