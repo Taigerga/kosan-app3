@@ -1,22 +1,10 @@
 <?php
-
-use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PemilikDashboardController;
 use App\Http\Controllers\API\WhatsAppBridgeController;
 use App\Http\Controllers\API\NotificationController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Untuk pemilik
-    Route::get('/pemilik/pembayaran/pending', [PaymentController::class, 'pendingPayments']);
-    Route::post('/pemilik/pembayaran/{pembayaranId}/confirm', [PaymentController::class, 'confirmPayment']);
-    Route::post('/pemilik/pembayaran/{pembayaranId}/reject', [PaymentController::class, 'rejectPayment']);
-    
-    // Untuk penghuni
-    Route::get('/penghuni/pembayaran/riwayat', [PaymentController::class, 'paymentHistory']);
-    Route::get('/penghuni/pembayaran/belum-bayar', [PaymentController::class, 'unpaidPayments']);
-    Route::post('/penghuni/pembayaran/{pembayaranId}/upload-bukti', [PaymentController::class, 'uploadProof']);
-});
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -29,11 +17,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-use App\Http\Controllers\API\PaymentCallbackController;
-
-// Payment callback routes
-Route::post('/payment/callback', [PaymentCallbackController::class, 'handleCallback']);
-Route::get('/payment/simulate/{externalId}', [PaymentCallbackController::class, 'simulatePayment'])->name('payment.simulate');
 
 Route::prefix('notifications')->group(function () {
     Route::post('menunggu-persetujuan/{kontrakId}', [NotificationController::class, 'sendMenungguPersetujuan']);
