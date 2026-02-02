@@ -82,11 +82,17 @@ class WhatsAppBot {
         this.isConnected = false;
         this.isReconnecting = false;
         this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 5;
+        this.maxReconnectAttempts = 3;
         this.authFolder = path.join(__dirname, 'auth_info');
         this.keepAliveInterval = null;
         this.messageQueueInterval = null;
         this.lastActivity = Date.now();
+        this.lastMessageTime = 0;
+        this.minMessageDelay = 3000;
+        this.maxMessageDelay = 8000;
+        this.messagesPerMinute = 0;
+        this.messagesSentThisMinute = 0;
+        this.startTime = Date.now();
         
         // Queue file path
         const projectRoot = path.resolve(__dirname, '..', '..', '..');
@@ -102,6 +108,16 @@ class WhatsAppBot {
         SafeConsole.log('📁 Queue file:', this.messageQueueFile);
         
         this.init();
+    }
+
+    // Helper function untuk delay
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Helper function untuk random delay
+    getRandomDelay() {
+        return Math.floor(Math.random() * (this.maxMessageDelay - this.minMessageDelay + 1)) + this.minMessageDelay;
     }
 
     // ========== PERBAIKAN 3: Initialize dengan error handling ==========
@@ -188,17 +204,17 @@ class WhatsAppBot {
                 if (statusCode === DisconnectReason.loggedOut) {
                     SafeConsole.log('🚨 Logged out, cleaning auth...');
                     this.cleanAuth();
-                    setTimeout(() => this.init(), 3000);
+                    setTimeout(() => this.init(), 10000); // Delay 10 detik
                 } else if (statusCode === DisconnectReason.restartRequired) {
                     SafeConsole.log('🔄 Restart required, reconnecting...');
-                    setTimeout(() => this.init(), 3000);
+                    setTimeout(() => this.init(), 10000); // Delay 10 detik
                 } else if (statusCode === DisconnectReason.connectionClosed) {
                     SafeConsole.log('🔌 Connection closed, reconnecting...');
                     this.handleReconnect();
                 } else {
-                    // Unknown/other errors
+                    // Unknown/other errors - delay lebih lama
                     SafeConsole.log('🔄 Reconnecting due to unknown closure...');
-                    this.handleReconnect();
+                    setTimeout(() => this.handleReconnect(), 15000); // Delay 15 detik
                 }
             }
             
@@ -207,6 +223,11 @@ class WhatsAppBot {
                 this.reconnectAttempts = 0;
                 this.lastActivity = Date.now();
                 SafeConsole.log('✅ WhatsApp CONNECTED!');
+                SafeConsole.log('⏳ Waiting 10 seconds before sending messages...');
+                // Delay 10 detik saat connect pertama untuk menghindari deteksi bot
+                this.sleep(10000).then(() => {
+                    SafeConsole.log('✅ Ready to send messages');
+                });
             }
             
             if (connection === 'connecting') {
@@ -228,15 +249,20 @@ class WhatsAppBot {
         this.isReconnecting = true;
         
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            SafeConsole.error('🚨 Max reconnection attempts reached');
-            this.isReconnecting = false;
+            SafeConsole.error('🚨 Max reconnection attempts reached, waiting 5 minutes...');
+            // Tunggu 5 menit sebelum reset counter
+            setTimeout(() => {
+                this.reconnectAttempts = 0;
+                this.isReconnecting = false;
+                this.handleReconnect();
+            }, 300000);
             return;
         }
         
         this.reconnectAttempts++;
         
-        // Exponential backoff
-        const delay = Math.min(5000 * Math.pow(2, this.reconnectAttempts - 1), 60000);
+        // Exponential backoff dengan delay lebih lama
+        const delay = Math.min(10000 * Math.pow(2, this.reconnectAttempts - 1), 120000);
         
         SafeConsole.log(`🔄 Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay/1000}s...`);
         
@@ -263,16 +289,14 @@ class WhatsAppBot {
             if (!this.sock || !this.isConnected) return;
             
             try {
-                // Send presence update untuk menjaga connection
-                this.sock.sendPresenceUpdate('available');
                 this.lastActivity = Date.now();
                 
-                SafeConsole.log('❤️ Keep-alive sent');
+                SafeConsole.log('❤️ Keep-alive check');
             } catch (error) {
                 SafeConsole.log('⚠️ Keep-alive failed:', error.message);
                 this.isConnected = false;
             }
-        }, 25000); // Setiap 25 detik
+        }, 240000); // Setiap 4 menit (dari 25 detik)
     }
 
     // ========== PERBAIKAN 7: Cleanup yang lebih baik ==========
@@ -289,19 +313,14 @@ class WhatsAppBot {
                 this.messageQueueInterval = null;
             }
             
-            // Cleanup socket
+            // Cleanup socket - lebih gentle, jangan paksa close WS
             if (this.sock) {
                 try {
                     // Remove all listeners
                     this.sock.ev.removeAllListeners();
                     
-                    // Close WebSocket jika ada
-                    if (this.sock.ws && this.sock.ws.readyState !== 3) { // 3 = CLOSED
-                        this.sock.ws.close();
-                    }
-                    
-                    // End connection
-                    this.sock.end(new Error('Cleanup'));
+                    // End connection dengan cara gentle (tanpa error parameter)
+                    this.sock.end();
                     
                 } catch (sockError) {
                     // Ignore cleanup errors
@@ -357,7 +376,7 @@ class WhatsAppBot {
         
         this.messageQueueInterval = setInterval(() => {
             this.processMessageQueue();
-        }, 5000); // Cek setiap 5 detik
+        }, 30000); // Cek setiap 30 detik (dari 5 detik)
     }
 
     // ========== PERBAIKAN 11: Process message queue ==========
@@ -401,9 +420,28 @@ class WhatsAppBot {
                 return;
             }
             
+            // Reset counter setiap menit
+            const now = Date.now();
+            if (now - this.startTime > 60000) {
+                this.startTime = now;
+                this.messagesSentThisMinute = 0;
+            }
+            
+            // Rate limiting: maksimal 5 pesan per menit
+            if (this.messagesSentThisMinute >= 5) {
+                SafeConsole.log('⚠️ Rate limit reached, waiting...');
+                return;
+            }
+            
             SafeConsole.log(`📨 Found ${pendingMessages.length} pending messages`);
             
             for (const message of pendingMessages) {
+                // Cek lagi rate limit di setiap iterasi
+                if (this.messagesSentThisMinute >= 5) {
+                    SafeConsole.log('⚠️ Rate limit reached, stopping for now');
+                    break;
+                }
+                
                 const phone = message.phone || message.to || message.recipient;
                 const text = message.message || message.text || message.content;
                 
@@ -412,11 +450,17 @@ class WhatsAppBot {
                     continue;
                 }
                 
+                // Delay antar pesan (random 3-8 detik)
+                const delay = this.getRandomDelay();
+                SafeConsole.log(`⏳ Waiting ${delay/1000}s before sending...`);
+                await this.sleep(delay);
+                
                 SafeConsole.log(`📤 Sending to ${phone}: ${text.substring(0, 50)}...`);
                 
                 const result = await this.sendMessage(phone, text);
                 
                 if (result.success) {
+                    this.messagesSentThisMinute++;
                     // Update status
                     const updatedMessages = messages.map(msg => {
                         if ((msg.id && msg.id === message.id) || 
@@ -432,7 +476,7 @@ class WhatsAppBot {
                     });
                     
                     fs.writeFileSync(this.messageQueueFile, JSON.stringify(updatedMessages, null, 2));
-                    SafeConsole.log(`✅ Message sent successfully`);
+                    SafeConsole.log(`✅ Message sent successfully (${this.messagesSentThisMinute}/5 this minute)`);
                 } else {
                     SafeConsole.error(`❌ Failed to send:`, result.error);
                 }
@@ -455,9 +499,9 @@ class WhatsAppBot {
             
             SafeConsole.log(`📤 Sending to ${jid}...`);
             
-            // Send dengan timeout
+            // Send dengan timeout yang lebih panjang (60 detik)
             const timeout = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Send timeout')), 30000)
+                setTimeout(() => reject(new Error('Send timeout')), 60000)
             );
             
             const sendPromise = this.sock.sendMessage(jid, { text: message });
@@ -471,12 +515,13 @@ class WhatsAppBot {
         } catch (error) {
             SafeConsole.error('❌ Send message error:', error.message);
             
-            // Jika connection error, trigger reconnect
+            // Jika connection error, trigger reconnect dengan delay
             if (error.message.includes('not connected') || 
                 error.message.includes('timeout') ||
                 error.message.includes('EPIPE')) {
                 this.isConnected = false;
-                this.handleReconnect();
+                // Delay lebih lama sebelum reconnect (30 detik)
+                setTimeout(() => this.handleReconnect(), 30000);
             }
             
             return { 

@@ -140,7 +140,7 @@ class NotificationService
         // Start bot MANUAL hanya saat pertama kali
         if (!$this->whatsapp->isBotStarted()) {
             $this->whatsapp->startBot();
-            sleep(3); // Tunggu bot initialize
+            sleep(15); // Tunggu bot initialize (dinaikkan dari 3 detik)
         }
 
         $kontrak = KontrakSewa::with(['penghuni', 'kos.pemilik'])->find($kontrakId);
@@ -563,6 +563,16 @@ class NotificationService
         return $this->whatsapp->sendMessage($kontrak->penghuni->no_hp, $message);
     }
 
+    // ==================== HELPERS ====================
+
+    /**
+     * Delay helper untuk mengurangi risiko ban
+     */
+    private function delay($seconds = 5)
+    {
+        sleep($seconds);
+    }
+
     // ==================== TRIGGER METHODS ====================
 
     /**
@@ -571,6 +581,7 @@ class NotificationService
     public function triggerKontrakCreated($kontrakId)
     {
         $this->sendMenungguPersetujuan($kontrakId);
+        $this->delay(5); // Delay 5 detik antar pesan
         $this->sendPengajuanBaru($kontrakId);
     }
 
@@ -580,6 +591,7 @@ class NotificationService
     public function triggerKontrakApproved($kontrakId)
     {
         $this->sendPersetujuanDiterima($kontrakId);
+        $this->delay(5); // Delay 5 detik antar pesan
         $this->sendPersetujuanDiberikan($kontrakId);
     }
 
@@ -589,6 +601,7 @@ class NotificationService
     public function triggerKontrakRejected($kontrakId)
     {
         $this->sendPersetujuanDitolak($kontrakId);
+        $this->delay(5); // Delay 5 detik antar pesan
         $this->sendPersetujuanDitolakPemilik($kontrakId);
     }
 
@@ -607,19 +620,24 @@ class NotificationService
 
         if ($sisaHari == 7) {
             $this->sendPengingat7Hari($kontrakId);
+            $this->delay(5); // Delay 5 detik antar pesan
             $this->sendPengingat7HariPemilik($kontrakId);
         } elseif ($sisaHari == 3) {
             $this->sendPengingat3Hari($kontrakId);
+            $this->delay(5); // Delay 5 detik antar pesan
             $this->sendPengingat3HariPemilik($kontrakId);
         } elseif ($sisaHari == 1) {
             $this->sendPengingatH1($kontrakId);
+            $this->delay(5); // Delay 5 detik antar pesan
             $this->sendPengingatH1Pemilik($kontrakId);
         } elseif ($sisaHari == 0) {
             $this->sendPengingatHariIni($kontrakId);
+            $this->delay(5); // Delay 5 detik antar pesan
             $this->sendPengingatHariIniPemilik($kontrakId);
         } elseif ($sisaHari < 0) {
             $hariTerlambat = abs($sisaHari);
             $this->sendNotifikasiTerlambat($kontrakId, $hariTerlambat);
+            $this->delay(5); // Delay 5 detik antar pesan
             $this->sendNotifikasiTerlambatPemilik($kontrakId, $hariTerlambat);
         }
     }

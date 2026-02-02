@@ -122,6 +122,14 @@ class ALLNotificationService
     }
 
     /**
+     * Delay helper untuk mengurangi risiko ban
+     */
+    private function delay($seconds = 3)
+    {
+        sleep($seconds);
+    }
+
+    /**
      * Send dual notification (WhatsApp + Email) for contract reminder
      */
     public function sendDualContractReminder($user, $kosName, $roomNumber, $daysLeft, $endDate, $type = 'before', $isPemilik = false)
@@ -153,6 +161,9 @@ class ALLNotificationService
                 Log::error("ALLNotificationService: Failed WhatsApp for {$user->nama}: " . $e->getMessage());
             }
         }
+        
+        // Delay antar pengiriman untuk mengurangi risiko ban
+        $this->delay(3);
         
         // Send Email
         if (!empty($user->email)) {
@@ -349,6 +360,9 @@ class ALLNotificationService
             }
         }
         
+        // Delay antar pengiriman untuk mengurangi risiko ban
+        $this->delay(3);
+        
         // Send Email
         if (!empty($user->email)) {
             try {
@@ -528,6 +542,7 @@ class ALLNotificationService
 
     /**
      * Format phone number for WhatsApp
+     * Catatan: Hanya bersihkan nomor, biarkan WhatsAppService atau whatsapp-bot.js yang handle format lengkap
      */
     private function formatPhoneNumber($phone)
     {
@@ -544,6 +559,7 @@ class ALLNotificationService
             $phone = '62' . $phone;
         }
         
-        return $phone . '@c.us'; // Baileys format
+        // Jangan tambahkan suffix di sini, biarkan whatsapp-bot.js yang handle
+        return $phone;
     }
 }

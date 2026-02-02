@@ -10,6 +10,8 @@ class WhatsAppService
     private $messageQueueFile;
     private $isBotRunning = false;
     private $botStarted = false;
+    private $lastMessageTime = 0;
+    private $minDelayBetweenMessages = 3000; // minimal 3 detik antar pesan
 
     public function __construct()
     {
@@ -64,6 +66,16 @@ class WhatsAppService
     public function sendMessage($phone, $message)
     {
         try {
+            // Rate limiting - cek delay antar pesan
+            $now = microtime(true) * 1000; // convert to milliseconds
+            $timeSinceLastMessage = $now - $this->lastMessageTime;
+            
+            if ($timeSinceLastMessage < $this->minDelayBetweenMessages) {
+                $sleepTime = ($this->minDelayBetweenMessages - $timeSinceLastMessage) / 1000; // convert to seconds
+                Log::info("Rate limiting: sleeping for {$sleepTime} seconds");
+                sleep(ceil($sleepTime));
+            }
+            
             $formattedPhone = $this->formatPhoneNumber($phone);
             
             $messageData = [
@@ -94,6 +106,9 @@ class WhatsAppService
                 'phone' => $formattedPhone,
                 'message_id' => $messageData['id']
             ]);
+            
+            // Update last message time untuk rate limiting
+            $this->lastMessageTime = microtime(true) * 1000;
             
             // Start bot jika belum running (hanya untuk message pertama)
             if (!$this->botStarted) {
