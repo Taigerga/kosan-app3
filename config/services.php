@@ -40,6 +40,16 @@ return [
         'api_key' => env('PAYMENT_API_KEY'),
         'secret_key' => env('PAYMENT_SECRET_KEY'),
     ],
-    
+
+    'whatsapp' => [
+        // Mode hybrid: true = PC rumah sebagai bridge, false = bot jalan di VPS
+        'hybrid_mode' => env('WHATSAPP_HYBRID_MODE', false),
+        
+        // Token untuk autentikasi bot (penting untuk keamanan!)
+        'bot_token' => env('WHATSAPP_BOT_TOKEN', 'default-secret-token-change-in-production'),
+        
+        // URL VPS (untuk bot bridge di PC rumah)
+        'vps_url' => env('WHATSAPP_VPS_URL', 'https://your-vps-hostinger.com'),
+    ],
 
 ];

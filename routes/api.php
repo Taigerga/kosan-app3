@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PemilikDashboardController;
+use App\Http\Controllers\API\WhatsAppBridgeController;
+use App\Http\Controllers\API\NotificationController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     // Untuk pemilik
@@ -27,7 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 use App\Http\Controllers\API\PaymentCallbackController;
-use Illuminate\Support\Facades\Route;
 
 // Payment callback routes
 Route::post('/payment/callback', [PaymentCallbackController::class, 'handleCallback']);
@@ -38,4 +40,17 @@ Route::prefix('notifications')->group(function () {
     Route::post('persetujuan-diterima/{kontrakId}', [NotificationController::class, 'sendPersetujuanDiterima']);
     Route::post('persetujuan-ditolak/{kontrakId}', [NotificationController::class, 'sendPersetujuanDitolak']);
     Route::post('pengajuan-baru/{kontrakId}', [NotificationController::class, 'sendPengajuanBaru']);
+});
+
+// WhatsApp Bridge API (untuk komunikasi VPS → PC Rumah)
+Route::prefix('whatsapp-bridge')->group(function () {
+    // Endpoint untuk bot (PC Rumah)
+    Route::get('/pending', [WhatsAppBridgeController::class, 'getPendingMessages']);
+    Route::post('/mark-sent', [WhatsAppBridgeController::class, 'markAsSent']);
+    Route::post('/mark-failed', [WhatsAppBridgeController::class, 'markAsFailed']);
+    Route::post('/bot-status', [WhatsAppBridgeController::class, 'updateBotStatus']);
+    
+    // Endpoint untuk admin panel
+    Route::get('/status', [WhatsAppBridgeController::class, 'getBotStatus']);
+    Route::get('/stats', [WhatsAppBridgeController::class, 'getStats']);
 });

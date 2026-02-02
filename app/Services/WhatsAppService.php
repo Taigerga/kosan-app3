@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\WhatsAppMessage;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class WhatsAppService
 {
@@ -12,20 +13,140 @@ class WhatsAppService
     private $botStarted = false;
     private $lastMessageTime = 0;
     private $minDelayBetweenMessages = 3000; // minimal 3 detik antar pesan
+    private $useHybridMode;
 
     public function __construct()
     {
         $this->messageQueueFile = storage_path('app/whatsapp_messages.json');
-        // JANGAN start bot di constructor!
-        // $this->initNodeProcess(); // HAPUS BARIS INI
+        // Mode hybrid: true = pakai database (PC rumah), false = pakai file local (VPS lokal)
+        $this->useHybridMode = config('services.whatsapp.hybrid_mode', false);
     }
 
     /**
-     * Start bot manually (bukan otomatis)
+     * Check if using hybrid mode (PC rumah as bridge)
+     */
+    public function isHybridMode()
+    {
+        return $this->useHybridMode;
+    }
+
+    /**
+     * Send message - akan disimpan ke queue untuk diproses
+     */
+    public function sendMessage($phone, $message, $type = 'general', $metadata = null)
+    {
+        try {
+            // Rate limiting - cek delay antar pesan
+            $now = microtime(true) * 1000;
+            $timeSinceLastMessage = $now - $this->lastMessageTime;
+            
+            if ($timeSinceLastMessage < $this->minDelayBetweenMessages) {
+                $sleepTime = ($this->minDelayBetweenMessages - $timeSinceLastMessage) / 1000;
+                Log::info("Rate limiting: sleeping for {$sleepTime} seconds");
+                sleep(ceil($sleepTime));
+            }
+            
+            $formattedPhone = $this->formatPhoneNumber($phone);
+            
+            if ($this->useHybridMode) {
+                // Mode Hybrid: Simpan ke database untuk diambil PC rumah
+                return $this->saveToDatabase($formattedPhone, $message, $type, $metadata);
+            } else {
+                // Mode Local: Simpan ke file untuk bot local
+                return $this->saveToFile($formattedPhone, $message);
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Error queueing WhatsApp message: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Save message to database (Hybrid Mode)
+     */
+    private function saveToDatabase($phone, $message, $type = 'general', $metadata = null)
+    {
+        try {
+            $whatsappMessage = WhatsAppMessage::create([
+                'phone' => $phone,
+                'message' => $message,
+                'status' => 'pending',
+                'attempts' => 0,
+                'type' => $type,
+                'metadata' => $metadata
+            ]);
+
+            Log::info("WhatsApp message queued to database for: {$phone}", [
+                'phone' => $phone,
+                'message_id' => $whatsappMessage->id,
+                'type' => $type,
+                'mode' => 'hybrid'
+            ]);
+            
+            $this->lastMessageTime = microtime(true) * 1000;
+            
+            return true;
+            
+        } catch (\Exception $e) {
+            Log::error('Error saving to database: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Save message to file (Local Mode - untuk backward compatibility)
+     */
+    private function saveToFile($phone, $message)
+    {
+        try {
+            $messageData = [
+                'id' => uniqid(),
+                'type' => 'send_message',
+                'phone' => $phone,
+                'message' => $message,
+                'timestamp' => now()->toISOString(),
+                'status' => 'pending'
+            ];
+
+            $queue = [];
+            if (file_exists($this->messageQueueFile)) {
+                $existingData = file_get_contents($this->messageQueueFile);
+                if ($existingData) {
+                    $queue = json_decode($existingData, true) ?? [];
+                }
+            }
+
+            $queue[] = $messageData;
+            file_put_contents($this->messageQueueFile, json_encode($queue, JSON_PRETTY_PRINT));
+
+            Log::info("WhatsApp message queued to file for: {$phone}", [
+                'phone' => $phone,
+                'message_id' => $messageData['id'],
+                'mode' => 'local'
+            ]);
+            
+            $this->lastMessageTime = microtime(true) * 1000;
+            
+            // Start bot local jika belum running
+            if (!$this->botStarted) {
+                $this->startBot();
+            }
+            
+            return true;
+            
+        } catch (\Exception $e) {
+            Log::error('Error saving to file: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Start bot manually (hanya untuk mode local)
      */
     public function startBot()
     {
-        if ($this->botStarted) {
+        if ($this->botStarted || $this->useHybridMode) {
             return true;
         }
 
@@ -37,18 +158,15 @@ class WhatsAppService
                 return false;
             }
 
-            // Jalankan di background (detached)
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                // Windows: start /B (background) di console terpisah
                 $command = 'start "WhatsApp Bot" /B cmd /c "node ' . escapeshellarg($nodeScriptPath) . '"';
                 pclose(popen($command, 'r'));
             } else {
-                // Linux/Mac: nohup &
                 $command = 'nohup node ' . escapeshellarg($nodeScriptPath) . ' > /dev/null 2>&1 &';
                 exec($command);
             }
 
-            Log::info('WhatsApp bot started in background');
+            Log::info('WhatsApp bot started in background (local mode)');
             $this->botStarted = true;
             $this->isBotRunning = true;
             
@@ -61,66 +179,127 @@ class WhatsAppService
     }
 
     /**
-     * Send message - bot akan start otomatis hanya saat pertama kali send
+     * Get bot status
      */
-    public function sendMessage($phone, $message)
+    public function getStatus()
     {
-        try {
-            // Rate limiting - cek delay antar pesan
-            $now = microtime(true) * 1000; // convert to milliseconds
-            $timeSinceLastMessage = $now - $this->lastMessageTime;
-            
-            if ($timeSinceLastMessage < $this->minDelayBetweenMessages) {
-                $sleepTime = ($this->minDelayBetweenMessages - $timeSinceLastMessage) / 1000; // convert to seconds
-                Log::info("Rate limiting: sleeping for {$sleepTime} seconds");
-                sleep(ceil($sleepTime));
-            }
-            
-            $formattedPhone = $this->formatPhoneNumber($phone);
-            
-            $messageData = [
-                'id' => uniqid(),
-                'type' => 'send_message',
-                'phone' => $formattedPhone,
-                'message' => $message,
-                'timestamp' => now()->toISOString(),
-                'status' => 'pending'
-            ];
-
-            // Baca queue yang ada
-            $queue = [];
-            if (file_exists($this->messageQueueFile)) {
-                $existingData = file_get_contents($this->messageQueueFile);
-                if ($existingData) {
-                    $queue = json_decode($existingData, true) ?? [];
-                }
-            }
-
-            // Tambahkan message baru
-            $queue[] = $messageData;
-
-            // Simpan ke file
-            file_put_contents($this->messageQueueFile, json_encode($queue, JSON_PRETTY_PRINT));
-
-            Log::info("WhatsApp message queued for: {$formattedPhone}", [
-                'phone' => $formattedPhone,
-                'message_id' => $messageData['id']
+        if ($this->useHybridMode) {
+            // Hybrid mode: ambil status dari cache (diupdate oleh bridge)
+            $botStatus = Cache::get('whatsapp_bot_status', [
+                'status' => 'unknown',
+                'updated_at' => null
             ]);
             
-            // Update last message time untuk rate limiting
-            $this->lastMessageTime = microtime(true) * 1000;
+            $isOnline = $botStatus['updated_at'] && 
+                        now()->diffInMinutes($botStatus['updated_at']) < 2;
+
+            return [
+                'mode' => 'hybrid',
+                'bot_online' => $isOnline,
+                'bot_status' => $botStatus['status'],
+                'bot_last_seen' => $botStatus['updated_at'],
+                'pending_count' => WhatsAppMessage::where('status', 'pending')->count(),
+                'sent_today' => WhatsAppMessage::where('status', 'sent')
+                    ->whereDate('sent_at', today())->count(),
+            ];
+        } else {
+            // Local mode: status dari file
+            $queueCount = 0;
+            $pendingCount = 0;
             
-            // Start bot jika belum running (hanya untuk message pertama)
-            if (!$this->botStarted) {
-                $this->startBot();
+            if (file_exists($this->messageQueueFile)) {
+                $queueData = file_get_contents($this->messageQueueFile);
+                $queue = json_decode($queueData, true) ?? [];
+                $queueCount = count($queue);
+                $pendingCount = count(array_filter($queue, fn($msg) => $msg['status'] === 'pending'));
             }
-            
-            return true;
-            
+
+            return [
+                'mode' => 'local',
+                'bot_started' => $this->botStarted,
+                'queue_count' => $queueCount,
+                'pending_messages' => $pendingCount,
+            ];
+        }
+    }
+
+    /**
+     * Get queue (local mode only)
+     */
+    public function getQueue()
+    {
+        if ($this->useHybridMode) {
+            return WhatsAppMessage::whereIn('status', ['pending', 'processing'])
+                ->orderBy('created_at', 'asc')
+                ->get();
+        }
+
+        try {
+            if (file_exists($this->messageQueueFile)) {
+                $queueData = file_get_contents($this->messageQueueFile);
+                return json_decode($queueData, true) ?? [];
+            }
+            return [];
         } catch (\Exception $e) {
-            Log::error('Error queueing WhatsApp message: ' . $e->getMessage());
+            Log::error('Error reading queue: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Clear queue
+     */
+    public function clearQueue()
+    {
+        try {
+            if ($this->useHybridMode) {
+                WhatsAppMessage::whereIn('status', ['pending', 'processing'])->delete();
+                Log::info('WhatsApp message queue cleared (hybrid mode)');
+                return true;
+            } else {
+                if (file_exists($this->messageQueueFile)) {
+                    unlink($this->messageQueueFile);
+                    Log::info('WhatsApp message queue cleared (local mode)');
+                    return true;
+                }
+                return false;
+            }
+        } catch (\Exception $e) {
+            Log::error('Error clearing queue: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Stop bot (local mode only)
+     */
+    public function stopBot()
+    {
+        if ($this->useHybridMode) {
+            Log::info('Cannot stop bot in hybrid mode (bot runs on remote PC)');
+            return false;
+        }
+
+        try {
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                exec('taskkill /F /IM node.exe 2>nul 1>nul');
+            } else {
+                exec("pkill -f 'whatsapp-bot.js' 2>/dev/null");
+            }
+            
+            $this->botStarted = false;
+            $this->isBotRunning = false;
+            Log::info('WhatsApp bot stopped');
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error stopping bot: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function isBotStarted()
+    {
+        return $this->botStarted;
     }
 
     private function formatPhoneNumber($phone)
@@ -140,80 +319,5 @@ class WhatsAppService
         }
         
         return $phone;
-    }
-
-    /**
-     * Check bot status
-     */
-    public function getStatus()
-    {
-        $queueCount = 0;
-        $pendingCount = 0;
-        
-        if (file_exists($this->messageQueueFile)) {
-            $queueData = file_get_contents($this->messageQueueFile);
-            $queue = json_decode($queueData, true) ?? [];
-            $queueCount = count($queue);
-            $pendingCount = count(array_filter($queue, fn($msg) => $msg['status'] === 'pending'));
-        }
-
-        return [
-            'bot_started' => $this->botStarted,
-            'queue_count' => $queueCount,
-            'pending_messages' => $pendingCount,
-            'queue_file_exists' => file_exists($this->messageQueueFile)
-        ];
-    }
-
-    public function getQueue()
-    {
-        try {
-            if (file_exists($this->messageQueueFile)) {
-                $queueData = file_get_contents($this->messageQueueFile);
-                return json_decode($queueData, true) ?? [];
-            }
-            return [];
-        } catch (\Exception $e) {
-            Log::error('Error reading queue: ' . $e->getMessage());
-            return [];
-        }
-    }
-
-    public function clearQueue()
-    {
-        try {
-            if (file_exists($this->messageQueueFile)) {
-                unlink($this->messageQueueFile);
-                Log::info('WhatsApp message queue cleared');
-                return true;
-            }
-            return false;
-        } catch (\Exception $e) {
-            Log::error('Error clearing queue: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    public function stopBot()
-    {
-        try {
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                exec('taskkill /F /IM node.exe 2>nul 1>nul');
-            } else {
-                exec("pkill -f 'whatsapp-bot.js' 2>/dev/null");
-            }
-            
-            $this->botStarted = false;
-            $this->isBotRunning = false;
-            Log::info('WhatsApp bot stopped');
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Error stopping bot: ' . $e->getMessage());
-            return false;
-        }
-    }
-    public function isBotStarted()
-    {
-        return $this->botStarted;
     }
 }
