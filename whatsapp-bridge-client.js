@@ -17,16 +17,17 @@
  * - POLL_INTERVAL: 30000 (30 detik)
  */
 
-import { default as makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
+import { default as makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+import pino from 'pino';
 
 // ========== CONFIGURATION ==========
 const CONFIG = {
-    VPS_URL: process.env.VPS_URL || 'https://your-vps-hostinger.com',
-    BOT_TOKEN: process.env.BOT_TOKEN || 'your-secret-token-here',
+    VPS_URL: process.env.VPS_URL || 'https://ayo-kos.com/',
+    BOT_TOKEN: process.env.BOT_TOKEN || '1234567890mrizki',
     POLL_INTERVAL: parseInt(process.env.POLL_INTERVAL) || 30000, // 30 detik
     RATE_LIMIT_DELAY: 5000, // 5 detik antar pesan
     MAX_RETRY_ATTEMPTS: 3,
@@ -73,15 +74,19 @@ class WhatsAppBridge {
             
             this.sock = makeWASocket({
                 version,
-                logger: { level: 'error' },
-                printQRInTerminal: true, // Tampilkan QR code
-                auth: state,
-                browser: ['Chrome', 'Windows', '10.0.19045'], // Windows PC lebih natural
+                logger: pino({ level: 'error' }),
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' })),
+                },
+                browser: ['Chrome (Linux)', '', ''],
                 generateHighQualityLinkPreview: true,
                 syncFullHistory: false,
                 connectTimeoutMs: 60000,
                 defaultQueryTimeoutMs: 60000,
-                emitOwnEvents: false,
+                emitOwnEvents: true,
+                markOnlineOnConnect: false,
+                keepAliveIntervalMs: 60000,
             });
 
             // Setup event handlers
