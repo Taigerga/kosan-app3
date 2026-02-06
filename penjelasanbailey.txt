@@ -1,0 +1,292 @@
+# PENJELASAN ALUR BAILEYS WHATSAPP API
+
+## Overview Sistem
+
+Sistem ini menggunakan library **Baileys** (@whiskeysockets/baileys) untuk mengirim pesan WhatsApp secara otomatis. Terdapat **DUA MODE** operasi yang berbeda:
+
+---
+
+## MODE 1: VPS-PC BRIDGE (Production Mode)
+
+File-file terkait:
+- `whatsapp-bridge-client.js` (Node.js client di PC rumah)
+- `app/Http/Controllers/API/WhatsAppBridgeController.php` (API Laravel di VPS)
+- `routes/api.php` (Route definitions)
+
+### Arsitektur:
+```
+┌─────────────────┐         ┌──────────────────┐         ┌─────────────────┐
+│   VPS HOSTINGER │  HTTP   │   PC RUMAH       │  WA Web │   WHATSAPP      │
+│   (Laravel)     │◄───────►│   (Node.js)      │◄────────►│   SERVERS       │
+│                 │  API    │   Baileys Bot    │ Socket  │                 │
+└─────────────────┘         └──────────────────┘         └─────────────────┘
+```
+
+### Alur Kerja:
+
+#### 1. Inisialisasi Client (PC Rumah)
+- Client Node.js dijalankan di PC rumah/laptop
+- Membuat koneksi WhatsApp Web menggunakan Baileys
+- Menampilkan QR code untuk scan dari HP
+- Menyimpan credentials di folder `./auth_info`
+
+#### 2. Polling Pesan (Setiap 30 detik)
+```javascript
+// Client request ke VPS
+GET /api/whatsapp-bridge/pending
+Headers: X-Bot-Token: <secret_token>
+```
+
+#### 3. VPS Processing (WhatsAppBridgeController.php)
+```php
+// Ambil pesan pending dari database
+$messages = WhatsAppMessage::where('status', 'pending')
+    ->where('attempts', '<', 3)
+    ->orderBy('created_at', 'asc')
+    ->limit(5)
+    ->get();
+
+// Update status jadi 'processing'
+$message->update([
+    'status' => 'processing',
+    'processing_at' => now(),
+    'attempts' => $message->attempts + 1
+]);
+```
+
+#### 4. Pengiriman Pesan (Client)
+```javascript
+// Format nomor
+const jid = phone.includes('@') ? phone : `${phone}@s.whatsapp.net`;
+
+// Kirim pesan via Baileys
+const result = await this.sock.sendMessage(jid, { text });
+```
+
+#### 5. Update Status ke VPS
+**Jika Berhasil:**
+```javascript
+POST /api/whatsapp-bridge/mark-sent
+{
+    id: messageId,
+    whatsapp_message_id: result.key.id
+}
+```
+
+**Jika Gagal:**
+```javascript
+POST /api/whatsapp-bridge/mark-failed
+{
+    id: messageId,
+    error: error.message
+}
+```
+
+#### 6. Status Bot
+```javascript
+// Kirim status periodik
+POST /api/whatsapp-bridge/bot-status
+{
+    status: 'online|offline|connecting|banned',
+    message: 'optional message'
+}
+```
+
+### API Endpoints:
+
+| Method | Endpoint | Fungsi |
+|--------|----------|--------|
+| GET | `/api/whatsapp-bridge/pending` | Ambil pesan pending |
+| POST | `/api/whatsapp-bridge/mark-sent` | Tandai pesan terkirim |
+| POST | `/api/whatsapp-bridge/mark-failed` | Tandai pesan gagal |
+| POST | `/api/whatsapp-bridge/bot-status` | Update status bot |
+| GET | `/api/whatsapp-bridge/status` | Cek status bot (admin) |
+| GET | `/api/whatsapp-bridge/stats` | Statistik pengiriman (admin) |
+
+### Keamanan:
+- Token autentikasi via header `X-Bot-Token`
+- Token disimpan di `.env` (WHATSAPP_BOT_TOKEN)
+- Rate limiting: max 5 pesan per request
+- Max retry: 3 attempts
+
+---
+
+## MODE 2: LOCAL FILE QUEUE (Standalone Mode)
+
+File terkait:
+- `app/Services/WhatsAppBot/whatsapp-bot.js`
+
+### Arsitektur:
+```
+┌─────────────────────────────────────┐         ┌─────────────────┐
+│   PC/Server Lokal                   │  WA Web │   WHATSAPP      │
+│   (Node.js + Baileys)               │◄────────►│   SERVERS       │
+│                                     │ Socket  │                 │
+│   Queue File:                       │         │                 │
+│   storage/app/whatsapp_messages.json│         │                 │
+└─────────────────────────────────────┘         └─────────────────┘
+```
+
+### Alur Kerja:
+
+#### 1. Queue File (JSON)
+File: `storage/app/whatsapp_messages.json`
+```json
+[
+    {
+        "id": 1,
+        "phone": "628123456789",
+        "message": "Halo, ini test",
+        "status": "pending"
+    }
+]
+```
+
+#### 2. Message Watcher
+Bot cek file setiap **30 detik**:
+```javascript
+this.messageQueueInterval = setInterval(() => {
+    this.processMessageQueue();
+}, 30000);
+```
+
+#### 3. Processing Queue
+- Filter pesan dengan status 'pending'
+- Rate limiting: max **5 pesan per menit**
+- Delay antar pesan: **3-8 detik random**
+- Update file JSON setelah pengiriman
+
+#### 4. Pengiriman
+```javascript
+const jid = phone.includes('@s.whatsapp.net') 
+    ? phone 
+    : `${phone.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
+
+await this.sock.sendMessage(jid, { text: message });
+```
+
+---
+
+## PERBEDAAN MODE:
+
+| Fitur | VPS-PC Bridge | Local File Queue |
+|-------|---------------|------------------|
+| Lokasi Bot | PC Rumah | PC/Server Lokal |
+| Storage | Database MySQL | File JSON |
+| Komunikasi | HTTP API ke VPS | Tidak ada |
+| Monitoring | Real-time via API | File log |
+| Retry Logic | VPS handle | Bot handle |
+| Rate Limit | 5 pesan/30 detik | 5 pesan/menit |
+| Cocok untuk | Production | Development/Test |
+
+---
+
+## FITUR KEAMANAN & STABILITAS:
+
+### 1. Reconnection Logic
+- Max 3 attempts reconnect
+- Exponential backoff (10s, 20s, 40s)
+- Wait 5 menit setelah max attempts
+
+### 2. Rate Limiting
+- Delay antar pesan: 3-8 detik (random)
+- Max 5 pesan per menit (local mode)
+- Max 5 pesan per request (bridge mode)
+
+### 3. Error Handling
+- SafeConsole untuk logging tanpa crash
+- Try-catch di semua async operations
+- Backup file corrupt otomatis
+
+### 4. Connection Keep-Alive
+- Keep-alive interval: 4 menit
+- Activity tracking
+- Auto reconnect jika timeout
+
+---
+
+## CARA MENGGUNAKAN:
+
+### Mode 1 (VPS-PC Bridge):
+
+**Di VPS (Laravel):**
+1. Set token di `.env`:
+```env
+WHATSAPP_BOT_TOKEN=your_secret_token_here
+```
+
+2. Tambahkan pesan ke database:
+```php
+WhatsAppMessage::create([
+    'phone' => '628123456789',
+    'message' => 'Halo dari VPS!',
+    'status' => 'pending'
+]);
+```
+
+**Di PC Rumah:**
+1. Install dependencies:
+```bash
+npm install @whiskeysockets/baileys axios qrcode-terminal pino
+```
+
+2. Jalankan bot:
+```bash
+VPS_URL=https://vps-hostinger.com BOT_TOKEN=your_token node whatsapp-bridge-client.js
+```
+
+### Mode 2 (Local File):
+
+1. Buat queue file:
+```bash
+# File: storage/app/whatsapp_messages.json
+echo '[{"phone":"628123456789","message":"Test","status":"pending"}]' > storage/app/whatsapp_messages.json
+```
+
+2. Jalankan bot:
+```bash
+node app/Services/WhatsAppBot/whatsapp-bot.js
+```
+
+---
+
+## DATABASE SCHEMA (WhatsAppMessage):
+
+```php
+Schema::create('whatsapp_messages', function (Blueprint $table) {
+    $table->id();
+    $table->string('phone');
+    $table->text('message');
+    $table->enum('status', ['pending', 'processing', 'sent', 'failed'])->default('pending');
+    $table->integer('attempts')->default(0);
+    $table->timestamp('processing_at')->nullable();
+    $table->timestamp('sent_at')->nullable();
+    $table->timestamp('failed_at')->nullable();
+    $table->string('whatsapp_message_id')->nullable();
+    $table->text('error')->nullable();
+    $table->timestamps();
+});
+```
+
+---
+
+## STATUS LIFECYCLE:
+
+```
+pending → processing → sent
+   ↓           ↓
+   └───────────→ failed (after 3 attempts)
+```
+
+---
+
+## LOGGING:
+
+Bridge Mode: Console output + VPS API status updates
+Local Mode: Console + `whatsapp-bot-fallback.log` + `critical-errors.log`
+
+---
+
+Dibuat: 2026-02-02
+Sistem: Kosan App WhatsApp Bridge
+Library: @whiskeysockets/baileys

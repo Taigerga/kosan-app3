@@ -26,7 +26,7 @@ import pino from 'pino';
 
 // ========== CONFIGURATION ==========
 const CONFIG = {
-    VPS_URL: process.env.VPS_URL || 'https://ayo-kos.com/',
+    VPS_URL: (process.env.VPS_URL || 'https://ayo-kos.com').replace(/\/$/, ''), // Hapus trailing slash
     BOT_TOKEN: process.env.BOT_TOKEN || '1234567890mrizki',
     POLL_INTERVAL: parseInt(process.env.POLL_INTERVAL) || 30000, // 30 detik
     RATE_LIMIT_DELAY: 5000, // 5 detik antar pesan
